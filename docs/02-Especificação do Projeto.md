@@ -8,9 +8,72 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 ## Personas
 
-Pedro Paulo tem 26 anos, é arquiteto recém-formado e autônomo. Pensa em se desenvolver profissionalmente através de um mestrado fora do país, pois adora viajar, é solteiro e sempre quis fazer um intercâmbio. Está buscando uma agência que o ajude a encontrar universidades na Europa que aceitem alunos estrangeiros.
+Persona 1 – Lucas Andrade (República Universitária)
 
-Enumere e detalhe as personas da sua solução. Para tanto, baseie-se tanto nos documentos disponibilizados na disciplina e/ou nos seguintes links:
+22 anos
+
+Estudante de Engenharia
+
+Mora com 4 colegas
+
+Renda limitada
+
+Usa Pix diariamente
+
+Pouca paciência para planilhas
+
+Dores:
+
+Esquecem quem pagou contas
+
+Conflitos por divisão desigual
+
+Falta de registro histórico
+
+Objetivo:
+Ter divisão automática e transparente.
+
+Persona 2 – Mariana Souza (Organizadora de Viagens)
+
+29 anos
+
+Profissional de Marketing
+
+Organiza viagens com amigos
+
+Costuma pagar reservas no cartão
+
+Gosta de relatórios
+
+Dores:
+
+Parcelamentos longos
+
+Cobranças desconfortáveis
+
+Falta de controle consolidado
+
+Objetivo:
+Visualizar quem deve, quanto deve e quando deve pagar.
+
+Persona 3 – Rafael Oliveira (Gestor Familiar)
+
+35 anos
+
+Empreendedor
+
+Divide despesas familiares ampliadas
+
+Quer visão macro consolidada
+
+Dores:
+
+Falta de controle global
+
+Desorganização financeira
+
+Objetivo:
+Dashboard analítico completo.
 
 > **Links Úteis**:
 > - [Rock Content](https://rockcontent.com/blog/personas/)
@@ -26,10 +89,27 @@ Lembre-se que você deve ser enumerar e descrever precisamente e personalizada t
 
 Com base na análise das personas forma identificadas as seguintes histórias de usuários:
 
-|EU COMO... `PERSONA`| QUERO/PRECISO ... `FUNCIONALIDADE` |PARA ... `MOTIVO/VALOR`                 |
-|--------------------|------------------------------------|----------------------------------------|
-|Usuário do sistema  | Registrar minhas tarefas           | Não esquecer de fazê-las               |
-|Administrador       | Alterar permissões                 | Permitir que possam administrar contas |
+| EU COMO | QUERO                             | PARA                             |
+| ------- | --------------------------------- | -------------------------------- |
+| Usuário | Criar um grupo de despesas        | Organizar contas compartilhadas  |
+| Usuário | Convidar membros via link         | Facilitar entrada no grupo       |
+| Usuário | Sair de um grupo                  | Não participar mais das despesas |
+| Usuário | Registrar uma despesa             | Não esquecer gastos              |
+| Usuário | Escolher tipo de divisão          | Garantir justiça                 |
+| Usuário | Anexar comprovante                | Ter transparência                |
+| Usuário | Parcelar despesa                  | Controlar pagamentos futuros     |
+| Usuário | Visualizar saldo consolidado      | Saber quanto devo                |
+| Usuário | Receber notificação de vencimento | Não atrasar pagamento            |
+| Usuário | Gerar relatório mensal            | Controlar orçamento              |
+
+| EU COMO       | QUERO                        | PARA                  |
+| ------------- | ---------------------------- | --------------------- |
+| Administrador | Alterar permissões           | Controlar organização |
+| Administrador | Remover usuário inadimplente | Manter integridade    |
+
+
+
+
 
 Apresente aqui as histórias de usuário que são relevantes para o projeto de sua solução. As Histórias de Usuário consistem em uma ferramenta poderosa para a compreensão e elicitação dos requisitos funcionais e não funcionais da sua aplicação. Se possível, agrupe as histórias de usuário por contexto, para facilitar consultas recorrentes à essa parte do documento.
 
@@ -48,17 +128,36 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 <strong>Cada aluno será responsável pela execução completa (back, web e mobile) de pelo menos 2 requisitos que será acompanhado pelo professor</strong>
 ### Requisitos Funcionais
 
-|ID    | Descrição do Requisito  | Prioridade | Responsável |
-|------|-----------------------------------------|----|----|
-|RF-001| Permitir que o usuário cadastre tarefas | ALTA | Pedro |
-|RF-002| Emitir um relatório de tarefas no mês   | MÉDIA | João |
+| ID     | Descrição                         | Prioridade | Responsável |
+| ------ | --------------------------------- | ---------- | ----------- |
+| RF-001 | Cadastrar usuário                 | ALTA       | henrique    |
+| RF-002 | Autenticação com JWT              | ALTA       | joao        |
+| RF-003 | Criar grupo de despesas           | ALTA       | ana         |
+| RF-004 | Convidar usuários via link        | ALTA       | fernanda    |
+| RF-005 | Registrar despesa                 | ALTA       | wyvern      |
+| RF-006 | Dividir despesa igualmente        | ALTA       | erick       |
+| RF-007 | Dividir despesa proporcional      | ALTA       | francisco   |
+| RF-008 | Parcelar despesa automaticamente  | MÉDIA      | leticia     |
+| RF-009 | Gerar relatório mensal            | MÉDIA      | miguel      |
+| RF-010 | Exibir dashboard consolidado      | ALTA       | amanda      |
+| RF-011 | Enviar notificações de vencimento | MÉDIA      | sophia      |
+| RF-012 | Anexar comprovante à despesa      | BAIXA      | sara        |
+| RF-013 | Alterar permissões do grupo       | MÉDIA      | wendy       |
+| RF-014 | Remover participante do grupo     | MÉDIA      | knupp       |
+
 
 ### Requisitos não Funcionais
 
-|ID     | Descrição do Requisito  |Prioridade |
-|-------|-------------------------|----|
-|RNF-001| O sistema deve ser responsivo para rodar em um dispositivos móvel | MÉDIA | 
-|RNF-002| Deve processar requisições do usuário em no máximo 3s |  BAIXA | 
+| ID      | Descrição                            | Prioridade |
+| ------- | ------------------------------------ | ---------- |
+| RNF-001 | Sistema responsivo (Web + Mobile)    | ALTA       |
+| RNF-002 | Tempo de resposta ≤ 2 segundos       | ALTA       |
+| RNF-003 | Disponibilidade mínima de 99%        | MÉDIA      |
+| RNF-004 | Criptografia de dados sensíveis      | ALTA       |
+| RNF-005 | Backup automático diário             | MÉDIA      |
+| RNF-006 | Suporte a 1.000 usuários simultâneos | MÉDIA      |
+| RNF-007 | Sincronização em tempo real          | ALTA       |
+
 
 Com base nas Histórias de Usuário, enumere os requisitos da sua solução. Classifique esses requisitos em dois grupos:
 
@@ -77,12 +176,12 @@ todos os aspectos capturados nas Histórias de Usuário foram cobertos.
 
 ## Restrições
 
-O projeto está restrito pelos itens apresentados na tabela a seguir.
-
-|ID| Restrição                                             |
-|--|-------------------------------------------------------|
-|01| O projeto deverá ser entregue até o final do semestre |
-|02| Não pode ser desenvolvido um módulo de backend        |
+| ID   | Restrição                         |
+| ---- | --------------------------------- |
+| R-01 | Entrega até final do semestre     |
+| R-02 | Deve usar arquitetura distribuída |
+| R-03 | Deve possuir versão web e mobile  |
+| R-04 | Hospedagem obrigatória em nuvem   |
 
 Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
 
@@ -112,7 +211,9 @@ De acordo com o PMBoK v6 as dez áreas que constituem os pilares para gerenciar 
 
 Com diagramas bem organizados que permitem gerenciar o tempo nos projetos, o gerente de projetos agenda e coordena tarefas dentro de um projeto para estimar o tempo necessário de conclusão.
 
-![Diagrama de rede simplificado notação francesa (método francês)](img/02-diagrama-rede-simplificado.png)
+
+<img width="797" height="428" alt="image" src="https://github.com/user-attachments/assets/92ad0f85-ae8a-4e3c-9d45-64521158c6df" />
+)](img/02-diagrama-rede-simplificado.png)
 
 O gráfico de Gantt ou diagrama de Gantt também é uma ferramenta visual utilizada para controlar e gerenciar o cronograma de atividades de um projeto. Com ele, é possível listar tudo que precisa ser feito para colocar o projeto em prática, dividir em atividades e estimar o tempo necessário para executá-las.
 
