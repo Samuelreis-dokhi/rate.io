@@ -1,25 +1,25 @@
-# TÍTULO DO PROJETO
+# RATE.IO
 
-`CURSO`
+`Análise e Desenvolvimento de Sistemas`
 
-`DISCIPLINA`
+`Projeto - Desenvolvimento de uma Aplicação Distribuída - Turma 01 - 2026/1`
 
-`SEMESTRE`
+`Eixo 4`
 
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+O projeto consiste no desenvolvimento de uma aplicação distribuída voltada para a gestão financeira e o rateio de despesas coletivas em diversos cenários, como viagens, moradias compartilhadas (repúblicas) e eventos sociais. A solução utiliza uma arquitetura cliente-servidor onde uma API REST centralizada na nuvem, integrada a um banco de dados NoSQL, serve simultaneamente a uma interface Web e a um aplicativo Mobile. Enquanto o foco do dispositivo móvel é a agilidade nos lançamentos cotidianos e notificações em tempo real, a plataforma Web oferece uma visão macro e gerencial dos gastos.
 
 ## Integrantes
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
-* Nome completo do aluno 5
-* Nome completo do aluno 6
+* Samuel Filipe dos reis
+* Louise Dias Santos
+* Heitor Oliveiro Soares Domingos
+* Vinícius Nogueira
+* Rondinelli
+* Samuel Reis
 
 ## Orientador
 
-* Nome completo do professor 1
+* Leonardo Vilela Cardoso
 
 ## Instruções de utilização
 

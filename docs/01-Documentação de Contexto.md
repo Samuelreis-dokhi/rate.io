@@ -20,22 +20,20 @@ Barreiras de Sincronização: O registro de um gasto muitas vezes não ocorre no
 
 A aplicação será utilizada por indivíduos que buscam otimizar sua saúde financeira através da tecnologia. No contexto acadêmico e profissional, utiliza-se a arquitetura de Sistemas Distribuídos para garantir que os dados inseridos via dispositivos móveis (em situações de mobilidade) estejam imediatamente disponíveis para consulta e gestão em plataformas web, utilizando armazenamento em nuvem para garantir a persistência e a integridade das informações entre todos os envolvidos.
 
-
-```
-    > **Links Úteis**:
-    > - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
-    > - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
-    > - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
-```
-
 ## Objetivos
 
-Aqui você deve descrever os objetivos do trabalho indicando que o objetivo geral é desenvolver um software para solucionar o problema apresentado acima. 
+O objetivo geral deste projeto é desenvolver uma aplicação distribuída multiplataforma para a gestão e o rateio de despesas coletivas, visando automatizar cálculos de saldo e promover a transparência financeira entre participantes de diferentes contextos sociais, como moradias compartilhadas e viagens em grupo.
 
-Apresente também alguns (pelo menos 2) objetivos específicos dependendo de onde você vai querer concentrar a sua prática investigativa, ou como você vai aprofundar no seu trabalho.
+### Objetivos Específicos
+
+- Interoperabilidade: Desenvolver uma API REST centralizada na nuvem que sirva como fonte única de dados para clientes distintos (Web e Mobile), garantindo a consistência das informações em tempo real.
+
+- Flexibilidade de Divisão: Implementar algoritmos de cálculo que suportem múltiplas abordagens de rateio, incluindo divisões igualitárias, por percentual e por valor exato de consumo individual.
+
+- Gestão de Recorrência: Automatizar o controle de despesas parceladas e fixas, gerando cobranças mensais automáticas para reduzir o esquecimento de dívidas de longo prazo.
+
+- Persistência Não Relacional: Estruturar o armazenamento de dados utilizando um banco de dados NoSQL para permitir a escalabilidade e a flexibilidade necessária para lidar com diferentes perfis de grupos e transações.
  
-> **Links Úteis**:
-> - [Objetivo geral e objetivo específico: como fazer e quais verbos utilizar](https://blog.mettzer.com/diferenca-entre-objetivo-geral-e-objetivo-especifico/)
 
 ## Justificativa
 
