@@ -1,27 +1,39 @@
 # Introdução
 
-Texto descritivo com a visão geral do projeto abordado. Inclui o contexto, o problema, os objetivos, a justificativa e o público-alvo do projeto.
+O gerenciamento de finanças compartilhadas é um desafio comum em diversos contextos sociais contemporâneos. Seja na divisão de despesas fixas em moradias compartilhadas (repúblicas), na organização de custos variáveis durante viagens em grupo ou no simples rateio de contas em eventos sociais e saídas de lazer, a falta de uma metodologia clara frequentemente gera atritos interpessoais e desorganização financeira. Este projeto propõe o desenvolvimento de uma aplicação distribuída focada na transparência e automação da divisão de gastos, integrando a praticidade do acesso móvel para lançamentos imediatos à robustez de uma interface web para análises gerenciais profundas.
 
 ## Problema
-Nesse momento você deve apresentar o problema que a sua aplicação deve  resolver. No entanto, não é a hora de comentar sobre a aplicação.
 
-Descreva também o contexto em que essa aplicação será usada, se  houver: empresa, tecnologias, etc. Novamente, descreva apenas o que de  fato existir, pois ainda não é a hora de apresentar requisitos  detalhados ou projetos.
+O problema central reside na complexidade e no ônus cognitivo de gerir contas coletivas manualmente ou através de métodos descentralizados (como planilhas isoladas ou anotações informais).
 
-Nesse momento, o grupo pode optar por fazer uso  de ferramentas como Design Thinking, que permite um olhar de ponta a ponta para o problema.
+Os principais pontos de dor identificados são:
 
-> **Links Úteis**:
-> - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
-> - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
-> - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
+Dificuldade de Cálculo em Divisões Desiguais: Em cenários como bares ou restaurantes, o rateio raramente é estritamente igualitário, exigindo cálculos rápidos sobre quem consumiu o quê, o que frequentemente leva a erros ou desconforto entre os participantes.
+
+Gestão de Longo Prazo e Parcelamentos: Itens de alto valor adquiridos por um único indivíduo para o grupo (como o aluguel de um veículo em uma viagem ou a compra de um eletrodoméstico para uma república) geram uma "dívida fantasma" que precisa ser cobrada e acompanhada mensalmente, o que é difícil de sustentar sem um sistema de alertas e histórico.
+
+Falta de Visibilidade Macro: Membros de grupos de despesas compartilhadas muitas vezes perdem a noção do impacto desses gastos no seu orçamento pessoal, por não possuírem uma visão consolidada que integre diferentes contextos (ex: saber quanto se deve na república somado ao que se deve da última viagem).
+
+Barreiras de Sincronização: O registro de um gasto muitas vezes não ocorre no momento da compra por falta de uma ferramenta acessível, resultando no esquecimento de despesas e em saldos finais injustos.
+
+### Contexto de uso:
+
+A aplicação será utilizada por indivíduos que buscam otimizar sua saúde financeira através da tecnologia. No contexto acadêmico e profissional, utiliza-se a arquitetura de Sistemas Distribuídos para garantir que os dados inseridos via dispositivos móveis (em situações de mobilidade) estejam imediatamente disponíveis para consulta e gestão em plataformas web, utilizando armazenamento em nuvem para garantir a persistência e a integridade das informações entre todos os envolvidos.
 
 ## Objetivos
 
-Aqui você deve descrever os objetivos do trabalho indicando que o objetivo geral é desenvolver um software para solucionar o problema apresentado acima. 
+O objetivo geral deste projeto é desenvolver uma aplicação distribuída multiplataforma para a gestão e o rateio de despesas coletivas, visando automatizar cálculos de saldo e promover a transparência financeira entre participantes de diferentes contextos sociais, como moradias compartilhadas e viagens em grupo.
 
-Apresente também alguns (pelo menos 2) objetivos específicos dependendo de onde você vai querer concentrar a sua prática investigativa, ou como você vai aprofundar no seu trabalho.
+### Objetivos Específicos
+
+- Interoperabilidade: Desenvolver uma API REST centralizada na nuvem que sirva como fonte única de dados para clientes distintos (Web e Mobile), garantindo a consistência das informações em tempo real.
+
+- Flexibilidade de Divisão: Implementar algoritmos de cálculo que suportem múltiplas abordagens de rateio, incluindo divisões igualitárias, por percentual e por valor exato de consumo individual.
+
+- Gestão de Recorrência: Automatizar o controle de despesas parceladas e fixas, gerando cobranças mensais automáticas para reduzir o esquecimento de dívidas de longo prazo.
+
+- Persistência Não Relacional: Estruturar o armazenamento de dados utilizando um banco de dados NoSQL para permitir a escalabilidade e a flexibilidade necessária para lidar com diferentes perfis de grupos e transações.
  
-> **Links Úteis**:
-> - [Objetivo geral e objetivo específico: como fazer e quais verbos utilizar](https://blog.mettzer.com/diferenca-entre-objetivo-geral-e-objetivo-especifico/)
 
 ## Justificativa
 
