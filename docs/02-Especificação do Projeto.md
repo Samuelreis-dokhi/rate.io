@@ -8,72 +8,17 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 ## Personas
 
-Persona 1 – Lucas Andrade (República Universitária)
+| Característica | **Lucas Andrade** | **Mariana Souza** | **Rafael Oliveira** |
+| :--- | :--- | :--- | :--- |
+| **Perfil** | Estudante de Engenharia (22 anos) | Profissional de Marketing (29 anos) | Empreendedor (35 anos) |
+| **Contexto** | República universitária (4 colegas) | Organização de viagens e eventos | Gestão familiar ampliada |
+| **Principal Meio** | Pix e pagamentos imediatos | Cartão de crédito e parcelamentos | Visão macro e fluxo de caixa |
+| **Dores** | Esquecimento e divisões desiguais | Cobranças chatas e parcelas longas | Desorganização e falta de visão global |
+| **Comportamento** | Prático, odeia planilhas | Gosta de relatórios e organização | Analítico e focado em estratégia |
+| **Objetivo** | Divisão automática e transparente | Saber quem, quanto e quando devem | Dashboard analítico e consolidado |
+| **Necessidade** | Histórico rápido e saldo em tempo real | Gestão de saldo credor e lembretes | Controle global e eficiência de gastos |
 
-22 anos
 
-Estudante de Engenharia
-
-Mora com 4 colegas
-
-Renda limitada
-
-Usa Pix diariamente
-
-Pouca paciência para planilhas
-
-Dores:
-
-Esquecem quem pagou contas
-
-Conflitos por divisão desigual
-
-Falta de registro histórico
-
-Objetivo:
-Ter divisão automática e transparente.
-
-Persona 2 – Mariana Souza (Organizadora de Viagens)
-
-29 anos
-
-Profissional de Marketing
-
-Organiza viagens com amigos
-
-Costuma pagar reservas no cartão
-
-Gosta de relatórios
-
-Dores:
-
-Parcelamentos longos
-
-Cobranças desconfortáveis
-
-Falta de controle consolidado
-
-Objetivo:
-Visualizar quem deve, quanto deve e quando deve pagar.
-
-Persona 3 – Rafael Oliveira (Gestor Familiar)
-
-35 anos
-
-Empreendedor
-
-Divide despesas familiares ampliadas
-
-Quer visão macro consolidada
-
-Dores:
-
-Falta de controle global
-
-Desorganização financeira
-
-Objetivo:
-Dashboard analítico completo.
 
 > **Links Úteis**:
 > - [Rock Content](https://rockcontent.com/blog/personas/)
