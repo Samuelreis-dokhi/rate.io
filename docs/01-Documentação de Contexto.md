@@ -4,17 +4,12 @@ O gerenciamento de finanças compartilhadas é um desafio comum em diversos cont
 
 ## Problema
 
-O problema central reside na complexidade e no ônus cognitivo de gerir contas coletivas manualmente ou através de métodos descentralizados (como planilhas isoladas ou anotações informais).
-
-Os principais pontos de dor identificados são:
-
-Dificuldade de Cálculo em Divisões Desiguais: Em cenários como bares ou restaurantes, o rateio raramente é estritamente igualitário, exigindo cálculos rápidos sobre quem consumiu o quê, o que frequentemente leva a erros ou desconforto entre os participantes.
-
-Gestão de Longo Prazo e Parcelamentos: Itens de alto valor adquiridos por um único indivíduo para o grupo (como o aluguel de um veículo em uma viagem ou a compra de um eletrodoméstico para uma república) geram uma "dívida fantasma" que precisa ser cobrada e acompanhada mensalmente, o que é difícil de sustentar sem um sistema de alertas e histórico.
-
-Falta de Visibilidade Macro: Membros de grupos de despesas compartilhadas muitas vezes perdem a noção do impacto desses gastos no seu orçamento pessoal, por não possuírem uma visão consolidada que integre diferentes contextos (ex: saber quanto se deve na república somado ao que se deve da última viagem).
-
-Barreiras de Sincronização: O registro de um gasto muitas vezes não ocorre no momento da compra por falta de uma ferramenta acessível, resultando no esquecimento de despesas e em saldos finais injustos.
+O gerenciamento de finanças coletivas e individuais enfrenta um obstáculo recorrente: o ônus cognitivo e a descentralização das informações. Atualmente, a ausência de uma ferramenta integrada que una o controle de gastos pessoais ao rateio de despesas de grupo força os usuários a utilizarem métodos arcaicos ou isolados, como anotações informais e planilhas estáticas.
+Os principais pontos de dor que compõem este problema são:
+### - Complexidade em Divisões Não-Equitativas: Em contextos sociais (festas, bares ou restaurantes), o rateio raramente é igualitário. A necessidade de realizar cálculos manuais proporcionais ao consumo individual gera margem para erros matemáticos e situações de desconforto social.
+### - Gestão de Passivos e Longo Prazo: Despesas de alto valor ou recorrentes (como aluguel de moradias compartilhadas ou parcelamento de eletrônicos para uso comum) criam "dívidas fantasmas". Sem um histórico formal e um sistema de alertas, o controle desses saldos ao longo dos meses torna-se insustentável.
+### - Fragmentação da Visão Macroeconômica: O indivíduo perde a noção do impacto real das despesas compartilhadas em seu orçamento pessoal. A falta de uma visão consolidada impede que o usuário saiba, de forma imediata, quanto de sua reserva financeira já está comprometida com dívidas de diferentes contextos (república, viagens e lazer).
+### - Gargalos de Sincronização e Mobilidade: A falta de uma plataforma acessível no momento exato da transação leva ao esquecimento de registros. No contexto de Sistemas Distribuídos, a ausência de uma arquitetura que garanta a persistência em nuvem e a sincronização entre dispositivos móveis e web resulta em saldos finais injustos e dados inconsistentes entre os membros do grupo.
 
 ### Contexto de uso:
 
@@ -37,12 +32,14 @@ O objetivo geral deste projeto é desenvolver uma aplicação distribuída multi
 
 ## Justificativa
 
-Descreva a importância ou a motivação para trabalhar com esta aplicação que você escolheu. Indique as razões pelas quais você escolheu seus objetivos específicos ou as razões para aprofundar em certos aspectos do software.
+A motivação para o desenvolvimento desta aplicação reside na necessidade de democratizar e automatizar a saúde financeira através da tecnologia. A escolha deste tema justifica-se pela crescente complexidade das relações de consumo modernas, onde o compartilhamento de bens e serviços (economia compartilhada) tornou-se uma norma entre estudantes e jovens profissionais.
+### Razões para o desenvolvimento e aprofundamento técnico:
+### - Redução de Atritos Sociais e Financeiros: A aplicação visa eliminar a "cobrança manual", automatizando o processo de lembretes e transparência de gastos. Isso garante que a justiça financeira seja mantida sem desgastar as relações interpessoais.
+### - Arquitetura de Sistemas Distribuídos: Aprofundar-se neste aspecto é fundamental para garantir a integridade dos dados. Em um cenário de gastos em grupo, a concorrência de acessos e a necessidade de disponibilidade imediata exigem o uso de armazenamento em nuvem e sincronização em tempo real, permitindo que um gasto inserido em um dispositivo móvel durante uma viagem seja imediatamente refletido no painel de controle de todos os envolvidos.
+### - Centralização de Fluxo de Caixa: Diferente de soluções que focam apenas em "dividir a conta", este projeto justifica-se pela integração com a gestão pessoal. O objetivo é permitir que o usuário gerencie seu saldo fixo e proporcional em um único ecossistema, oferecendo uma visão holística de suas finanças.
+### - Base em Dados e Necessidade de Mercado: Observa-se, através de levantamentos preliminares em ambientes acadêmicos (repúblicas e grupos de viagem), que o uso de ferramentas manuais ainda é predominante, resultando em uma taxa considerável de esquecimento de cobranças e desorganização orçamentária.
 
-O grupo de trabalho pode fazer uso de questionários, entrevistas e dados estatísticos, que podem ser apresentados, com o objetivo de esclarecer detalhes do problema que será abordado pelo grupo.
-
-> **Links Úteis**:
-> - [Como montar a justificativa](https://guiadamonografia.com.br/como-montar-justificativa-do-tcc/)
+A aplicação, portanto, não se limita a uma calculadora de divisões, mas propõe-se a ser um hub de saúde financeira que mitiga o erro humano e otimiza o tempo do usuário através de uma interface intuitiva.
 
 ## Público-Alvo
 
