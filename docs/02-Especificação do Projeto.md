@@ -65,74 +65,97 @@ Apresente aqui as histórias de usuário que são relevantes para o projeto de s
 > - [Histórias de Usuários: mais exemplos](https://www.reqview.com/doc/user-stories-example.html)
 > - [9 Common User Story Mistakes](https://airfocus.com/blog/user-story-mistakes/)
 
-## Requisitos
+-----
 
-As tabelas que se seguem apresentam os requisitos funcionais e não funcionais que detalham o escopo do projeto. Para determinar a prioridade de requisitos, aplicar uma técnica de priorização de requisitos e detalhar como a técnica foi aplicada.
+## Requisitos Funcionais
 
-<strong>Crie no mínimo 12 Requisitos funcionais, 6 não funcionais e 3 restrições</strong>
-<strong>Cada aluno será responsável pela execução completa (back, web e mobile) de pelo menos 2 requisitos que será acompanhado pelo professor</strong>
-### Requisitos Funcionais
+> Prioridade definida pela técnica **MoSCoW** — detalhada na seção correspondente.
 
-| ID     | Descrição                         | Prioridade | Responsável |
-| ------ | --------------------------------- | ---------- | ----------- |
-| RF-001 | Cadastrar usuário                 | ALTA       | henrique    |
-| RF-002 | Autenticação com JWT              | ALTA       | joao        |
-| RF-003 | Criar grupo de despesas           | ALTA       | ana         |
-| RF-004 | Convidar usuários via link        | ALTA       | fernanda    |
-| RF-005 | Registrar despesa                 | ALTA       | wyvern      |
-| RF-006 | Dividir despesa igualmente        | ALTA       | erick       |
-| RF-007 | Dividir despesa proporcional      | ALTA       | francisco   |
-| RF-008 | Parcelar despesa automaticamente  | MÉDIA      | leticia     |
-| RF-009 | Gerar relatório mensal            | MÉDIA      | miguel      |
-| RF-010 | Exibir dashboard consolidado      | ALTA       | amanda      |
-| RF-011 | Enviar notificações de vencimento | MÉDIA      | sophia      |
-| RF-012 | Anexar comprovante à despesa      | BAIXA      | sara        |
-| RF-013 | Alterar permissões do grupo       | MÉDIA      | wendy       |
-| RF-014 | Remover participante do grupo     | MÉDIA      | knupp       |
+| ID | Descrição | Prioridade | Responsável |
+|:---|:----------|:----------:|:-----------:|
+| `RF-001` | Cadastrar e autenticar usuário (e-mail/senha e OAuth) | 🔴 ALTA | Rondinelli |
+| `RF-002` | Criar grupo de despesas com nome e tipo *(república, viagem, lazer)* | 🔴 ALTA | Rondinelli |
+| `RF-003` | Convidar membros ao grupo via link compartilhável | 🔴 ALTA | Louise |
+| `RF-004` | Registrar despesa com valor, descrição, data e comprovante *(imagem)* | 🔴 ALTA | Louise |
+| `RF-005` | Definir tipo de divisão: igualitária, por percentual ou por valor exato | 🔴 ALTA | Samuel |
+| `RF-006` | Parcelar despesa em N meses com geração automática de cobranças mensais | 🔴 ALTA | Samuel |
+| `RF-007` | Visualizar saldo consolidado individual *(quanto devo / quanto me devem)* | 🔴 ALTA | Heitor |
+| `RF-008` | Enviar notificação de vencimento de parcela e cobrança pendente | 🟡 MÉDIA | Heitor |
+| `RF-009` | Registrar pagamento de dívida *(marcar como pago com comprovante)* | 🔴 ALTA | Ícaro |
+| `RF-010` | Administrador pode alterar permissões e remover membros do grupo | 🟡 MÉDIA | Ícaro |
+| `RF-011` | Sair de um grupo *(usuário encerra participação e mantém acesso ao histórico)* | 🟢 BAIXA | Vinicius |
+| `RF-012` | Exportar extrato de despesas em PDF ou CSV | 🟢 BAIXA | Vinicius |
 
+---
 
-### Requisitos não Funcionais
+##  Requisitos Não Funcionais
 
-| ID      | Descrição                            | Prioridade |
-| ------- | ------------------------------------ | ---------- |
-| RNF-001 | Sistema responsivo (Web + Mobile)    | ALTA       |
-| RNF-002 | Tempo de resposta ≤ 2 segundos       | ALTA       |
-| RNF-003 | Disponibilidade mínima de 99%        | MÉDIA      |
-| RNF-004 | Criptografia de dados sensíveis      | ALTA       |
-| RNF-005 | Backup automático diário             | MÉDIA      |
-| RNF-006 | Suporte a 1.000 usuários simultâneos | MÉDIA      |
-| RNF-007 | Sincronização em tempo real          | ALTA       |
+| ID | Categoria | Descrição | Critério de Aceitação |
+|:---|:----------|:----------|:----------------------|
+| `RNF-001` | Desempenho | O sistema deve responder às requisições da API em no máximo **2 segundos** em condições normais de uso. | 95% das requisições < 2s medido via teste de carga |
+| `RNF-002` |  Disponibilidade | A aplicação deve estar disponível **99% do tempo** (SLA), com janelas de manutenção fora do horário de pico. | Uptime monitorado via serviço em nuvem |
+| `RNF-003` |  Segurança | Senhas e tokens armazenados com **criptografia**. Comunicação exclusivamente via **HTTPS/TLS**. Autenticação por **JWT**. | Auditoria de segurança + testes de autenticação |
+| `RNF-004` |  Usabilidade | A interface mobile deve permitir o registro de uma despesa em no máximo **4 toques** a partir da tela inicial. | Teste de usabilidade com 5 usuários reais |
+| `RNF-005` |  Escalabilidade | A arquitetura em nuvem deve suportar até **500 usuários simultâneos** sem degradação de performance. | Teste de carga com k6 ou JMeter |
+| `RNF-006` |  Manutenibilidade | Código seguindo **clean code** com cobertura mínima de **60%** por testes automatizados (unitários/integração). | Relatório de cobertura gerado no CI/CD pipeline |
 
-
-Com base nas Histórias de Usuário, enumere os requisitos da sua solução. Classifique esses requisitos em dois grupos:
-
-- [Requisitos Funcionais
- (RF)](https://pt.wikipedia.org/wiki/Requisito_funcional):
- correspondem a uma funcionalidade que deve estar presente na
-  plataforma (ex: cadastro de usuário).
-- [Requisitos Não Funcionais
-  (RNF)](https://pt.wikipedia.org/wiki/Requisito_n%C3%A3o_funcional):
-  correspondem a uma característica técnica, seja de usabilidade,
-  desempenho, confiabilidade, segurança ou outro (ex: suporte a
-  dispositivos iOS e Android).
-Lembre-se que cada requisito deve corresponder à uma e somente uma
-característica alvo da sua solução. Além disso, certifique-se de que
-todos os aspectos capturados nas Histórias de Usuário foram cobertos.
+---
 
 ## Restrições
 
-| ID   | Restrição                         |
-| ---- | --------------------------------- |
-| R-01 | Entrega até final do semestre     |
-| R-02 | Deve usar arquitetura distribuída |
-| R-03 | Deve possuir versão web e mobile  |
-| R-04 | Hospedagem obrigatória em nuvem   |
+> As restrições limitam as soluções candidatas e devem ser respeitadas durante todo o desenvolvimento.
 
-Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
+| ID | Restrição | Justificativa |
+|:---|:----------|:--------------|
+| `R-01` | Entrega até o final do semestre letivo | O projeto é avaliado dentro do calendário acadêmico vigente, sem possibilidade de prorrogação. |
+| `R-02` | Deve usar **arquitetura distribuída** *(cliente-servidor com API REST centralizada)* | Requisito técnico que exige separação entre front-end (web/mobile) e back-end comunicando via API. |
+| `R-03` | Deve possuir versão **web** e versão **mobile** funcionais | Ambas as plataformas são obrigatórias para atender os diferentes perfis de uso. |
+| `R-04` | Hospedagem obrigatória em **nuvem** *(ex: Render, Railway, Firebase, Vercel)* | A sincronização em tempo real entre dispositivos exige back-end e banco de dados em nuvem. |
+| `R-05` | Banco de dados **NoSQL** *(ex: MongoDB, Firestore)* | Definido no escopo para garantir flexibilidade no esquema de dados e escalabilidade horizontal. |
+| `R-06` | **Orçamento zero** — utilizar apenas planos gratuitos *(free tier)* | Projeto acadêmico sem financiamento; toda a stack deve operar nos planos gratuitos das plataformas. |
 
-> **Links Úteis**:
-> - [O que são Requisitos Funcionais e Requisitos Não Funcionais?](https://codificar.com.br/requisitos-funcionais-nao-funcionais/)
-> - [O que são requisitos funcionais e requisitos não funcionais?](https://analisederequisitos.com.br/requisitos-funcionais-e-requisitos-nao-funcionais-o-que-sao/)
+---
+
+##  Priorização MoSCoW
+
+> A técnica **MoSCoW** classifica os requisitos em quatro categorias, permitindo que a equipe foque no que é essencial para a entrega dentro do semestre.  
+> A aplicação foi feita em reunião de equipe, avaliando **impacto para o usuário**, **viabilidade técnica** e **dependências entre funcionalidades**.
+
+### Como funciona
+
+```
+M — Must Have   → Deve ter obrigatoriamente
+S — Should Have → Deveria ter, alta importância
+C — Could Have  → Poderia ter, se houver tempo
+W — Won't Have  → Não entra neste ciclo
+```
+
+### Classificação
+
+| Categoria | Requisitos | Critério |
+|:----------|:-----------|:---------|
+| 🔴 **Must Have** | `RF-001` `RF-002` `RF-003` `RF-004` `RF-005` `RF-006` `RF-007` `RF-009` | Sem estas funcionalidades o app não cumpre seu propósito central de registrar e dividir despesas. |
+| 🟡 **Should Have** | `RF-008` `RF-010` | Agregam valor significativo e melhoram a experiência, mas a ausência não inviabiliza o produto no semestre. |
+| 🟢 **Could Have** | `RF-011` `RF-012` | Desejáveis, mas de baixo impacto imediato; implementados somente se houver tempo disponível. |
+| ⚪ **Won't Have** | — | Integrações bancárias automáticas, OCR de nota fiscal e suporte a múltiplas moedas ficam fora do escopo deste ciclo. |
+
+---
+
+##  Distribuição entre Integrantes
+
+> Cada integrante é responsável pela execução completa **(back-end + web + mobile)** dos seus requisitos.
+
+| Integrante | Requisitos | Escopo |
+|:-----------|:----------:|:-------|
+| **Rondinelli** | `RF-001` `RF-002` | Autenticação de usuários · Criação de grupos |
+| **Louise** | `RF-003` `RF-004` | Convite de membros · Registro de despesas |
+| **Samuel** | `RF-005` `RF-006` | Tipos de divisão · Parcelamento |
+| **Heitor** | `RF-007` `RF-008` | Saldo consolidado · Notificações de vencimento |
+| **Ícaro** | `RF-009` `RF-010` | Registro de pagamentos · Gestão de permissões |
+| **Vinicius** | `RF-011` `RF-012` | Saída de grupo · Exportação de extrato |
+
+---
+
 
 ## Diagrama de Casos de Uso
 
