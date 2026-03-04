@@ -14,7 +14,7 @@ O projeto consiste no desenvolvimento de uma aplicação distribuída voltada pa
 * Louise Dias Santos
 * Heitor Oliveiro Soares Domingos
 * Vinícius Nogueira
-* Rondinelli
+* Rondinelli Silva de Oliveira
 * Icaro de Jesus Souza e Cota
 
 ## Orientador
