@@ -43,13 +43,114 @@ A aplicação, portanto, não se limita a uma calculadora de divisões, mas prop
 
 ## Público-Alvo
 
-Descreva quem serão as pessoas que usarão a sua aplicação indicando os diferentes perfis. O objetivo aqui não é definir quem serão os clientes ou quais serão os papéis dos usuários na aplicação. A ideia é, dentro do possível, conhecer um pouco mais sobre o perfil dos usuários: conhecimentos prévios, relação com a tecnologia, relações
-hierárquicas, etc.
+Pessoas entre 18 e 35 anos, economicamente ativas, com familiaridade básica com tecnologia digital e inseridas em contextos de despesas compartilhadas. Indivíduos que desejam facilitar a forma como fazem a divisão de despesas, a fim de tornar o processo mais automatizado, evitando possíveis erros humanos, e mais transparente, de forma que todos os envolvidos possam ver e consultar a qualquer momento. Residem em capitais, grandes centros urbanos ou cidades universitárias.
 
-Adicione informações sobre o público-alvo por meio de uma descrição textual, diagramas de personas e mapa de stakeholders.
+---
 
-> **Links Úteis**:
-> - [Público-alvo](https://blog.hotmart.com/pt-br/publico-alvo/)
-> - [Como definir o público alvo](https://exame.com/pme/5-dicas-essenciais-para-definir-o-publico-alvo-do-seu-negocio/)
-> - [Público-alvo: o que é, tipos, como definir seu público e exemplos](https://klickpages.com.br/blog/publico-alvo-o-que-e/)
-> - [Qual a diferença entre público-alvo e persona?](https://rockcontent.com/blog/diferenca-publico-alvo-e-persona/)
+# Perfis de Usuários
+
+## 1. Estudantes Universitários (18–30 anos)
+
+### Características
+- Vivem em repúblicas ou moradias compartilhadas  
+- Possuem renda limitada e maior sensibilidade a desequilíbrios financeiros  
+- Alto grau de familiaridade com aplicativos móveis  
+- Pouca disciplina formal de controle financeiro, mas interesse crescente no tema  
+- Necessidade recorrente de dividir despesas fixas (aluguel, internet, energia) e variáveis (mercado, lazer)
+
+### Dores Principais
+- Esquecimento de lançamentos  
+- Conflitos por cobranças informais  
+- Falta de controle acumulado da dívida ao longo dos meses  
+
+---
+
+## 2. Jovens Casados (22–35 anos)
+
+### Características
+- Renda conjunta variável (ambos trabalham ou apenas um provedor principal)  
+- Divisão formal ou informal das despesas da casa  
+- Presença de gastos fixos recorrentes (aluguel, condomínio, água, luz, internet, mercado)  
+- Possibilidade de financiamentos ou parcelamentos (móveis, eletrodomésticos, veículo)
+
+### Dores Principais
+- Falta de clareza sobre quem pagou o quê no mês  
+- Desequilíbrio na percepção de contribuição financeira  
+- Dificuldade em acompanhar parcelamentos longos  
+- Ausência de visão consolidada do impacto das despesas compartilhadas  
+- Conversas desconfortáveis sobre dinheiro por falta de dados objetivos  
+
+---
+
+## 3. Jovens Profissionais (22–35 anos)
+
+### Características
+- Trabalham em regime CLT, PJ ou autônomo  
+- Realizam viagens em grupo, eventos sociais e dividem despesas pontuais  
+- Maior preocupação com planejamento financeiro e previsibilidade  
+- Utilizam aplicativos bancários, fintechs e ferramentas digitais com frequência  
+
+### Dores Principais
+- Divisões desiguais complexas (bares, restaurantes, viagens)  
+- Parcelamentos pagos por uma única pessoa em nome do grupo  
+- Desejo de visão consolidada entre diferentes grupos de despesas  
+
+---
+
+## 4. Grupos Organizadores (Perfil informal de liderança)
+
+### Características
+- Pessoa que costuma pagar antecipadamente pelo grupo  
+- Assume responsabilidade de controlar valores e cobrar terceiros  
+- Pode ter perfil mais organizado ou simplesmente ser o mais disponível financeiramente  
+- Sofre maior ônus cognitivo e social  
+
+### Dores Principais
+- Cobrança recorrente desconfortável  
+- Controle manual em planilhas ou anotações  
+- Falta de mecanismo automático de lembretes  
+
+---
+
+# Mapa de Stakeholders
+
+## 1. Stakeholders Internos
+
+### 1.1 Desenvolvedores (Grupo 08)
+
+- **Papel:** Planejamento, desenvolvimento, testes e manutenção da aplicação  
+- **Poder:** Alto (decidem arquitetura, escopo técnico e entregas)  
+- **Interesse:** Alto (responsáveis diretos pelo sucesso do projeto)  
+- **Estratégia:** Reuniões periódicas, alinhamento contínuo e definição clara de responsabilidades  
+
+### 1.2 Professor Orientador
+
+- **Papel:** Avaliação acadêmica, validação metodológica e direcionamento técnico  
+- **Poder:** Alto (impacta aprovação e direcionamento do projeto)  
+- **Interesse:** Alto (responsável pela qualidade acadêmica)  
+- **Estratégia:** Entregas formais, checkpoints de validação e alinhamento de expectativas  
+
+---
+
+## 2. Stakeholders Externos
+
+### 2.1 Provedor de Infraestrutura (Cloud)
+
+- **Papel:** Disponibilização de servidores, banco de dados e armazenamento  
+- **Poder:** Médio (impacta disponibilidade e desempenho)  
+- **Interesse:** Baixo a médio (relação contratual/serviço)  
+- **Estratégia:** Monitoramento técnico e cumprimento de requisitos de SLA  
+
+### 2.2 Loja de Aplicativos (Google Play / App Store)
+
+- **Papel:** Distribuição e publicação da aplicação  
+- **Poder:** Alto (podem aprovar, reprovar ou remover o app)  
+- **Interesse:** Baixo (desde que regras sejam cumpridas)  
+- **Estratégia:** Conformidade com políticas, testes prévios e adequação às diretrizes de publicação  
+
+### 2.3 Usuários Finais
+
+- **Papel:** Utilização da aplicação e validação prática da proposta de valor  
+- **Poder:** Médio (influenciam sucesso, retenção e evolução do produto)  
+- **Interesse:** Alto (impacto direto na organização financeira pessoal)  
+- **Estratégia:** Interface intuitiva, suporte eficiente e coleta de feedback contínuo  
