@@ -177,19 +177,70 @@ De acordo com o PMBoK v6 as dez áreas que constituem os pilares para gerenciar 
 
 ## Gerenciamento de Tempo
 
-Com diagramas bem organizados que permitem gerenciar o tempo nos projetos, o gerente de projetos agenda e coordena tarefas dentro de um projeto para estimar o tempo necessário de conclusão.
+### Etapa 1
 
+Utilizando a ferramenta do GitHub Project, nossa equipe fez uma boa gestão de projeto seguindo a metodologia ágil SCRUM.
 
-<img width="797" height="428" alt="image" src="https://github.com/user-attachments/assets/92ad0f85-ae8a-4e3c-9d45-64521158c6df" />
-)](img/02-diagrama-rede-simplificado.png)
+![Gráfico de Gantt](img/gantt.png)
 
-O gráfico de Gantt ou diagrama de Gantt também é uma ferramenta visual utilizada para controlar e gerenciar o cronograma de atividades de um projeto. Com ele, é possível listar tudo que precisa ser feito para colocar o projeto em prática, dividir em atividades e estimar o tempo necessário para executá-las.
+A **gestão do tempo** de execução do projeto foi realizada a partir do gráfico de Gantt, uma ferramenta visual que permitiu com que toda a equipe acompanhasse o andamento da Etapa 1. Com ele, foi possível listar tudo que precisava ser feito para colocar o projeto em prática, dividindo em atividades e estimando o tempo necessário para executá-las, assim como delegando tarefas para todos os componentes da equipe.
 
-![Gráfico de Gantt](img/02-grafico-gantt.png)
 
 ## Gerenciamento de Equipe
 
-O gerenciamento adequado de tarefas contribuirá para que o projeto alcance altos níveis de produtividade. Por isso, é fundamental que ocorra a gestão de tarefas e de pessoas, de modo que os times envolvidos no projeto possam ser facilmente gerenciados. 
+O gerenciamento adequado de tarefas contribuiu para que o projeto níveis de produtividade adequados para cumprir os prazos de entrega estabelecidos. Por isso, foi fundamental usufruir dos recursos tecnologicos dispoíveis para gestão de tarefas e de pessoas oferecidas pelo Github, de modo que os membros da equipe pudessem ser facilmente integrados e engajados na elaboração do projeto através da distribuição de tarefas. 
 
-![Simple Project Timeline](img/02-project-timeline.png)
+Com o campo *Team Items*, foi possível verificar todas as tarefas e sub-tarefas geradas durante as etapas, assim como o seu andamento no quadro Kanban e qual membro da equipe estava responsável por sua execução.
 
+![Simple Project Timeline](img/gestao.png)
+
+<br>
+
+## Planejamento de Recursos
+
+Para o projeto **RATE.IO**, o planejamento de custos e pessoal reflete a realidade de um grupo acadêmico, priorizando ferramentas com camadas gratuitas para viabilizar a entrega do MVP em um ciclo de entrega curto, cumprindo o primeiro semestre letivo de 2026.
+
+---
+
+## 1. Planejamento de Pessoal
+
+Devido ao prazo enxuto e ao tamanho reduzido do grupo, adotamos uma divisão híbrida. Embora todos colaborem no ecossistema, cada integrante possui responsabilidades centrais para garantir a especialização e a fluidez do **GitFlow**:
+
+| Papel | Responsabilidades Principais | Responsável |
+| :--- | :--- | :--- |
+| **Backend Developer** | Construção da API REST, lógica de cálculos de saldo (rateio) e integração com MongoDB Atlas. | Heitor e Rondinelli |
+| **Frontend Developer (Web)** | Desenvolvimento do Dashboard gerencial e integração de gráficos de consumo. | Vinícius e Samuel |
+| **Mobile Developer** | Desenvolvimento da interface de lançamentos rápidos e notificações para o usuário final. | Icaro e Louise |
+| **QA & DevOps** | Configuração do fluxo de CI/CD, testes de integração e deploy nas plataformas Cloud. | Heitor |
+
+---
+
+## 2. Planejamento de Custos
+
+O objetivo técnico é operar uma **arquitetura distribuída com custo zero** de infraestrutura, aproveitando os limites gratuitos dos provedores de nuvem modernos.
+
+### 2.1 Custos de Infraestrutura (Estimados)
+
+| Item | Provedor Sugerido | Custo Mensal | Justificativa |
+| :--- | :--- | :--- | :--- |
+| **Hospedagem API** | Render.com / Railway | R$ 0,00 | Camada gratuita para aplicações web hobby/estudo. |
+| **Banco de Dados** | MongoDB Atlas | R$ 0,00 | Cluster compartilhado gratuito (512MB a 5GB). |
+| **Hospedagem Web** | Vercel / Netlify | R$ 0,00 | Hospedagem de alta performance para frameworks SPA (React/Vue). |
+| **Domínio** | Subdomínio padrão | R$ 0,00 | Uso de subdomínios gratuitos fornecidos pelos provedores. |
+| **Total Estimado** | -- | **R$ 0,00** | Foco em viabilidade acadêmica e custo zero. |
+
+### 2.2 Custos de Pessoal (Horas Técnicas)
+
+Para fins de análise do "custo de oportunidade" acadêmico, baseamos o cálculo no valor de mercado para desenvolvedores em transição/Júnior em Minas Gerais:
+
+* **Esforço estimado:** 10 horas semanais por integrante.
+* **Valor hora sugerido:** R$ 30,00.
+* **Cálculo (8 semanas):** 6 integrantes × 80h totais × R$ 30,00 = **R$ 14.400,00** (Custo simbólico de desenvolvimento).
+
+---
+
+## 3. Justificativa de Recursos
+
+A seleção da stack tecnológica (**Node.js, React e MongoDB**) fundamenta-se na vasta documentação disponível e na agilidade de desenvolvimento, fatores críticos para o cronograma de 8 semanas. 
+
+A utilização de serviços de **nuvem distribuídos** garante que a aplicação permaneça disponível 24/7 sem a necessidade de infraestrutura física local, validando os conceitos de escalabilidade e disponibilidade essenciais para a disciplina de Sistemas Distribuídos.
