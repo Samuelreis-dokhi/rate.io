@@ -2,12 +2,30 @@
 
 <span style="color:red">Pré-requisitos: <a href="1-Documentação de Contexto.md"> Documentação de Contexto</a></span>
 
-Definição do problema e ideia de solução a partir da perspectiva do usuário. É composta pela definição do  diagrama de personas, histórias de usuários, requisitos funcionais e não funcionais além das restrições do projeto.
+Esta seção apresenta a especificação da solução proposta, considerando a perspectiva do usuário final e os requisitos necessários para o desenvolvimento do sistema Rate.io. A partir das informações levantadas na documentação de contexto, são definidas as principais características do sistema, bem como as necessidades e expectativas dos usuários que irão interagir com a aplicação.
 
-Apresente uma visão geral do que será abordado nesta parte do documento, enumerando as técnicas e/ou ferramentas utilizadas para realizar a especificações do projeto
+O objetivo desta etapa é traduzir o problema identificado em requisitos estruturados, que servirão como base para o desenvolvimento da aplicação e para a definição da arquitetura do sistema.
+
+Para isso, são utilizadas técnicas de engenharia de requisitos e modelagem de software, que permitem compreender o comportamento esperado do sistema e organizar suas funcionalidades de forma clara e objetiva.
+
+Nesta seção serão abordados os seguintes elementos:
+
+Personas: representação de perfis fictícios de usuários que refletem características, necessidades e comportamentos do público-alvo da aplicação, auxiliando na compreensão dos diferentes cenários de uso.
+
+Histórias de Usuário: descrição das funcionalidades do sistema a partir da perspectiva do usuário, permitindo identificar necessidades e objetivos que devem ser atendidos pela solução.
+
+Requisitos Funcionais: definição das funcionalidades que o sistema deverá oferecer para atender às necessidades dos usuários, como criação de grupos, registro de despesas e controle de saldos.
+
+Requisitos Não Funcionais: especificação de características relacionadas à qualidade do sistema, como desempenho, segurança, disponibilidade e usabilidade.
+
+Restrições do Projeto: limitações técnicas, tecnológicas ou organizacionais que devem ser consideradas durante o desenvolvimento da aplicação.
+
+Para a elaboração desta especificação foram utilizadas técnicas de levantamento e modelagem de requisitos, como a criação de personas, definição de histórias de usuário no formato utilizado em metodologias ágeis (Scrum) e organização de requisitos segundo boas práticas de engenharia de software.
+
+Esses elementos permitirão estabelecer uma base estruturada para o desenvolvimento do sistema Rate.io, garantindo que a solução proposta atenda às necessidades reais dos usuários e contribua para a melhoria da gestão de despesas compartilhadas.
+
 
 ## Personas
-
 
 
 | Característica     | **Carla Mendes**                               | **Bruno Carvalho**                        | **Fernanda Lima**                                  |
@@ -34,39 +52,41 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 
 
-> **Links Úteis**:
-> - [Rock Content](https://rockcontent.com/blog/personas/)
-> - [Hotmart](https://blog.hotmart.com/pt-br/como-criar-persona-negocio/)
-> - [O que é persona?](https://resultadosdigitais.com.br/blog/persona-o-que-e/)
-> - [Persona x Público-alvo](https://flammo.com.br/blog/persona-e-publico-alvo-qual-a-diferenca/)
-> - [Mapa de Empatia](https://resultadosdigitais.com.br/blog/mapa-da-empatia/)
-> - [Mapa de Stalkeholders](https://www.racecomunicacao.com.br/blog/como-fazer-o-mapeamento-de-stakeholders/)
->
-Lembre-se que você deve ser enumerar e descrever precisamente e personalizada todos os clientes ideais que sua solução almeja.
 
 ## Histórias de Usuários
 
+
 Com base na análise das personas forma identificadas as seguintes histórias de usuários:
 
-| EU COMO | QUERO                             | PARA                             |
-| ------- | --------------------------------- | -------------------------------- |
-| Usuário | Criar um grupo de despesas        | Organizar contas compartilhadas  |
-| Usuário | Convidar membros via link         | Facilitar entrada no grupo       |
-| Usuário | Sair de um grupo                  | Não participar mais das despesas |
-| Usuário | Registrar uma despesa             | Não esquecer gastos              |
-| Usuário | Escolher tipo de divisão          | Garantir justiça                 |
-| Usuário | Anexar comprovante                | Ter transparência                |
-| Usuário | Parcelar despesa                  | Controlar pagamentos futuros     |
-| Usuário | Visualizar saldo consolidado      | Saber quanto devo                |
-| Usuário | Receber notificação de vencimento | Não atrasar pagamento            |
-| Usuário | Gerar relatório mensal            | Controlar orçamento              |
+| EU COMO | QUERO                                       | PARA                                             |
+| ------- | ------------------------------------------- | ------------------------------------------------ |
+| Usuário | Criar um grupo de despesas                  | Organizar contas compartilhadas                  |
+| Usuário | Convidar participantes por link ou QR Code  | Facilitar a entrada de novos membros             |
+| Usuário | Registrar despesas rapidamente pelo celular | Evitar esquecer gastos                           |
+| Usuário | Escolher divisão igualitária                | Dividir despesas simples entre todos             |
+| Usuário | Dividir despesas por valor individual       | Garantir justiça em contas de restaurante ou bar |
+| Usuário | Registrar quem pagou a despesa              | Manter transparência entre os participantes      |
+| Usuário | Visualizar saldo atualizado em tempo real   | Saber quem deve pagar ou receber                 |
+| Usuário | Visualizar histórico de despesas do grupo   | Acompanhar gastos anteriores                     |
+| Usuário | Receber notificações de novas despesas      | Manter-me informado sobre mudanças no saldo      |
+| Usuário | Receber lembretes de pagamento              | Evitar atrasos nas dívidas                       |
+| Usuário | Registrar pagamentos realizados             | Atualizar automaticamente os saldos              |
+| Usuário | Anexar comprovantes de pagamento            | Garantir transparência nas transações            |
+| Usuário | Parcelar despesas compartilhadas            | Controlar pagamentos ao longo dos meses          |
+| Usuário | Filtrar despesas por período ou categoria   | Analisar melhor os gastos                        |
+| Usuário | Visualizar um resumo financeiro do grupo    | Ter visão clara das despesas totais              |
 
-| EU COMO       | QUERO                        | PARA                  |
-| ------------- | ---------------------------- | --------------------- |
-| Administrador | Alterar permissões           | Controlar organização |
-| Administrador | Remover usuário inadimplente | Manter integridade    |
+## Administrativo
 
 
+| EU COMO       | QUERO                                 | PARA                                          |
+| ------------- | ------------------------------------- | --------------------------------------------- |
+| Administrador | Criar e gerenciar grupos              | Organizar despesas de diferentes contextos    |
+| Administrador | Alterar permissões de membros         | Controlar a organização do grupo              |
+| Administrador | Remover membros do grupo              | Manter a organização das despesas             |
+| Administrador | Editar ou excluir despesas incorretas | Corrigir erros de lançamento                  |
+| Administrador | Visualizar relatórios detalhados      | Acompanhar a saúde financeira do grupo        |
+| Administrador | Encerrar um grupo de despesas         | Finalizar o controle após um evento ou viagem |
 
 
 
