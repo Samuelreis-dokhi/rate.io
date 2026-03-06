@@ -18,6 +18,27 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 | **Objetivo** | Divisão automática e transparente | Saber quem, quanto e quando devem | Dashboard analítico e consolidado |
 | **Necessidade** | Histórico rápido e saldo em tempo real | Gestão de saldo credor e lembretes | Controle global e eficiência de gastos |
 
+| Característica     | **Carla Mendes**                               | **Bruno Carvalho**                        | **Fernanda Lima**                                  |
+| :----------------- | :--------------------------------------------- | :---------------------------------------- | :------------------------------------------------- |
+| **Perfil**         | Estudante de Arquitetura (24 anos)             | Analista de TI (31 anos)                  | Designer Freelancer (27 anos)                      |
+| **Contexto**       | Divide apartamento com 2 amigas                | Viagens frequentes com amigos             | Trabalha remotamente e divide coworking            |
+| **Principal Meio** | Pix e transferências bancárias                 | Cartão de crédito e apps bancários        | Carteiras digitais e Pix                           |
+| **Dores**          | Confusão na divisão de compras do mercado      | Controle de gastos de viagens longas      | Divisão de despesas de trabalho compartilhado      |
+| **Comportamento**  | Organizada, mas esquece de registrar gastos    | Planejador e detalhista                   | Digital e acostumada a apps financeiros            |
+| **Objetivo**       | Saber exatamente quanto cada colega deve pagar | Controlar despesas de grupo sem planilhas | Registrar gastos rapidamente no dia a dia          |
+| **Necessidade**    | Divisão automática e histórico de gastos       | Relatórios claros e controle de parcelas  | Registro rápido e sincronização entre dispositivos |
+
+| Característica     | **Diego Martins**                                | **Juliana Rocha**                         | **Pedro Santos**                        |
+| :----------------- | :----------------------------------------------- | :---------------------------------------- | :-------------------------------------- |
+| **Perfil**         | Estudante de Direito (23 anos)                   | Administradora (33 anos)                  | Engenheiro Civil (34 anos)              |
+| **Contexto**       | Mora em república com 5 pessoas                  | Organização de eventos familiares         | Divide despesas de viagens com amigos   |
+| **Principal Meio** | Pix e apps de pagamento                          | Transferências bancárias                  | Cartão de crédito                       |
+| **Dores**          | Dificuldade em lembrar quem pagou contas da casa | Controle de gastos em eventos grandes     | Divisão desigual de despesas em viagens |
+| **Comportamento**  | Prático e quer soluções rápidas                  | Muito organizada e detalhista             | Analítico e focado em planejamento      |
+| **Objetivo**       | Evitar discussões sobre dinheiro na república    | Manter controle de quem pagou e quem deve | Ter visão clara das despesas da viagem  |
+| **Necessidade**    | Atualização de saldo em tempo real               | Controle de participantes e despesas      | Dashboard simples com resumo financeiro |
+
+
 
 
 > **Links Úteis**:
