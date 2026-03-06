@@ -161,11 +161,11 @@ W — Won't Have  → Não entra neste ciclo
 
 O diagrama de casos de uso é o próximo passo após a elicitação de requisitos, que utiliza um modelo gráfico e uma tabela com as descrições sucintas dos casos de uso e dos atores. Ele contempla a fronteira do sistema e o detalhamento dos requisitos funcionais com a indicação dos atores, casos de uso e seus relacionamentos. 
 
-<img width="728" height="1027" alt="Novo Diagrama de Casos de Uso" src="https://github.com/user-attachments/assets/31231557-cc66-47df-a574-a7455946def6" />
+![Diagrama de Casos de Uso](img/02-diagrama-de-caso-de-uso.png)
 
 # Matriz de Rastreabilidade
 
-<img width="1620" height="507" alt="Nova Matriz de Rastreabilidade" src="https://github.com/user-attachments/assets/8e50dce9-b814-4ab7-91e3-c2b25798162f" />
+![Matriz de Rastreabilidade](img/02-matriz-de-rastreabilidade.png)
 
 # Gerenciamento de Projeto
 
