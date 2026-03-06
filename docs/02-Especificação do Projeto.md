@@ -8,15 +8,7 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 ## Personas
 
-| Característica | **Lucas Andrade** | **Mariana Souza** | **Rafael Oliveira** |
-| :--- | :--- | :--- | :--- |
-| **Perfil** | Estudante de Engenharia (22 anos) | Profissional de Marketing (29 anos) | Empreendedor (35 anos) |
-| **Contexto** | República universitária (4 colegas) | Organização de viagens e eventos | Gestão familiar ampliada |
-| **Principal Meio** | Pix e pagamentos imediatos | Cartão de crédito e parcelamentos | Visão macro e fluxo de caixa |
-| **Dores** | Esquecimento e divisões desiguais | Cobranças chatas e parcelas longas | Desorganização e falta de visão global |
-| **Comportamento** | Prático, odeia planilhas | Gosta de relatórios e organização | Analítico e focado em estratégia |
-| **Objetivo** | Divisão automática e transparente | Saber quem, quanto e quando devem | Dashboard analítico e consolidado |
-| **Necessidade** | Histórico rápido e saldo em tempo real | Gestão de saldo credor e lembretes | Controle global e eficiência de gastos |
+
 
 | Característica     | **Carla Mendes**                               | **Bruno Carvalho**                        | **Fernanda Lima**                                  |
 | :----------------- | :--------------------------------------------- | :---------------------------------------- | :------------------------------------------------- |
@@ -27,6 +19,7 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 | **Comportamento**  | Organizada, mas esquece de registrar gastos    | Planejador e detalhista                   | Digital e acostumada a apps financeiros            |
 | **Objetivo**       | Saber exatamente quanto cada colega deve pagar | Controlar despesas de grupo sem planilhas | Registrar gastos rapidamente no dia a dia          |
 | **Necessidade**    | Divisão automática e histórico de gastos       | Relatórios claros e controle de parcelas  | Registro rápido e sincronização entre dispositivos |
+
 
 | Característica     | **Diego Martins**                                | **Juliana Rocha**                         | **Pedro Santos**                        |
 | :----------------- | :----------------------------------------------- | :---------------------------------------- | :-------------------------------------- |
