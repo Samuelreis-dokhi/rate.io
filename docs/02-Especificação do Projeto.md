@@ -6,6 +6,8 @@ Definição do problema e ideia de solução a partir da perspectiva do usuário
 
 Apresente uma visão geral do que será abordado nesta parte do documento, enumerando as técnicas e/ou ferramentas utilizadas para realizar a especificações do projeto
 
+
+
 ## Personas
 
 | Característica | **Lucas Andrade** | **Mariana Souza** | **Rafael Oliveira** |
@@ -18,6 +20,8 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 | **Objetivo** | Divisão automática e transparente | Saber quem, quanto e quando devem | Dashboard analítico e consolidado |
 | **Necessidade** | Histórico rápido e saldo em tempo real | Gestão de saldo credor e lembretes | Controle global e eficiência de gastos |
 
+
+
 | Característica     | **Carla Mendes**                               | **Bruno Carvalho**                        | **Fernanda Lima**                                  |
 | :----------------- | :--------------------------------------------- | :---------------------------------------- | :------------------------------------------------- |
 | **Perfil**         | Estudante de Arquitetura (24 anos)             | Analista de TI (31 anos)                  | Designer Freelancer (27 anos)                      |
@@ -27,6 +31,8 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 | **Comportamento**  | Organizada, mas esquece de registrar gastos    | Planejador e detalhista                   | Digital e acostumada a apps financeiros            |
 | **Objetivo**       | Saber exatamente quanto cada colega deve pagar | Controlar despesas de grupo sem planilhas | Registrar gastos rapidamente no dia a dia          |
 | **Necessidade**    | Divisão automática e histórico de gastos       | Relatórios claros e controle de parcelas  | Registro rápido e sincronização entre dispositivos |
+
+
 
 | Característica     | **Diego Martins**                                | **Juliana Rocha**                         | **Pedro Santos**                        |
 | :----------------- | :----------------------------------------------- | :---------------------------------------- | :-------------------------------------- |
@@ -41,52 +47,43 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 
 
-> **Links Úteis**:
-> - [Rock Content](https://rockcontent.com/blog/personas/)
-> - [Hotmart](https://blog.hotmart.com/pt-br/como-criar-persona-negocio/)
-> - [O que é persona?](https://resultadosdigitais.com.br/blog/persona-o-que-e/)
-> - [Persona x Público-alvo](https://flammo.com.br/blog/persona-e-publico-alvo-qual-a-diferenca/)
-> - [Mapa de Empatia](https://resultadosdigitais.com.br/blog/mapa-da-empatia/)
-> - [Mapa de Stalkeholders](https://www.racecomunicacao.com.br/blog/como-fazer-o-mapeamento-de-stakeholders/)
->
-Lembre-se que você deve ser enumerar e descrever precisamente e personalizada todos os clientes ideais que sua solução almeja.
+
 
 ## Histórias de Usuários
 
 Com base na análise das personas forma identificadas as seguintes histórias de usuários:
 
-| EU COMO | QUERO                             | PARA                             |
-| ------- | --------------------------------- | -------------------------------- |
-| Usuário | Criar um grupo de despesas        | Organizar contas compartilhadas  |
-| Usuário | Convidar membros via link         | Facilitar entrada no grupo       |
-| Usuário | Sair de um grupo                  | Não participar mais das despesas |
-| Usuário | Registrar uma despesa             | Não esquecer gastos              |
-| Usuário | Escolher tipo de divisão          | Garantir justiça                 |
-| Usuário | Anexar comprovante                | Ter transparência                |
-| Usuário | Parcelar despesa                  | Controlar pagamentos futuros     |
-| Usuário | Visualizar saldo consolidado      | Saber quanto devo                |
-| Usuário | Receber notificação de vencimento | Não atrasar pagamento            |
-| Usuário | Gerar relatório mensal            | Controlar orçamento              |
+| EU COMO | QUERO                                       | PARA                                             |
+| ------- | ------------------------------------------- | ------------------------------------------------ |
+| Usuário | Criar um grupo de despesas                  | Organizar contas compartilhadas                  |
+| Usuário | Convidar participantes por link ou QR Code  | Facilitar a entrada de novos membros             |
+| Usuário | Registrar despesas rapidamente pelo celular | Evitar esquecer gastos                           |
+| Usuário | Escolher divisão igualitária                | Dividir despesas simples entre todos             |
+| Usuário | Dividir despesas por valor individual       | Garantir justiça em contas de restaurante ou bar |
+| Usuário | Registrar quem pagou a despesa              | Manter transparência entre os participantes      |
+| Usuário | Visualizar saldo atualizado em tempo real   | Saber quem deve pagar ou receber                 |
+| Usuário | Visualizar histórico de despesas do grupo   | Acompanhar gastos anteriores                     |
+| Usuário | Receber notificações de novas despesas      | Manter-me informado sobre mudanças no saldo      |
+| Usuário | Receber lembretes de pagamento              | Evitar atrasos nas dívidas                       |
+| Usuário | Registrar pagamentos realizados             | Atualizar automaticamente os saldos              |
+| Usuário | Anexar comprovantes de pagamento            | Garantir transparência nas transações            |
+| Usuário | Parcelar despesas compartilhadas            | Controlar pagamentos ao longo dos meses          |
+| Usuário | Filtrar despesas por período ou categoria   | Analisar melhor os gastos                        |
+| Usuário | Visualizar um resumo financeiro do grupo    | Ter visão clara das despesas totais              |
 
-| EU COMO       | QUERO                        | PARA                  |
-| ------------- | ---------------------------- | --------------------- |
-| Administrador | Alterar permissões           | Controlar organização |
-| Administrador | Remover usuário inadimplente | Manter integridade    |
+| EU COMO       | QUERO                                 | PARA                                          |
+| ------------- | ------------------------------------- | --------------------------------------------- |
+| Administrador | Criar e gerenciar grupos              | Organizar despesas de diferentes contextos    |
+| Administrador | Alterar permissões de membros         | Controlar a organização do grupo              |
+| Administrador | Remover membros do grupo              | Manter a organização das despesas             |
+| Administrador | Editar ou excluir despesas incorretas | Corrigir erros de lançamento                  |
+| Administrador | Visualizar relatórios detalhados      | Acompanhar a saúde financeira do grupo        |
+| Administrador | Encerrar um grupo de despesas         | Finalizar o controle após um evento ou viagem |
 
 
 
 
 
-Apresente aqui as histórias de usuário que são relevantes para o projeto de sua solução. As Histórias de Usuário consistem em uma ferramenta poderosa para a compreensão e elicitação dos requisitos funcionais e não funcionais da sua aplicação. Se possível, agrupe as histórias de usuário por contexto, para facilitar consultas recorrentes à essa parte do documento.
-
-> **Links Úteis**:
-> - [Histórias de usuários com exemplos e template](https://www.atlassian.com/br/agile/project-management/user-stories)
-> - [Como escrever boas histórias de usuário (User Stories)](https://medium.com/vertice/como-escrever-boas-users-stories-hist%C3%B3rias-de-usu%C3%A1rios-b29c75043fac)
-> - [User Stories: requisitos que humanos entendem](https://www.luiztools.com.br/post/user-stories-descricao-de-requisitos-que-humanos-entendem/)
-> - [Histórias de Usuários: mais exemplos](https://www.reqview.com/doc/user-stories-example.html)
-> - [9 Common User Story Mistakes](https://airfocus.com/blog/user-story-mistakes/)
-
------
 
 ## Requisitos Funcionais
 
