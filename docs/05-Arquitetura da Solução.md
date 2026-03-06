@@ -1,33 +1,35 @@
 # Arquitetura da Solução
 
-# Definição e Documentação da Arquitetura Distribuída
+## Definição e Documentação da Arquitetura Distribuída
 
-A arquitetura do **RATE.IO** foi projetada seguindo os princípios de sistemas distribuídos modernos, garantindo o desacoplamento entre as interfaces de usuário e a lógica de negócio centralizada. A estrutura divide-se em três camadas principais:
+A arquitetura do **RATE.IO** foi projetada seguindo os princípios de sistemas distribuídos modernos, garantindo o desacoplamento entre as interfaces de usuário e a lógica de negócio centralizada. Essa estrutura permite que diferentes plataformas consumam os mesmos serviços de forma independente e escalável.
+
+A solução divide-se em três camadas principais:
 
 ### 1. Camada de Cliente (Front-end e Mobile)
-O sistema utiliza clientes heterogêneos que consomem a mesma API distribuída:
-* **Aplicação Web:** Desenvolvida para oferecer uma visão gerencial, relatórios de gastos e administração de grupos.
-* **Aplicação Mobile:** Focada na agilidade operacional, permitindo lançamentos de despesas em tempo real e consultas rápidas de saldo.
-Ambos os clientes comunicam-se com o servidor exclusivamente via protocolo HTTPS, utilizando o formato JSON para o intercâmbio de dados.
+O sistema utiliza clientes heterogêneos desenvolvidos em ecossistema JavaScript/TypeScript, garantindo agilidade no desenvolvimento e consistência da interface:
+* **Aplicação Web:** Desenvolvida para oferecer uma visão gerencial profunda, com relatórios de gastos e administração completa de grupos.
+* **Aplicação Mobile:** Focada na mobilidade e agilidade operacional, permitindo lançamentos de despesas em tempo real e consultas imediatas de saldo consolidado.
+* Ambos os clientes comunicam-se com o servidor exclusivamente via protocolo HTTPS, utilizando o formato JSON para o intercâmbio de dados.
 
 ### 2. Camada de Comunicação e Testes (REST API & Postman)
-Seguindo o modelo de arquitetura distribuída, utilizamos uma **API centralizada** que atua como o ponto único de entrada (Gateway) para todas as requisições. 
-* **Roteamento e Lógica:** A API processa as chamadas dos diferentes clientes, valida a autenticação dos usuários e direciona as operações para o motor de cálculo de rateio.
-* **Validação com Postman:** Durante o ciclo de desenvolvimento e QA, utilizamos o **Postman** como cliente de testes para documentar os endpoints e garantir a integridade das respostas da API antes da integração com as interfaces finais.
+Utilizamos uma API REST centralizada na nuvem que atua como o ponto único de entrada (Gateway) para todas as requisições, servindo como fonte única de verdade para os dados.
+
+* **Roteamento e Lógica:** A API processa as chamadas dos diferentes clientes, valida a autenticação dos usuários via JWT e direciona as operações para o motor de cálculo de rateio.
+* **Validação com Postman:** Durante todo o ciclo de desenvolvimento e QA, o Postman é utilizado para documentar os endpoints, realizar testes de integração e garantir a integridade das respostas da API antes da integração com as interfaces finais.
 
 ### 3. Camada de Processamento e Dados (Backend e SQL)
-A lógica de negócio está isolada em um ambiente de execução, garantindo que o "cálculo de quem deve para quem" seja processado de forma atômica.
-* **Serviços de Backend:** Responsáveis por interpretar as diferentes regras de divisão (igualitária, percentual ou valor exato) e gerenciar o histórico de transações.
-* **Persistência Relacional (SQL):** Os dados são estruturados em um modelo relacional. A escolha pelo SQL (utilizando SQL Express em ambiente de desenvolvimento) justifica-se pela necessidade de integridade referencial rigorosa entre as tabelas de **Usuários**, **Grupos**, **Despesas** e **Participantes**, garantindo que nenhum registro financeiro fique órfão ou inconsistente.
+A lógica de negócio está isolada em um ambiente de execução em nuvem, garantindo que o processamento das divisões financeiras seja realizado de forma atômica.
+* **Serviços de Backend (Node.js):** Responsáveis por interpretar as regras de divisão (igualitária, percentual ou valor exato) e gerenciar o histórico de transações e notificações de vencimento.
+
+* **Persistência Não Relacional (NoSQL):** Os dados são armazenados no MongoDB Atlas. A escolha por um banco de dados NoSQL justifica-se pela natureza dinâmica e flexível dos grupos de despesas, permitindo armazenar documentos complexos de "Grupos" com listas variáveis de participantes e transações sem a rigidez de esquemas tabulares.
 
 ### Ambiente de Hospedagem e Ferramentas
-Para viabilizar a natureza distribuída do software:
+Para viabilizar a natureza distribuída e o requisito de custo zero de infraestrutura:
 * **Backend:** Publicado em plataformas PaaS (como Render ou Railway).
-* **Banco de Dados:** Utilização de SQL Server/Express para garantir a persistência dos dados financeiros.
-* **Frontend Web:** Distribuído via plataformas de deploy contínuo para garantir alta disponibilidade.
+* **Banco de Dados:** Cluster gerenciado na nuvem via MongoDB Atlas, garantindo alta disponibilidade e escalabilidade.
+* **Frontend Web:** Distribuído via plataformas de deploy contínuo (Vercel ou Netlify) para garantir baixa latência.
 
-
-![Arquitetura da Solução](img/arch-diagram.jpg)
 
 ## Diagrama de Classes
 
