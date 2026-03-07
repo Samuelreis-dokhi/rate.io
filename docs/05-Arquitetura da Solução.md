@@ -2,34 +2,39 @@
 
 ## Definição e Documentação da Arquitetura Distribuída
 
-A arquitetura do **RATE.IO** foi projetada seguindo os princípios de sistemas distribuídos modernos, garantindo o desacoplamento entre as interfaces de usuário e a lógica de negócio centralizada. Essa estrutura permite que diferentes plataformas consumam os mesmos serviços de forma independente e escalável.
+## Diagrama de Arquitetura Distribuída
 
-A solução divide-se em três camadas principais:
+Abaixo, apresentamos o diagrama que ilustra a integração crítica entre os componentes do sistema **RATE.IO**, detalhando o fluxo de comunicação entre os clientes, a API centralizada e a persistência de dados na nuvem.
 
-### 1. Camada de Cliente (Front-end e Mobile)
-O sistema utiliza clientes heterogêneos desenvolvidos em ecossistema JavaScript/TypeScript, garantindo agilidade no desenvolvimento e consistência da interface:
-* **Aplicação Web:** Desenvolvida para oferecer uma visão gerencial profunda, com relatórios de gastos e administração completa de grupos.
-* **Aplicação Mobile:** Focada na mobilidade e agilidade operacional, permitindo lançamentos de despesas em tempo real e consultas imediatas de saldo consolidado.
-* Ambos os clientes comunicam-se com o servidor exclusivamente via protocolo HTTPS, utilizando o formato JSON para o intercâmbio de dados.
+![Diagrama de Arquitetura Distribuída RATE.IO](img/arquitetura-distribuida-rateio.jpeg)
+*(Substitua o caminho acima pelo local real onde você salvou a imagem no seu repositório)*
 
-### 2. Camada de Comunicação e Testes (REST API & Postman)
-Utilizamos uma API REST centralizada na nuvem que atua como o ponto único de entrada (Gateway) para todas as requisições, servindo como fonte única de verdade para os dados.
+### Detalhamento dos Componentes
 
-* **Roteamento e Lógica:** A API processa as chamadas dos diferentes clientes, valida a autenticação dos usuários via JWT e direciona as operações para o motor de cálculo de rateio.
-* **Validação com Postman:** Durante todo o ciclo de desenvolvimento e QA, o Postman é utilizado para documentar os endpoints, realizar testes de integração e garantir a integridade das respostas da API antes da integração com as interfaces finais.
+#### 1. Camada de Cliente (Aparelhos do Usuário)
+Esta camada representa os *front-ends* heterogêneos. Eles são "clientes magros" (*thin clients*), pois não possuem lógica de negócio ou acesso direto ao banco de dados.
 
-### 3. Camada de Processamento e Dados (Backend e SQL)
-A lógica de negócio está isolada em um ambiente de execução em nuvem, garantindo que o processamento das divisões financeiras seja realizado de forma atômica.
-* **Serviços de Backend (Node.js):** Responsáveis por interpretar as regras de divisão (igualitária, percentual ou valor exato) e gerenciar o histórico de transações e notificações de vencimento.
+* **Aplicações Web (React) e Mobile (React Native):** Fazem requisições assíncronas via rede utilizando o protocolo **HTTPS** e o formato **JSON**.
+* **Navegador/Celular:** São os ambientes de execução que renderizam a interface e gerenciam o estado local da aplicação.
 
-* **Persistência Não Relacional (NoSQL):** Os dados são armazenados no MongoDB Atlas. A escolha por um banco de dados NoSQL justifica-se pela natureza dinâmica e flexível dos grupos de despesas, permitindo armazenar documentos complexos de "Grupos" com listas variáveis de participantes e transações sem a rigidez de esquemas tabulares.
+#### 2. Camada de Comunicação e Segurança (Internet/Rede)
+A "Nuvem" representa a infraestrutura de rede pública (Internet) que conecta os clientes ao servidor.
 
-### Ambiente de Hospedagem e Ferramentas
-Para viabilizar a natureza distribuída e o requisito de custo zero de infraestrutura:
-* **Backend:** Publicado em plataformas PaaS (como Render ou Railway).
-* **Banco de Dados:** Cluster gerenciado na nuvem via MongoDB Atlas, garantindo alta disponibilidade e escalabilidade.
-* **Frontend Web:** Distribuído via plataformas de deploy contínuo (Vercel ou Netlify) para garantir baixa latência.
+* **HTTPS/JSON:** É o protocolo de comunicação padrão, garantindo a criptografia dos dados financeiros em trânsito.
+* **JWT (JSON Web Token):** Utilizado para autenticação *stateless*. Após o login, o cliente envia o token no cabeçalho de cada requisição para validar sua identidade na API.
+* **Postman:** Atua como um cliente externo nesta camada, permitindo que a equipe de QA/DevOps valide os *endpoints* da API independentemente dos *front-ends*.
 
+#### 3. Camada de Aplicação (Servidor de Backend)
+O "Cérebro" do sistema, hospedado em uma plataforma PaaS (como Render ou Railway).
+
+* **API REST (Node.js/Express):** É o ponto único de entrada (Gateway). Ela centraliza a lógica de controle, roteamento e as regras de negócio para o cálculo de rateio.
+* **Lógica de Negócio:** Interpreta as regras de divisão (igual, %, valor) e processa as transações de forma atômica.
+
+#### 4. Camada de Dados (Banco de Dados NoSQL)
+O "Coração" do sistema, hospedado em um cluster gerenciado na nuvem (MongoDB Atlas).
+
+* **MongoDB Atlas:** Responsável pela persistência e integridade dos dados. Sendo um banco NoSQL orientado a documentos, ele oferece a flexibilidade necessária para armazenar grupos com estruturas variáveis de membros e despesas.
+* **Isolamento:** A API é o **único** componente com credenciais para ler e gravar dados no banco, garantindo a segurança e consistência das informações financeiras.
 
 ## Diagrama de Classes
 
