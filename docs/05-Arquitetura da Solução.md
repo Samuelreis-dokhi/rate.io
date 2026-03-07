@@ -7,7 +7,6 @@
 Abaixo, apresentamos o diagrama que ilustra a integração crítica entre os componentes do sistema **RATE.IO**, detalhando o fluxo de comunicação entre os clientes, a API centralizada e a persistência de dados na nuvem.
 
 ![Diagrama de Arquitetura Distribuída RATE.IO](img/arquitetura-distribuida-rateio.jpeg)
-*(Substitua o caminho acima pelo local real onde você salvou a imagem no seu repositório)*
 
 ### Detalhamento dos Componentes
 
