@@ -25,7 +25,11 @@ Para a elaboração desta especificação foram utilizadas técnicas de levantam
 Esses elementos permitirão estabelecer uma base estruturada para o desenvolvimento do sistema Rate.io, garantindo que a solução proposta atenda às necessidades reais dos usuários e contribua para a melhoria da gestão de despesas compartilhadas.
 
 
+
+
 ## Personas
+
+
 
 
 | Característica     | **Carla Mendes**                               | **Bruno Carvalho**                        | **Fernanda Lima**                                  |
@@ -37,6 +41,7 @@ Esses elementos permitirão estabelecer uma base estruturada para o desenvolvime
 | **Comportamento**  | Organizada, mas esquece de registrar gastos    | Planejador e detalhista                   | Digital e acostumada a apps financeiros            |
 | **Objetivo**       | Saber exatamente quanto cada colega deve pagar | Controlar despesas de grupo sem planilhas | Registrar gastos rapidamente no dia a dia          |
 | **Necessidade**    | Divisão automática e histórico de gastos       | Relatórios claros e controle de parcelas  | Registro rápido e sincronização entre dispositivos |
+
 
 
 | Característica     | **Diego Martins**                                | **Juliana Rocha**                         | **Pedro Santos**                        |
@@ -53,8 +58,37 @@ Esses elementos permitirão estabelecer uma base estruturada para o desenvolvime
 
 
 
+
 ## Histórias de Usuários
 
+Com base na análise das personas forma identificadas as seguintes histórias de usuários:
+
+| EU COMO | QUERO                                       | PARA                                             |
+| ------- | ------------------------------------------- | ------------------------------------------------ |
+| Usuário | Criar um grupo de despesas                  | Organizar contas compartilhadas                  |
+| Usuário | Convidar participantes por link ou QR Code  | Facilitar a entrada de novos membros             |
+| Usuário | Registrar despesas rapidamente pelo celular | Evitar esquecer gastos                           |
+| Usuário | Escolher divisão igualitária                | Dividir despesas simples entre todos             |
+| Usuário | Dividir despesas por valor individual       | Garantir justiça em contas de restaurante ou bar |
+| Usuário | Registrar quem pagou a despesa              | Manter transparência entre os participantes      |
+| Usuário | Visualizar saldo atualizado em tempo real   | Saber quem deve pagar ou receber                 |
+| Usuário | Visualizar histórico de despesas do grupo   | Acompanhar gastos anteriores                     |
+| Usuário | Receber notificações de novas despesas      | Manter-me informado sobre mudanças no saldo      |
+| Usuário | Receber lembretes de pagamento              | Evitar atrasos nas dívidas                       |
+| Usuário | Registrar pagamentos realizados             | Atualizar automaticamente os saldos              |
+| Usuário | Anexar comprovantes de pagamento            | Garantir transparência nas transações            |
+| Usuário | Parcelar despesas compartilhadas            | Controlar pagamentos ao longo dos meses          |
+| Usuário | Filtrar despesas por período ou categoria   | Analisar melhor os gastos                        |
+| Usuário | Visualizar um resumo financeiro do grupo    | Ter visão clara das despesas totais              |
+
+| EU COMO       | QUERO                                 | PARA                                          |
+| ------------- | ------------------------------------- | --------------------------------------------- |
+| Administrador | Criar e gerenciar grupos              | Organizar despesas de diferentes contextos    |
+| Administrador | Alterar permissões de membros         | Controlar a organização do grupo              |
+| Administrador | Remover membros do grupo              | Manter a organização das despesas             |
+| Administrador | Editar ou excluir despesas incorretas | Corrigir erros de lançamento                  |
+| Administrador | Visualizar relatórios detalhados      | Acompanhar a saúde financeira do grupo        |
+| Administrador | Encerrar um grupo de despesas         | Finalizar o controle após um evento ou viagem |
 
 Com base na análise das personas forma identificadas as seguintes histórias de usuários:
 
@@ -90,16 +124,6 @@ Com base na análise das personas forma identificadas as seguintes histórias de
 
 
 
-Apresente aqui as histórias de usuário que são relevantes para o projeto de sua solução. As Histórias de Usuário consistem em uma ferramenta poderosa para a compreensão e elicitação dos requisitos funcionais e não funcionais da sua aplicação. Se possível, agrupe as histórias de usuário por contexto, para facilitar consultas recorrentes à essa parte do documento.
-
-> **Links Úteis**:
-> - [Histórias de usuários com exemplos e template](https://www.atlassian.com/br/agile/project-management/user-stories)
-> - [Como escrever boas histórias de usuário (User Stories)](https://medium.com/vertice/como-escrever-boas-users-stories-hist%C3%B3rias-de-usu%C3%A1rios-b29c75043fac)
-> - [User Stories: requisitos que humanos entendem](https://www.luiztools.com.br/post/user-stories-descricao-de-requisitos-que-humanos-entendem/)
-> - [Histórias de Usuários: mais exemplos](https://www.reqview.com/doc/user-stories-example.html)
-> - [9 Common User Story Mistakes](https://airfocus.com/blog/user-story-mistakes/)
-
------
 
 ## Requisitos Funcionais
 
