@@ -2,13 +2,17 @@
 
 ## Definição e Documentação da Arquitetura Distribuída
 
-## Diagrama de Arquitetura Distribuída
+### Diagrama de Arquitetura Distribuída
 
 Abaixo, apresentamos o diagrama que ilustra a integração crítica entre os componentes do sistema **RATE.IO**, detalhando o fluxo de comunicação entre os clientes, a API centralizada e a persistência de dados na nuvem.
 
-![Diagrama de Arquitetura Distribuída RATE.IO](img/arquitetura-distribuida-rateio.jpeg)
+![Diagrama de Arquitetura Distribuída RATE.IO](img/diagrama-arquitetura.png)
 
 ### Detalhamento dos Componentes
+
+A nova arquitetura do projeto é fundamentada em Microsserviços com soberania de dados. O diagrama acima ilustra a separação física e lógica dos componentes, o fluxo de comunicação via rede e a descentralização de dados no **MongoDB Atlas**.
+
+A estrutura do RATE.IO foi projetada para garantir baixo acoplamento e alta coesão, permitindo que cada módulo evolua independentemente. A arquitetura divide-se em quatro camadas principais:
 
 #### 1. Camada de Cliente (Aparelhos do Usuário)
 Esta camada representa os *front-ends* heterogêneos. Eles são "clientes magros" (*thin clients*), pois não possuem lógica de negócio ou acesso direto ao banco de dados.
@@ -23,17 +27,36 @@ A "Nuvem" representa a infraestrutura de rede pública (Internet) que conecta os
 * **JWT (JSON Web Token):** Utilizado para autenticação *stateless*. Após o login, o cliente envia o token no cabeçalho de cada requisição para validar sua identidade na API.
 * **Postman:** Atua como um cliente externo nesta camada, permitindo que a equipe de QA/DevOps valide os *endpoints* da API independentemente dos *front-ends*.
 
-#### 3. Camada de Aplicação (Servidor de Backend)
-O "Cérebro" do sistema, hospedado em uma plataforma PaaS (como Render ou Railway).
+#### 3. Camada de Aplicação (Microsserviços Autônomos)
+A lógica de negócio foi dividida em três serviços independentes:
 
-* **API REST (Node.js/Express):** É o ponto único de entrada (Gateway). Ela centraliza a lógica de controle, roteamento e as regras de negócio para o cálculo de rateio.
-* **Lógica de Negócio:** Interpreta as regras de divisão (igual, %, valor) e processa as transações de forma atômica.
+* **Users Service**: Gerencia o ciclo de vida do usuário (registro, login, perfil).
 
-#### 4. Camada de Dados (Banco de Dados NoSQL)
-O "Coração" do sistema, hospedado em um cluster gerenciado na nuvem (MongoDB Atlas).
+* **Groups Service**: Gerencia a estrutura do grupo, membros, administradores e os saldos consolidados dos participantes (necessário para o RF-007).
 
-* **MongoDB Atlas:** Responsável pela persistência e integridade dos dados. Sendo um banco NoSQL orientado a documentos, ele oferece a flexibilidade necessária para armazenar grupos com estruturas variáveis de membros e despesas.
-* **Isolamento:** A API é o **único** componente com credenciais para ler e gravar dados no banco, garantindo a segurança e consistência das informações financeiras.
+* **Expenses Service**: Contém o motor de cálculo de rateio (RF-005) e gerencia o histórico de transações brutas.
+
+#### 4. Camada de Dados (NoSQL Descentralizado)
+A persistência de dados foi descentralizada no MongoDB Atlas, onde cada microsserviço possui seu próprio banco de dados NoSQL isolado, garantindo a soberania de dados:
+
+* ```users_db```: Armazena apenas perfis e credenciais criptografadas.
+
+* ```groups_db```: Armazena a estrutura do grupo e o saldo consolidado de cada membro (balance).
+
+* ```expenses_db```: Armazena o histórico bruto de transações e fotos de comprovantes.
+
+---
+
+#### Barramento de comunicação insterna
+
+Devido a descentralização dos banco de dados, o sistema agora depende de chamadas de rede para buscar e sincronizar dados entre os serviços, um conceito fundamental em sistemas distribuídos.
+
+* Fluxo Crítico (RF-004 e RF-005): Ao registrar uma despesa, o Expenses Service faz chamadas assíncronas (via HTTP) para o Groups Service para validar membros e, após o cálculo, notificar atualizações de saldo, garantindo a integridade dos dados entre as entidades.
+
+---
+
+#### Camada de testes e QA (Postman)
+* **Postman**: Integrado ao Gateway, é utilizado como cliente externo para validar os endpoints e garantir a integridade das respostas da API, independentemente das interfaces finais.
 
 ## Diagrama de Classes
 
