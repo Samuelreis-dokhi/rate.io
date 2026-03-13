@@ -1,15 +1,15 @@
 # Especificações do Projeto
 
-<span style="color:red">Pré-requisitos: <a href="1-Documentação de Contexto.md"> Documentação de Contexto</a></span>
 
 Esta seção apresenta a especificação da solução proposta, considerando a perspectiva do usuário final e os requisitos necessários para o desenvolvimento do sistema Rate.io. A partir das informações levantadas na documentação de contexto, são definidas as principais características do sistema, bem como as necessidades e expectativas dos usuários que irão interagir com a aplicação.
 
 O objetivo desta etapa é traduzir o problema identificado em requisitos estruturados, que servirão como base para o desenvolvimento da aplicação e para a definição da arquitetura do sistema.
 
-Para isso, são utilizadas técnicas de engenharia de requisitos e modelagem de software, que permitem compreender o comportamento esperado do sistema e organizar suas funcionalidades de forma clara e objetiva.
+Para a elaboração desta especificação foram utilizadas técnicas de engenharia de requisitos e modelagem de software, como a criação de personas, definição de histórias de usuário no formato utilizado em metodologias ágeis (Scrum) e organização de requisitos segundo boas práticas de engenharia de software.
 
 Nesta seção serão abordados os seguintes elementos:
 
+```
 Personas: representação de perfis fictícios de usuários que refletem características, necessidades e comportamentos do público-alvo da aplicação, auxiliando na compreensão dos diferentes cenários de uso.
 
 Histórias de Usuário: descrição das funcionalidades do sistema a partir da perspectiva do usuário, permitindo identificar necessidades e objetivos que devem ser atendidos pela solução.
@@ -19,17 +19,12 @@ Requisitos Funcionais: definição das funcionalidades que o sistema deverá ofe
 Requisitos Não Funcionais: especificação de características relacionadas à qualidade do sistema, como desempenho, segurança, disponibilidade e usabilidade.
 
 Restrições do Projeto: limitações técnicas, tecnológicas ou organizacionais que devem ser consideradas durante o desenvolvimento da aplicação.
-
-Para a elaboração desta especificação foram utilizadas técnicas de levantamento e modelagem de requisitos, como a criação de personas, definição de histórias de usuário no formato utilizado em metodologias ágeis (Scrum) e organização de requisitos segundo boas práticas de engenharia de software.
+```
 
 Esses elementos permitirão estabelecer uma base estruturada para o desenvolvimento do sistema Rate.io, garantindo que a solução proposta atenda às necessidades reais dos usuários e contribua para a melhoria da gestão de despesas compartilhadas.
 
 
-
-
 ## Personas
-
-
 
 
 | Característica     | **Carla Mendes**                               | **Bruno Carvalho**                        | **Fernanda Lima**                                  |
@@ -53,10 +48,6 @@ Esses elementos permitirão estabelecer uma base estruturada para o desenvolvime
 | **Comportamento**  | Prático e quer soluções rápidas                  | Muito organizada e detalhista             | Analítico e focado em planejamento      |
 | **Objetivo**       | Evitar discussões sobre dinheiro na república    | Manter controle de quem pagou e quem deve | Ter visão clara das despesas da viagem  |
 | **Necessidade**    | Atualização de saldo em tempo real               | Controle de participantes e despesas      | Dashboard simples com resumo financeiro |
-
-
-
-
 
 
 ## Histórias de Usuários
@@ -123,8 +114,6 @@ Com base na análise das personas forma identificadas as seguintes histórias de
 | Administrador | Encerrar um grupo de despesas         | Finalizar o controle após um evento ou viagem |
 
 
-
-
 ## Requisitos Funcionais
 
 > Prioridade definida pela técnica **MoSCoW** — detalhada na seção correspondente.
@@ -166,10 +155,10 @@ Com base na análise das personas forma identificadas as seguintes histórias de
 | ID | Restrição | Justificativa |
 |:---|:----------|:--------------|
 | `R-01` | Entrega até o final do semestre letivo | O projeto é avaliado dentro do calendário acadêmico vigente, sem possibilidade de prorrogação. |
-| `R-02` | Deve usar **arquitetura distribuída** *(cliente-servidor com API REST centralizada)* | Requisito técnico que exige separação entre front-end (web/mobile) e back-end comunicando via API. |
+| `R-02` | Deve usar **arquitetura distribuída** *(Microsserviços com API Gateway)* | Requisito técnico que exige separação entre front-end (web/mobile) e back-end comunicando via API. |
 | `R-03` | Deve possuir versão **web** e versão **mobile** funcionais | Ambas as plataformas são obrigatórias para atender os diferentes perfis de uso. |
 | `R-04` | Hospedagem obrigatória em **nuvem** *(ex: Render, Railway, Firebase, Vercel)* | A sincronização em tempo real entre dispositivos exige back-end e banco de dados em nuvem. |
-| `R-05` | Banco de dados **NoSQL** *(ex: MongoDB, Firestore)* | Definido no escopo para garantir flexibilidade no esquema de dados e escalabilidade horizontal. |
+| `R-05` | Banco de dados **NoSQL** *(MongoDB)* | Definido no escopo para garantir flexibilidade no esquema de dados e escalabilidade horizontal. A estolha do MongoDB facilita o padrão **Database-per-Service** |
 | `R-06` | **Orçamento zero** — utilizar apenas planos gratuitos *(free tier)* | Projeto acadêmico sem financiamento; toda a stack deve operar nos planos gratuitos das plataformas. |
 
 ---
