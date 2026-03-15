@@ -15,7 +15,7 @@ A nova arquitetura do projeto é fundamentada em Microsserviços com soberania d
 A estrutura do RATE.IO foi projetada para garantir baixo acoplamento e alta coesão, permitindo que cada módulo evolua independentemente. A arquitetura divide-se em quatro camadas principais:
 
 #### 1. Camada de Cliente (Aparelhos do Usuário)
-Esta camada representa os *front-ends* heterogêneos. Eles são "clientes magros" (*thin clients*), pois não possuem lógica de negócio ou acesso direto ao banco de dados.
+Esta camada representa os *front-ends* heterogêneos. Eles são "clientes leves" (*thin clients*), pois não possuem lógica de negócio ou acesso direto ao banco de dados.
 
 * **Aplicações Web (React) e Mobile (React Native):** Fazem requisições assíncronas via rede utilizando o protocolo **HTTPS** e o formato **JSON**.
 * **Navegador/Celular:** São os ambientes de execução que renderizam a interface e gerenciam o estado local da aplicação.
@@ -30,20 +30,24 @@ A "Nuvem" representa a infraestrutura de rede pública (Internet) que conecta os
 #### 3. Camada de Aplicação (Microsserviços Autônomos)
 A lógica de negócio foi dividida em três serviços independentes:
 
-* **Users Service**: Gerencia o ciclo de vida do usuário (registro, login, perfil).
+* **Auth Service**: Único responsável pelo registro de utilizadores, login, validação de credenciais e, o mais importante, a emissão do Token JWT. 
+
+* **Users Service**: Gerencia o ciclo de vida do perfil social do usuário, consumindo userId gerado pelo Auth Service.
 
 * **Groups Service**: Gerencia a estrutura do grupo, membros, administradores e os saldos consolidados dos participantes (necessário para o RF-007).
 
-* **Expenses Service**: Contém o motor de cálculo de rateio (RF-005) e gerencia o histórico de transações brutas.
+* **Expenses Service**: Gerencia toda a parte de cálculo de rateios e transações (RF-005), além do feed de atividades.
 
 #### 4. Camada de Dados (NoSQL Descentralizado)
 A persistência de dados foi descentralizada no MongoDB Atlas, onde cada microsserviço possui seu próprio banco de dados NoSQL isolado, garantindo a soberania de dados:
 
-* ```users_db```: Armazena apenas perfis e credenciais criptografadas.
+* ```auth_db```: Armazena apenas perfis e credenciais criptografadas.
+
+* ```user_db```: Armazena perfis sociais e listagem de amigos.
 
 * ```groups_db```: Armazena a estrutura do grupo e o saldo consolidado de cada membro (balance).
 
-* ```expenses_db```: Armazena o histórico bruto de transações e fotos de comprovantes.
+* ```expenses_db```: Armazena o histórico bruto de transações e cálculos de rateio.
 
 ---
 
@@ -62,118 +66,133 @@ Devido a descentralização dos banco de dados, o sistema agora depende de chama
 
 O diagrama de classes ilustra graficamente como será a estrutura do software, e como cada uma das classes da sua estrutura estarão interligadas. Essas classes servem de modelo para materializar os objetos que executarão na memória.
 
-As referências abaixo irão auxiliá-lo na geração do artefato “Diagrama de Classes”.
 
-> - [Diagramas de Classes - Documentação da IBM](https://www.ibm.com/docs/pt-br/rational-soft-arch/9.6.1?topic=diagrams-class)
-> - [O que é um diagrama de classe UML? | Lucidchart](https://www.lucidchart.com/pages/pt/o-que-e-diagrama-de-classe-uml)
+![Diagrama de Arquitetura Distribuída RATE.IO](img/diagram-class.drawio.png)
+
 
 ## Documentação do Banco de Dados MongoDB
 
 Este documento descreve a estrutura e o esquema do banco de dados não relacional utilizado por nosso projeto, baseado em MongoDB. O MongoDB é um banco de dados NoSQL que armazena dados em documentos JSON (ou BSON, internamente), permitindo uma estrutura flexível e escalável para armazenar e consultar dados.
 
 ## Esquema do Banco de Dados
-### Coleção: users
-Armazena as informações dos usuários do sistema.
 
-Estrutura do Documento
+### auth_db
+Focado na autenticação, segurança e credenciais de usuário
 
 ```JSON
+
+// Coleção: auth_db
 {
-    "_id": "user123",
-    "name": "Heitor Oliveiro",
-    "email": "heitor.ol@example.com",
-    "passwordHash": "$2b$10$hashed_password",
+    "_id": "ObjectId", // referencia para outros serviços
+    "email": {
+      "type": "String",
+      "unique": true,
+      "required": true
+    },
+    "passwordHash": {
+      "type": "String",
+      "required": true
+    },
+    "createdAt": {
+      "type": "Date",
+      "default": "Date.now"
+    }
+}
+```
+
+
+### users_db
+Armazena o perfil social e a lista de amigos.
+
+```JSON
+// Coleção: users
+{
+    "_id": "ObjectId", // mesmo id vindo de Auth Service
+    "name": {
+      "type": "String",
+      "required": true
+    },
+    "avatarUrl": "String",
+    "friends": [{
+      "type": "ObjectId",
+      "ref": "user_db.userProfiles" // lista de ID de amigos
+    }],
     "createdAt": "2024-08-29T10:00:00Z",
     "updatedAt": "2024-08-29T12:00:00Z"
 }
 ```
 
-#### Descrição dos Campos
-> - <strong>_id:</strong> Identificador único do usuário gerado automaticamente pelo MongoDB.
-> - <strong>name:</strong> Nome completo do usuário.
-> - <strong>email:</strong> Endereço de email do usuário.
-> - <strong>passwordHash:</strong> Hash da senha do usuário.
-> - <strong>createdAt:</strong> Data e hora de criação do usuário.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do usuário.
-
-### Coleção: groups
+### groups_db
 Armazena a estrutura do grupo e o saldo consolidade de cada membro.
 
 ```Json
+// Coleção: groups
 {
-    "_id": "groupA1B2",
-    "name": "Viagem para Porto Seguro",
+    "_id": "ObjectId",
+    "name": {
+      "type": "String",
+      "required": true
+    },
+    "icon": "String",
     "description": "Descrição opcional do grupo.",
-    "type": "Viagem", // RF-003 (Flexibilidade)
-    "adminId": "user123", // _id de quem criou o grupo
+    "type": {
+      "type": "String",
+      "enum": ["viagem","moradia","casal","outros"],
+    }, // RF-003 (Flexibilidade)
+    "adminId": "ObjectId", // _id de quem criou o grupo
     "members": [
         {
-            "userId": "user123",
-            "name": "Heitor Oliveiro",
-            "balance": 50.0 // Usuário pagou a mais e deve receber
-        }
-        {
-            "userId": "user456",
-            "name": "Rondinelli",
-            "balance": -50.0 // Usuário deve pagar
-        }
+            "userId": "ObjectId", // Referencia ao ID do Auth
+            "name": "String", 
+            "balance": {
+              "type": "number",
+              "default": 0
+            }
+        },
     ],
     "createdAt": "2024-08-29T10:30:00Z",
     "updatedAt": "2024-08-29T11:30:00Z"
 }
 ```
-
-#### Descrição dos Campos
-> - <strong>_id:</strong> Identificador único do grupo, gerado automaticamente pelo MongoDB.
-> - <strong>name:</strong> Nome do grupo.
-> - <strong>description:</strong> Descrição do grupo (opcional).
-> - <strong>type:</strong> Categoria do grupo de despesas.
-> - <strong>adminId:</strong> Referencia o usuário que criou o grupo.
-> - <strong>members:</strong> Todos os usuários que participam do grupo de despesas.
-> - <strong>createdAt:</strong> Data e hora de criação do usuário.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do usuário.
-
-### Coleção: expenses
+### expenses_db
 Armazena as despesas de cada grupo disponíveis no sistema.
 
-Estrutura do Documento
-
 ```Json
+// Coleção: expenses
 {
-  "_id": "expenseXYZ",
-  "groupId": "groupA1B2", // Referência para saber a qual grupo pertence
-  "description": "Aluguel do Airbnb",
-  "totalAmount": 1000.0,
-  "paidById": "user123", // O Heitor pagou o total
-  "divisionType": "Equal", // RF-005 (Motor de cálculo do backend)
-  "details": [
+  "_id": "ObjectId",
+  "groupId": "ObjectId",
+  "description": "String",
+  "totalAmount": "Number",
+  "paidById": "ObjectId",
+  "divisionType": {
+    "type": "String",
+    "enum": ["igualmente","porcentagem", "fixo"]
+  }, // RF-005 (Motor de cálculo do backend)
+  "receiptPhoto": "String",
+  "expenseDetail": [
     {
-      "userId": "user123", // Heitor
-      "amountToPay": 500.0 // Sua parte na divisão
-    },
-    {
-      "userId": "user456", // Rondinelli
-      "amountToPay": 500.0 // Sua parte na divisão
+      "userId": "ObjectId", // Heitor
+      "name": "String",
+      "amoutToPay": "Number" // Sua parte na divisão
     }
   ],
-  "receiptPhotoUrl": "https://s3.render.com/receipts/expenseXYZ.jpg", // RF-004
-  "createdAt": "2024-10-26T11:00:00Z"
+  "date": {"type": "Date", "default": "Date.now"}, // RF-004
+}
+
+// Coleção: activities
+{
+  "_id": "ObjectId",
+  "userId": "ObjectId",
+  "groupId": "ObjectId",
+  "actionDescription": "String",
+  "timestamp": { "type": "Date", "default": "Date.now"}
 }
 ```
 
-#### Descrição dos Campos
-> - <strong>_id:</strong> Identificador único da despesa gerado automaticamente pelo MongoDB.
-> - <strong>groupId:</strong> Referencia o grupo ao qual a despesa pertence.
-> - <strong>description:</strong> Descrição da despesa.
-> - <strong>totalAmount:</strong> Total da despesa.
-> - <strong>amountToPay:</strong> Parte da divisão de cada usuário a pagar .
-> - <strong>paidById:</strong> Identificador de qual membro pagou o total.
-> - <strong>divisionType:</strong> Tipo de divisao, se em porcentagem, igualitaria.
-> - <strong>details:</strong> Detalhes da divisao.
-> - <strong>receiptPhotoUrl:</strong> Upload de fotos de comprovantes.
-> - <strong>createdAt:</strong> Data e hora de criação do produto.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do produto.
+<br>
 
+---
 ### Boas Práticas
 
 Validação de Dados: Implementar validação de esquema e restrições na aplicação para garantir a consistência dos dados.
