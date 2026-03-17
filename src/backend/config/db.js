@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const connectDB = async (uri, dbName) => {
   try {
-    await mongoose.connect(uri);
-    console.log(`MongoDB conectado: ${dbName}`);
+    const connection = await mongoose.connect(uri);
+    console.log(`MongoDB conectado: ${dbName}: ${connection.connection.host}`);
   } catch (error) {
     console.error(`Erro ao conectar ao MongoDB (${dbName}):`, error.message);
     if (process.env.NODE_ENV === 'production') {
