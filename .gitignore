@@ -22,3 +22,6 @@ out/
 logs/
 *.log
 tmp/
+
+# Relatório individual de produção
+relatorio.md
