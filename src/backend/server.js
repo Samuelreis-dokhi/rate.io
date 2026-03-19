@@ -21,9 +21,10 @@ app.get('/', (req, res) => {
   res.send('API rodando...');
 });
 
+app.use('/api/auth', require('./routes/authRoutes'));
+
 // importando rotas de microsserviços
 // app.use('/api/users', require('./routes/userRoutes'));
-// app.use('/api/auth', require('./routes/authRoutes'));
 // app.use('/api/expenses', require('./routes/expenseRoutes'));
 // app.use('/api/groups', require('./routes/groupRoutes'));
 
