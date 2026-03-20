@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const { connectDatabases } = require('./config/database');
 
 dotenv.config();
 
@@ -10,10 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexões com o banco de dados
-connectDB(process.env.MONGO_URI_AUTH, 'auth');
-connectDB(process.env.MONGO_URI_USERS, 'users');
-
+// Rota de teste inicial
 app.get('/', (req, res) => {
   res.send('API rodando...');
 });
@@ -26,6 +23,20 @@ app.use('/api/users', require('./routes/userRoutes'));
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+// Inicia o servidor e conecta ao MongoDB
+const startServer = async () => {
+  try {
+    await connectDatabases();
+
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Erro ao conectar ao MongoDB:', error.message);
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1);
+    }
+  }
+};
+
+startServer();

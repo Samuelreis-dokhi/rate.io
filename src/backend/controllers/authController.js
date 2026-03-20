@@ -1,13 +1,19 @@
 const Auth = require('../models/Auth');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const User = require('../models/User');
 
 const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 const validatePassword = (password) => password && password.length >= 6;
+const buildDefaultName = (email) => {
+  const localPart = String(email || '').split('@')[0] || '';
+  const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
+  return cleaned.length >= 2 ? cleaned : 'Usuario';
+};
 
 exports.register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
     // Validação de entrada
     if (!email || !password) {
@@ -32,11 +38,29 @@ exports.register = async (req, res) => {
       return res.status(409).json({ error: 'Email já cadastrado' });
     }
 
-    const user = await Auth.create({ email, password });
+    // Cria o registro de autenticação
+    const authRecord = await Auth.create({ email, password });
+
+    let userProfile;
+    try {
+      // Cria o perfil de usuário associado automaticamente
+      userProfile = await User.create({
+        name: name?.trim() || buildDefaultName(email),
+        email,
+        authId: authRecord._id,
+      });
+    } catch (profileError) {
+      // Evita registro órfão em auth quando o perfil falha
+      await Auth.deleteOne({ _id: authRecord._id });
+      throw profileError;
+    }
+
     res.status(201).json({
       message: 'Usuário criado com sucesso!',
-      id: user._id,
-      email: user.email,
+      authId: authRecord._id,
+      id: userProfile._id,
+      name: userProfile.name,
+      email: userProfile.email,
     });
   } catch (error) {
     if (error?.code === 11000) {
