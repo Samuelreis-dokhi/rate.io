@@ -41,13 +41,13 @@ A lógica de negócio foi dividida em três serviços independentes:
 #### 4. Camada de Dados (NoSQL Descentralizado)
 A persistência de dados foi descentralizada no MongoDB Atlas, onde cada microsserviço possui seu próprio banco de dados NoSQL isolado, garantindo a soberania de dados:
 
-* ```auth_db```: Armazena apenas perfis e credenciais criptografadas.
+* ```auth_db```: Armazena apenas credenciais e metadados de autenticação.
 
 * ```user_db```: Armazena perfis sociais e listagem de amigos.
 
-* ```groups_db```: Armazena a estrutura do grupo e o saldo consolidado de cada membro (balance).
+* ```group_db```: Armazena a estrutura do grupo e o saldo consolidado de cada membro (balance).
 
-* ```expenses_db```: Armazena o histórico bruto de transações e cálculos de rateio.
+* ```expense_db```: Armazena o histórico bruto de transações e cálculos de rateio.
 
 ---
 
@@ -81,7 +81,7 @@ Focado na autenticação, segurança e credenciais de usuário
 
 ```JSON
 
-// Coleção: auth_db
+// Coleção: auth_credentials
 {
     "_id": "ObjectId", // referencia para outros serviços
     "email": {
@@ -101,28 +101,31 @@ Focado na autenticação, segurança e credenciais de usuário
 ```
 
 
-### users_db
-Armazena o perfil social e a lista de amigos.
+### user_db
+Armazena o perfil do usuário e informações de apresentação.
 
 ```JSON
-// Coleção: users
+// Coleção: user_profiles
 {
-    "_id": "ObjectId", // mesmo id vindo de Auth Service
+    "_id": "ObjectId",
+    "authId": "ObjectId", // id do documento em auth_credentials
+    "email": {
+      "type": "String",
+      "unique": true,
+      "required": true
+    },
     "name": {
       "type": "String",
       "required": true
     },
     "avatarUrl": "String",
-    "friends": [{
-      "type": "ObjectId",
-      "ref": "user_db.userProfiles" // lista de ID de amigos
-    }],
+    "isActive": "Boolean",
     "createdAt": "2024-08-29T10:00:00Z",
     "updatedAt": "2024-08-29T12:00:00Z"
 }
 ```
 
-### groups_db
+### group_db
 Armazena a estrutura do grupo e o saldo consolidade de cada membro.
 
 ```Json
@@ -154,7 +157,7 @@ Armazena a estrutura do grupo e o saldo consolidade de cada membro.
     "updatedAt": "2024-08-29T11:30:00Z"
 }
 ```
-### expenses_db
+### expense_db
 Armazena as despesas de cada grupo disponíveis no sistema.
 
 ```Json
