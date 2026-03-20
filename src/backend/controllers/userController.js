@@ -9,13 +9,7 @@ exports.getProfile = async (req, res) => {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    res.json({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      createdAt: user.createdAt,
-    });
+    res.json(user);
   } catch (error) {
     return res.status(500).json({
       error: 'Erro ao buscar perfil.',
