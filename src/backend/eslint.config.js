@@ -32,15 +32,9 @@ module.exports = [
     },
   },
   {
-    files: ['server.js', 'config/db.js'],
+    files: ['server.js', 'config/database.js'],
     rules: {
       'no-console': 'off',
-    },
-  },
-  {
-    files: ['config/db.js'],
-    rules: {
-      'no-process-exit': 'off',
     },
   },
 ];

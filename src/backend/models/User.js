@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { getConnections } = require('../config/database');
 
 const userSchema = new mongoose.Schema(
   {
@@ -38,4 +39,6 @@ userSchema.statics.findByAuthId = function (authId) {
   return this.findOne({ authId, isActive: true });
 };
 
-module.exports = mongoose.model('User', userSchema, 'user_profiles');
+const { user } = getConnections();
+
+module.exports = user.model('User', userSchema, 'user_profiles');

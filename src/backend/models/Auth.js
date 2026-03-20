@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { getConnections } = require('../config/database');
 
 const authSchema = new mongoose.Schema(
   {
@@ -24,4 +25,6 @@ authSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-module.exports = mongoose.model('Auth', authSchema, 'auth_credentials');
+const { auth } = getConnections();
+
+module.exports = auth.model('Auth', authSchema, 'auth_credentials');
