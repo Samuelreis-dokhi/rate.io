@@ -3,12 +3,25 @@
 
 <span style="color:red">Pré-requisitos: <a href="2-Especificação do Projeto.md"> Documentação de Especificação</a></span>
 
-Descreva aqui a metodologia de trabalho do grupo para atacar o problema. Definições sobre os ambiente de trabalho utilizados pela  equipe para desenvolver o projeto. Abrange a relação de ambientes utilizados, a estrutura para gestão do código fonte, além da definição do processo e ferramenta através dos quais a equipe se organiza (Gestão de Times).
+A equipe utilizará uma metodologia ágil baseada em Scrum e Kanban, organizando o trabalho em Sprints curtas para garantir entregas contínuas e melhor controle das atividades.
+
+Serão utilizadas ferramentas como Visual Studio Code para desenvolvimento, GitHub para versionamento de código e GitHub Projects para organização das tarefas. O design das interfaces será feito no Figma, enquanto diagramas serão criados no Draw.io. Os testes de API serão realizados com o Postman.
+
+A comunicação da equipe acontecerá por meio do Discord, Microsoft Teams e Gather.
+
+O código será organizado em branches (main, develop, feature e bugfix), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
 
 ## Relação de Ambientes de Trabalho
 
-Os artefatos do projeto são desenvolvidos a partir de diversas plataformas e a relação dos ambientes com seu respectivo propósito deverá ser apresentada em uma tabela que especifica que detalha Ambiente, Plataforma e Link de Acesso. 
-Nota: Vide documento modelo do estudo de caso "Portal de Notícias" e defina também os ambientes e frameworks que serão utilizados no desenvolvimento de aplicações móveis.
+Os artefatos do projeto são desenvolvidos utilizando diferentes plataformas, cada uma com uma função específica dentro do processo de desenvolvimento. O ambiente de desenvolvimento utiliza o Visual Studio Code para a criação do código, enquanto o versionamento é realizado no GitHub.
+
+A organização das tarefas é feita por meio do GitHub Projects, permitindo acompanhar o andamento das atividades. O design das interfaces é desenvolvido no Figma, e a modelagem de diagramas é realizada no Draw.io.
+
+Para testes de APIs, será utilizado o Postman. A comunicação da equipe ocorre através do Discord, Microsoft Teams e do ambiente virtual Gather.
+
+No desenvolvimento de aplicações móveis, serão utilizados o React Native e o Expo, permitindo a criação de aplicativos multiplataforma de forma eficiente.
+
+Dessa forma, a equipe consegue manter organização, colaboração e qualidade durante todo o desenvolvimento do projeto.
 
 ## Controle de Versão
 
