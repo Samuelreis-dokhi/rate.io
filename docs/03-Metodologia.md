@@ -1,7 +1,6 @@
 
 # Metodologia
 
-<span style="color:red">Pré-requisitos: <a href="2-Especificação do Projeto.md"> Documentação de Especificação</a></span>
 
 A equipe utilizará uma metodologia ágil baseada em Scrum e Kanban, organizando o trabalho em Sprints curtas para garantir entregas contínuas e melhor controle das atividades.
 
