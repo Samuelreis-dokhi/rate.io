@@ -69,7 +69,6 @@ O diagrama de classes ilustra graficamente como será a estrutura do software, e
 
 ![Diagrama de Arquitetura Distribuída RATE.IO](img/diagram-class.drawio.png)
 
-
 ## Documentação do Banco de Dados MongoDB
 
 Este documento descreve a estrutura e o esquema do banco de dados não relacional utilizado por nosso projeto, baseado em MongoDB. O MongoDB é um banco de dados NoSQL que armazena dados em documentos JSON (ou BSON, internamente), permitindo uma estrutura flexível e escalável para armazenar e consultar dados.

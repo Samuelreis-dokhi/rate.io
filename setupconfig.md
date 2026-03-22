@@ -167,6 +167,7 @@ Com o servidor ativo, testar endpoints de autenticacao.
 	"password": "123456"
 }
 ```
+![Teste de registro com Postman](../pmv-ads-2026-1-e4-infra-t1-segunda-20h/docs/img/registroPostman.png)
 
 Resposta esperada:
 
@@ -186,6 +187,7 @@ Resposta esperada:
 	"password": "123456"
 }
 ```
+![Teste de registro com Postman](../pmv-ads-2026-1-e4-infra-t1-segunda-20h/docs/img/loginPostman.png)
 
 Resposta esperada:
 
