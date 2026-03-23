@@ -10,57 +10,130 @@ Abaixo, apresentamos o diagrama que ilustra a integração crítica entre os com
 
 ### Detalhamento dos Componentes
 
-A nova arquitetura do projeto é fundamentada em Microsserviços com soberania de dados. O diagrama acima ilustra a separação física e lógica dos componentes, o fluxo de comunicação via rede e a descentralização de dados no **MongoDB Atlas**.
+A arquitetura do RATE.IO evoluiu para um modelo **orientado a API** com separação de responsabilidades por domínio e soberania de dados por banco. No estado atual, os módulos de **Auth** e **Users** já estão implementados e operacionais no backend; **Groups** e **Expenses** permanecem como próximos incrementos planejados.
 
-A estrutura do RATE.IO foi projetada para garantir baixo acoplamento e alta coesão, permitindo que cada módulo evolua independentemente. A arquitetura divide-se em quatro camadas principais:
+A solução está organizada em quatro camadas:
 
-#### 1. Camada de Cliente (Aparelhos do Usuário)
-Esta camada representa os *front-ends* heterogêneos. Eles são "clientes leves" (*thin clients*), pois não possuem lógica de negócio ou acesso direto ao banco de dados.
+#### 1. Camada de Cliente (Web e Mobile)
+* **Web (React) e Mobile (React Native):** consumidores da API REST via HTTPS/JSON.
+* **Cliente leve (thin client):** sem acesso direto ao banco e sem regra de negócio crítica no frontend.
 
-* **Aplicações Web (React) e Mobile (React Native):** Fazem requisições assíncronas via rede utilizando o protocolo **HTTPS** e o formato **JSON**.
-* **Navegador/Celular:** São os ambientes de execução que renderizam a interface e gerenciam o estado local da aplicação.
+#### 2. Camada de API e Segurança
+* **API REST em Node.js + Express:** ponto único de entrada para consumo de recursos.
+* **Autenticação stateless com JWT:** emissão no login e envio no header `Authorization: Bearer <token>`.
+* **CORS + validação de entrada:** proteção de borda para acesso entre origens e consistência de payloads.
+* **Postman:** cliente de QA para validação funcional dos endpoints.
 
-#### 2. Camada de Comunicação e Segurança (Internet/Rede)
-A "Nuvem" representa a infraestrutura de rede pública (Internet) que conecta os clientes ao servidor.
+#### 3. Camada de Domínio (Serviços)
+* **Auth Service (implementado):** registro, login, hash de senha e emissão de token.
+* **Users Service (implementado):** criação automática e manutenção de perfil de usuário.
+* **Groups Service (planejado):** gestão de grupos, membros e saldos consolidados.
+* **Expenses Service (planejado):** gestão de despesas, divisão e histórico de atividades.
 
-* **HTTPS/JSON:** É o protocolo de comunicação padrão, garantindo a criptografia dos dados financeiros em trânsito.
-* **JWT (JSON Web Token):** Utilizado para autenticação *stateless*. Após o login, o cliente envia o token no cabeçalho de cada requisição para validar sua identidade na API.
-* **Postman:** Atua como um cliente externo nesta camada, permitindo que a equipe de QA/DevOps valide os *endpoints* da API independentemente dos *front-ends*.
+#### 4. Camada de Dados (MongoDB NoSQL)
+* **`auth_db` (implementado):** coleção `auth_credentials`.
+* **`user_db` (implementado):** coleção `user_profiles`.
+* **`group_db` (planejado):** coleção `groups`.
+* **`expense_db` (planejado):** coleções `expenses` e `activities`.
 
-#### 3. Camada de Aplicação (Microsserviços Autônomos)
-A lógica de negócio foi dividida em três serviços independentes:
+### Arquitetura da Solução Baseada em API
 
-* **Auth Service**: Único responsável pelo registro de utilizadores, login, validação de credenciais e, o mais importante, a emissão do Token JWT. 
+O diagrama abaixo representa o fluxo principal atualmente implementado (Auth + Users) e os domínios previstos para evolução.
 
-* **Users Service**: Gerencia o ciclo de vida do perfil social do usuário, consumindo userId gerado pelo Auth Service.
+![Arquitetura baseada em API](img/APIarquitetura.png)
 
-* **Groups Service**: Gerencia a estrutura do grupo, membros, administradores e os saldos consolidados dos participantes (necessário para o RF-007).
+#### Justificativas arquiteturais
+* **Escalabilidade por domínio:** cada serviço pode crescer com seu próprio ciclo de deploy e volume de dados.
+* **Baixo acoplamento:** separação entre autenticação e perfil reduz impacto de mudanças entre módulos.
+* **Soberania de dados:** cada domínio mantém seu banco, reduzindo dependências de esquema entre contextos.
+* **Segurança:** JWT evita sessão em memória no servidor e simplifica a autenticação distribuída.
+* **Evolução incremental:** permite entregar Auth/Users primeiro e expandir para Groups/Expenses mantendo o mesmo contrato de API.
 
-* **Expenses Service**: Gerencia toda a parte de cálculo de rateios e transações (RF-005), além do feed de atividades.
+## Documentação da Implementação da Web API REST
 
-#### 4. Camada de Dados (NoSQL Descentralizado)
-A persistência de dados foi descentralizada no MongoDB Atlas, onde cada microsserviço possui seu próprio banco de dados NoSQL isolado, garantindo a soberania de dados:
+### Stack de implementação
+* Runtime: Node.js 18+
+* Framework HTTP: Express 5
+* Persistência: Mongoose + MongoDB Atlas
+* Segurança: bcryptjs (hash) + jsonwebtoken (JWT)
+* Configuração: dotenv
+* Qualidade: ESLint + Prettier
 
-* ```auth_db```: Armazena apenas credenciais e metadados de autenticação.
+### Configurações de ambiente
 
-* ```user_db```: Armazena perfis sociais e listagem de amigos.
+As variáveis abaixo são usadas para execução local e integração com os bancos:
 
-* ```group_db```: Armazena a estrutura do grupo e o saldo consolidado de cada membro (balance).
+```env
+PORT=3000
+JWT_SECRET=<chave-jwt-segura>
+MONGO_URI_AUTH=<uri-auth_db>
+MONGO_URI_USERS=<uri-user_db>
+MONGO_URI_GROUPS=<uri-group_db>
+MONGO_URI_EXPENSES=<uri-expense_db>
+```
 
-* ```expense_db```: Armazena o histórico bruto de transações e cálculos de rateio.
+Regras relevantes do setup atual:
+* `MONGO_URI_AUTH` e `MONGO_URI_USERS` são obrigatórias para subir o backend.
+* `MONGO_URI_GROUPS` e `MONGO_URI_EXPENSES` são opcionais neste estágio.
+* O backend inicia apenas após validação e conexão com os bancos obrigatórios.
+* Em produção, falha de conexão encerra o processo para evitar API em estado inconsistente.
 
----
+### Modelagem implementada
 
-#### Barramento de comunicação interna
+#### Modelo `Auth` (`auth_credentials`)
+* `email` (único, obrigatório, validado)
+* `password` (hash via hook `pre('save')`)
+* `lastLogin` (data do último acesso)
+* `isActive` (controle lógico de ativação)
+* `createdAt` e `updatedAt` (timestamps automáticos)
 
-Devido a descentralização dos banco de dados, o sistema agora depende de chamadas de rede para buscar e sincronizar dados entre os serviços, um conceito fundamental em sistemas distribuídos.
+#### Modelo `User` (`user_profiles`)
+* `name` (obrigatório, mínimo de 2 caracteres)
+* `email` (único, obrigatório)
+* `authId` (referência ao usuário autenticado)
+* `avatarUrl` (opcional)
+* `isActive` (status lógico)
+* `createdAt` e `updatedAt` (timestamps automáticos)
 
-* Fluxo Crítico (RF-004 e RF-005): Ao registrar uma despesa, o Expenses Service faz chamadas assíncronas (via HTTP) para o Groups Service para validar membros e, após o cálculo, notificar atualizações de saldo, garantindo a integridade dos dados entre as entidades.
+### Autenticação e autorização
 
----
+Fluxo implementado:
+1. Cliente realiza login com email e senha.
+2. API valida credenciais e retorna JWT com expiração de 1 hora.
+3. Cliente envia token no header `Authorization`.
+4. Middleware valida formato Bearer, assinatura e validade.
+5. Dados decodificados são anexados em `req.user` para consumo nas rotas protegidas.
 
-#### Camada de testes e QA (Postman)
-* **Postman**: Integrado ao Gateway, é utilizado como cliente externo para validar os endpoints e garantir a integridade das respostas da API, independentemente das interfaces finais.
+Tratamento de erro de autenticação:
+* Token ausente: `401 AUTH_TOKEN_MISSING`
+* Formato inválido: `401 AUTH_TOKEN_FORMAT_INVALID` / `AUTH_TOKEN_SCHEME_INVALID`
+* Token expirado: `401 AUTH_TOKEN_EXPIRED`
+* Token inválido: `401 AUTH_TOKEN_INVALID`
+
+### Recursos e rotas da API (estado atual)
+
+#### Base URL local
+`http://localhost:3000`
+
+#### Rotas públicas
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/` | Health-check simples da API |
+| POST | `/api/auth/register` | Cadastra credencial e cria perfil automaticamente |
+| POST | `/api/auth/login` | Autentica usuário e retorna JWT |
+
+#### Rotas protegidas (`Authorization: Bearer <token>`)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/api/users` | Cria perfil (fallback para fluxos sem criação automática) |
+| GET | `/api/users/profile` | Retorna perfil ativo associado ao `authId` do token |
+| PUT | `/api/users/profile` | Atualiza `name` e/ou `avatarUrl` do perfil |
+
+### Fluxo de implementação REST (registro e autenticação)
+
+![Autenticaçao REST](img/autenticacaoREST.png)
 
 ## Diagrama de Classes
 
@@ -99,6 +172,12 @@ Focado na autenticação, segurança e credenciais de usuário
 }
 ```
 
+Implementação atual no backend:
+* Coleção utilizada: `auth_credentials`
+* Índice único em `email` para evitar duplicidade de credencial.
+* Senha persistida com hash BCrypt (não armazenada em texto puro).
+* Campo `lastLogin` atualizado no login com sucesso.
+
 
 ### user_db
 Armazena o perfil do usuário e informações de apresentação.
@@ -123,6 +202,12 @@ Armazena o perfil do usuário e informações de apresentação.
     "updatedAt": "2024-08-29T12:00:00Z"
 }
 ```
+
+Implementação atual no backend:
+* Coleção utilizada: `user_profiles`
+* Vínculo com autenticação por `authId`.
+* Método de acesso principal: busca por `authId` ativo (`findByAuthId`).
+* Criação do perfil ocorre automaticamente no registro e pode ser feita também por rota protegida.
 
 ### group_db
 Armazena a estrutura do grupo e o saldo consolidade de cada membro.
@@ -156,6 +241,10 @@ Armazena a estrutura do grupo e o saldo consolidade de cada membro.
     "updatedAt": "2024-08-29T11:30:00Z"
 }
 ```
+
+Status de implementação:
+* Banco e URI já previstos em configuração de ambiente.
+* Modelos e rotas ainda não publicados nesta versão do backend.
 ### expense_db
 Armazena as despesas de cada grupo disponíveis no sistema.
 
@@ -191,6 +280,38 @@ Armazena as despesas de cada grupo disponíveis no sistema.
   "timestamp": { "type": "Date", "default": "Date.now"}
 }
 ```
+
+Status de implementação:
+* Banco e URI já previstos em configuração de ambiente.
+* Modelos e rotas ainda não publicados nesta versão do backend.
+
+### Funcionalidades NoSQL implementadas (armazenamento e recuperação)
+
+No estado atual, as operações NoSQL em produção no backend são:
+
+1. **Cadastro de credenciais**
+  * Inserção de documento em `auth_credentials` com validações e hash da senha.
+
+2. **Cadastro de perfil**
+  * Inserção de documento em `user_profiles` vinculado por `authId`.
+
+3. **Autenticação de usuário**
+  * Consulta em `auth_credentials` por `email` e `isActive`.
+  * Atualização de `lastLogin` após sucesso.
+
+4. **Recuperação de perfil autenticado**
+  * Consulta em `user_profiles` por `authId` obtido do JWT.
+
+5. **Atualização de perfil**
+  * Persistência de alterações de `name` e `avatarUrl` em `user_profiles`.
+
+### Justificativas de escolhas NoSQL no contexto do projeto
+
+* **Flexibilidade de esquema:** os domínios (auth, users, groups, expenses) possuem evolução diferente; documentos permitem adaptação rápida.
+* **Escala horizontal natural:** MongoDB Atlas facilita crescimento por volume de usuários e transações.
+* **Produtividade com JSON/BSON:** reduz transformação de dados entre API e persistência.
+* **Isolamento de falhas por domínio:** problemas em um banco não bloqueiam necessariamente todos os serviços.
+* **Aderência ao cenário distribuído:** combina com estratégia de microsserviços e comunicação por API.
 
 <br>
 
@@ -230,13 +351,38 @@ Entregar um arquivo banco.sql contendo os scripts de criação das tabelas do ba
 
 ## Tecnologias Utilizadas
 
-Descreva aqui qual(is) tecnologias você vai usar para resolver o seu problema, ou seja, implementar a sua solução. Liste todas as tecnologias envolvidas, linguagens a serem utilizadas, serviços web, frameworks, bibliotecas, IDEs de desenvolvimento, e ferramentas.
+As tecnologias adotadas para a arquitetura atual são:
 
-Apresente também uma figura explicando como as tecnologias estão relacionadas ou como uma interação do usuário com o sistema vai ser conduzida, por onde ela passa até retornar uma resposta ao usuário.
+* **Node.js + Express 5:** implementação da API REST.
+* **MongoDB Atlas + Mongoose:** persistência NoSQL por domínio.
+* **JWT + bcryptjs:** autenticação e segurança de credenciais.
+* **dotenv:** configuração por variáveis de ambiente.
+* **CORS:** controle de acesso entre origens no consumo da API.
+* **Postman:** validação e testes de rotas REST.
+* **ESLint + Prettier + Nodemon:** qualidade de código e produtividade no desenvolvimento.
+
+Diagrama de relação entre tecnologias:
+
+```mermaid
+flowchart TD
+  FE[React Web / React Native] --> API[Express API]
+  QA[Postman] --> API
+  API --> SEC[JWT + bcryptjs]
+  API --> ODM[Mongoose]
+  ODM --> MDB[MongoDB Atlas]
+  ENV[dotenv/.env] --> API
+  DEV[ESLint + Prettier + Nodemon] --> API
+```
 
 ## Hospedagem
 
-Explique como a hospedagem e o lançamento da plataforma foi feita.
+No ambiente de desenvolvimento e validação da disciplina, a API está sendo executada localmente com `nodemon` e conectada ao MongoDB Atlas em nuvem.
+
+Estratégia prevista para publicação:
+* Containerização da API.
+* Deploy em serviço de nuvem com variáveis de ambiente seguras.
+* Banco de dados mantido no MongoDB Atlas com controle de acesso por IP/usuário.
+* Pipeline de CI para lint e validações antes de promoção para produção.
 
 > **Links Úteis**:
 >
