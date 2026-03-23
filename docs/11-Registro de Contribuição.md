@@ -6,7 +6,7 @@ Este é um exemplo de documento para a documentação das etapas e contribuiçã
 
 Este documento detalha as etapas e responsabilidades do trabalho em equipe para o desenvolvimento de um projeto. O projeto está dividido em cinco etapas principais, cada uma com suas respectivas tarefas e prazos. Cada membro da equipe é responsável por completar as tarefas atribuídas e colaborar com os demais para garantir o sucesso do projeto.
 
-## Etapa 1: Levantamento
+## Etapa 1: Documentação de contexto e Especificações do projeto
 
 ### Objetivo
 
@@ -14,18 +14,21 @@ Coletar e documentar todos os requisitos necessários para o desenvolvimento do 
 
 ### Tarefas
 
-- **Reunião com stakeholders**: Realizar reuniões com as partes interessadas para entender as necessidades e expectativas.
-- **Levantamento de requisitos**: Documentar os requisitos funcionais e não funcionais do projeto.
-- **Análise de viabilidade**: Avaliar a viabilidade técnica e econômica do projeto.
+- **Reunião com stakeholders**: Realizar reuniões com as partes interessadas para entender as necessidades e expectativas (professor).
+- **Documentação de contexto da aplicação**: Documentar o contexto da aplicação, abordando o problema que ela resolve, assim como a solução proposta, a justificativa e os seus objetivos (específicos e gerais).
+- **Especificações do projeto**: Conhecer o Público Alvo e os Perfis de Usuário para que seja possível desenvolver as Histórias de usuário. Dessa forma, é possível documentar os requisitos funcionais e não funcionais do projeto, assim como suas restrições. 
+- **Definição da arquitetura e modelagem de dados**: Foco no desenvolvimento de um sistema distribuído. Criar o diagrama que descreve a arquitetura distribuída do projeto e modelar o banco de dados, com suas entidades e esquemas.
+- **Gestão de projetos e planejamento geral**: Documentar todo o planejamento do projeto, detalhando a gestão de custos, pessoal, recursos e tempo.
 
 ### Responsáveis
 
-- **Analista de Requisitos**: Nome do analista
-- **Gerente de Projeto**: Nome do gerente
+- **Analista de Requisitos**: Louise Dias
+- **Scrum Master**: Heitor Oliveiro
+- **Desenvolvedores**: Icaro de Jesus, Rondinelli Silva, Vinícius Nogueira e Samuel Filipe
 
 ### Prazo
 
-- **Data de conclusão**: YYYY-MM-DD
+- **Data de conclusão**: 08-03-2026
 
 ---
 
@@ -43,12 +46,12 @@ Desenvolver a lógica de negócio e os serviços de backend do projeto.
 
 ### Responsáveis
 
-- **Desenvolvedor Backend**: Nome do desenvolvedor
-- **Engenheiro de Dados**: Nome do engenheiro
+- **Desenvolvedor Backend**: Heitor Oliveiro, Rondinelli Silva, Icaro de Jesus, Louise Dias, Samuel Filipe, Vinicius Nogueira
+- **Engenheiro de Dados**: Heitor Oliveiro, Rondinelli Silva, Icaro de Jesus, Louise Dias, Samuel Filipe, Vinicius Nogueira
 
 ### Prazo
 
-- **Data de conclusão**: YYYY-MM-DD
+- **Data de conclusão**: 12/04/2026
 
 ---
 
@@ -104,7 +107,7 @@ Desenvolver a aplicação mobile do projeto, adaptando as funcionalidades para d
 
 Garantir que a solução desenvolvida esteja pronta para produção e apresentar o projeto às partes interessadas.
 
-### Tarefas
+### Tarefasm
 
 - **Homologação**: Realizar testes finais com os stakeholders para validar a solução.
 - **Correção de Bugs**: Corrigir quaisquer problemas encontrados durante a homologação.
