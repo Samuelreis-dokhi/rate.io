@@ -5,19 +5,20 @@ const User = require('../models/User');
 
 const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 const validatePassword = (password) => password && password.length >= 6;
-const buildDefaultName = (email) => {
-  const localPart = String(email || '').split('@')[0] || '';
-  const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
-  return cleaned.length >= 2 ? cleaned : 'Usuario';
-};
+// const buildDefaultName = (email) => {
+//   const localPart = String(email || '').split('@')[0] || '';
+//   const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
+//   return cleaned.length >= 2 ? cleaned : 'Usuario';
+// };
 
 exports.register = async (req, res) => {
   try {
     const { email, password, name } = req.body;
+    const normalizedName = String(name || '').trim();
 
     // Validação de entrada
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+    if (!email || !password || !normalizedName) {
+      return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
     }
 
     if (!validateEmail(email)) {
@@ -45,7 +46,7 @@ exports.register = async (req, res) => {
     try {
       // Cria o perfil de usuário associado automaticamente
       userProfile = await User.create({
-        name: name?.trim() || buildDefaultName(email),
+        name: normalizedName,
         email,
         authId: authRecord._id,
       });

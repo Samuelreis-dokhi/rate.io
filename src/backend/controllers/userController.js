@@ -1,10 +1,10 @@
 const User = require('../models/User');
 
-const buildDefaultName = (email) => {
-  const localPart = String(email || '').split('@')[0] || '';
-  const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
-  return cleaned.length >= 2 ? cleaned : 'Usuario';
-};
+// const buildDefaultName = (email) => {
+//   const localPart = String(email || '').split('@')[0] || '';
+//   const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
+//   return cleaned.length >= 2 ? cleaned : 'Usuario';
+// };
 
 exports.getProfile = async (req, res) => {
   try {
@@ -26,11 +26,12 @@ exports.getProfile = async (req, res) => {
 exports.createProfile = async (req, res) => {
   try {
     const { name, email } = req.body;
+    const normalizedName = String(name || '').trim();
     const authId = req.user?.id;
     const profileEmail = (email || req.user?.email || '').toLowerCase();
 
-    if (!authId || !profileEmail) {
-      return res.status(400).json({ error: 'Token inválido para criação de perfil' });
+    if (!authId || !profileEmail || !normalizedName) {
+      return res.status(400).json({ error: 'Nome é obrigatório para criação de perfil' });
     }
 
     const existingProfileByAuth = await User.findByAuthId(authId);
@@ -44,7 +45,7 @@ exports.createProfile = async (req, res) => {
     }
 
     const user = await User.create({
-      name: name?.trim() || buildDefaultName(profileEmail),
+      name: normalizedName,
       email: profileEmail,
       authId,
     });
