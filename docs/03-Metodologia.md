@@ -5,7 +5,8 @@ A equipe utilizará uma metodologia ágil baseada em Scrum e Kanban, organizando
 
 Serão utilizadas ferramentas como Visual Studio Code para desenvolvimento, GitHub para versionamento de código e GitHub Projects para organização das tarefas. O design das interfaces será feito no Figma, enquanto diagramas serão criados no Draw.io. Os testes de API serão realizados com o Postman.
 
-A comunicação da equipe acontecerá por meio do Discord, Microsoft Teams e Gather.
+A comunicação da equipe acontecerá por meio do Discord, Microsoft Teams e Gather
+
 
 O código será organizado em branches (main, develop, feature e bugfix), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
 ## Relação de Ambientes de Trabalho
