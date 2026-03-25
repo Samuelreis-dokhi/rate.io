@@ -1,20 +1,29 @@
 
 # Metodologia
 
-A equipe utilizará uma metodologia ágil baseada em Scrum e Kanban, organizando o trabalho em Sprints curtas para garantir entregas contínuas e melhor controle das atividades.
+A equipe utiliza uma metodologia ágil baseada em Scrum e Kanban, organizando o trabalho em Sprints curtas para garantir entregas contínuas e melhor controle das atividades.
 
-Serão utilizadas ferramentas como Visual Studio Code para desenvolvimento, GitHub para versionamento de código e GitHub Projects para organização das tarefas. O design das interfaces será feito no Figma, enquanto diagramas serão criados no Draw.io. Os testes de API serão realizados com o Postman.
+São utilizadas ferramentas como Visual Studio Code para desenvolvimento, GitHub para versionamento de código e GitHub Projects para organização das tarefas. O design das interfaces é feito no Figma, enquanto diagramas são criados no Draw.io. Os testes de API são realizados com o Postman.
 
-A comunicação da equipe acontecerá por meio do Discord, Microsoft Teams e Gather.
+Para padronizar o ambiente de desenvolvimento entre os integrantes, a equipe adotou Docker e Docker Compose como estratégia principal de execução local da API. Com isso, as versões de Node, dependências e processo de inicialização ficam consistentes para todos os membros.
 
-O código será organizado em branches (main, develop, feature e bugfix), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
+A comunicação da equipe acontece por meio do Discord, Microsoft Teams e Gather.
+
+O código é organizado em branches (main, develop, feature, bugfix e docs), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
 ## Relação de Ambientes de Trabalho
 
 Os artefatos do projeto são desenvolvidos utilizando diferentes plataformas, cada uma com uma função específica dentro do processo de desenvolvimento. O ambiente de desenvolvimento utiliza o Visual Studio Code para a criação do código, enquanto o versionamento é realizado no GitHub.
 
 A organização das tarefas é feita por meio do GitHub Projects, permitindo acompanhar o andamento das atividades. O design das interfaces é desenvolvido no Figma, e a modelagem de diagramas é realizada no Draw.io.
 
-Para testes de APIs, será utilizado o Postman. A comunicação da equipe ocorre através do Discord, Microsoft Teams e do ambiente virtual Gather.
+Para testes de APIs, é utilizado o Postman. A comunicação da equipe ocorre através do Discord, Microsoft Teams e do ambiente virtual Gather.
+
+No setup técnico, o backend pode ser executado de duas formas:
+
+1. Fluxo padrão com Docker Compose na raiz do repositório.
+2. Fluxo alternativo com Node.js local dentro de `src/backend`.
+
+Esse modelo foi adotado para reduzir divergências de ambiente e facilitar o onboarding de novos integrantes.
 
 No desenvolvimento de aplicações móveis, serão utilizados o React Native e o Expo, permitindo a criação de aplicativos multiplataforma de forma eficiente.
 
@@ -36,6 +45,12 @@ testing: versão em fase de testes
 dev: ambiente principal de desenvolvimento
 
 O fluxo de trabalho consiste na criação de novas branches a partir da dev para desenvolvimento de funcionalidades. Após a implementação, as alterações passam por testes na branch testing, podendo seguir para unstable e, posteriormente, serem integradas à main quando estiverem estáveis.
+
+Além da revisão de código por Pull Request, a equipe considera como critérios mínimos de pronto para merge:
+
+1. Ambiente local validado com Docker Compose.
+2. Lint e formatação executados no backend.
+3. Teste manual dos endpoints principais via Postman.
 
 Gerenciamento de Commits, Merges e Tags
 Commits:
@@ -100,6 +115,8 @@ GitHub:
 Plataforma utilizada para armazenar e versionar o código do projeto, permitindo colaboração entre os membros da equipe.
 GitHub Projects:
 Ferramenta usada para organizar e acompanhar as tarefas do projeto em formato de quadro (Kanban).
+Docker e Docker Compose:
+Ferramentas utilizadas para padronizar e executar o ambiente local da API com configuração única para toda a equipe.
 Figma:
 Utilizado para criação das interfaces, protótipos e design das telas do sistema.
 Gather:
