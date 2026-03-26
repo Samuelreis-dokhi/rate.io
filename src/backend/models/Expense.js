@@ -1,9 +1,34 @@
 const mongoose = require('mongoose');
+const { getConnections } = require('../config/database');
+const { expense } = getConnections();
+
+const splitDetailSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  amount: { 
+    type: Number,
+    default: 0
+   }, //usado para Igual
+  percentage: { 
+    type: Number,
+    default: 0
+   }, //usado para Porcentagem
+   isPaid: {
+    type: Boolean,
+    default: false
+  },
+  paidAt: {
+    type: Date,
+    default: null,
+  }
+});
 
 const ExpenseSchema = new mongoose.Schema({
   group: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Group',
+    //ref: 'Group',
     required: true,
   },
   description: {
@@ -12,11 +37,11 @@ const ExpenseSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
-    required: true,
+    required: [true, 'Valor é obrigatório'],
+    min: [0, 'Valor deve ser positivo'],
   },
-  paidBy: {
+  paidByUserId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
     required: true,
   },
 
@@ -24,24 +49,22 @@ const ExpenseSchema = new mongoose.Schema({
   splitType: {
     type: String, //"Igual", "Porcentagem" e "Exato"
     required: [true, 'Tipo de Divisão é obrigatório'],
+    enum: ['igual', 'porcentagem', 'exato'],
   },
-  splitDetails: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-      amount: { type: Number }, //usado para Igual
-      percentage: { type: Number }, //usado para Porcentagem
-    },
-  ],
+  splitDetails: [splitDetailSchema], //Detalhes de como a despesa foi dividida entre os membros
   receiptImage: {
     type: String, //Url da imagem do comprovante
+    default: null,
+    category: ['alimentação', 'transporte', 'hospedagem', 'moradia', 'outros'],
+    default: 'outros',
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  //createdAt: {
+    //type: Date,
+    //default: Date.now,
+  //},
+},{ timestamps: true });
 
-module.exports = mongoose.model('Expense', ExpenseSchema);
+ExpenseSchema.index({ group: 1, createdAt: -1 });
+ExpenseSchema.index({ paidByUserId: 1 });
+
+module.exports = expense.model('Expense', ExpenseSchema, 'expenses');
