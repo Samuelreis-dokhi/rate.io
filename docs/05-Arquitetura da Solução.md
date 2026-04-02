@@ -15,26 +15,30 @@ A arquitetura do RATE.IO evoluiu para um modelo **orientado a API** com separaç
 A solução está organizada em quatro camadas:
 
 #### 1. Camada de Cliente (Web e Mobile)
-* **Web (React) e Mobile (React Native):** consumidores da API REST via HTTPS/JSON.
-* **Cliente leve (thin client):** sem acesso direto ao banco e sem regra de negócio crítica no frontend.
+
+- **Web (React) e Mobile (React Native):** consumidores da API REST via HTTPS/JSON.
+- **Cliente leve (thin client):** sem acesso direto ao banco e sem regra de negócio crítica no frontend.
 
 #### 2. Camada de API e Segurança
-* **API REST em Node.js + Express:** ponto único de entrada para consumo de recursos.
-* **Autenticação stateless com JWT:** emissão no login e envio no header `Authorization: Bearer <token>`.
-* **CORS + validação de entrada:** proteção de borda para acesso entre origens e consistência de payloads.
-* **Postman:** cliente de QA para validação funcional dos endpoints.
+
+- **API REST em Node.js + Express:** ponto único de entrada para consumo de recursos.
+- **Autenticação stateless com JWT:** emissão no login e envio no header `Authorization: Bearer <token>`.
+- **CORS + validação de entrada:** proteção de borda para acesso entre origens e consistência de payloads.
+- **Postman:** cliente de QA para validação funcional dos endpoints.
 
 #### 3. Camada de Domínio (Serviços)
-* **Auth Service (implementado):** registro, login, hash de senha e emissão de token.
-* **Users Service (implementado):** criação automática e manutenção de perfil de usuário.
-* **Groups Service (planejado):** gestão de grupos, membros e saldos consolidados.
-* **Expenses Service (planejado):** gestão de despesas, divisão e histórico de atividades.
+
+- **Auth Service (implementado):** registro, login, hash de senha e emissão de token.
+- **Users Service (implementado):** criação automática e manutenção de perfil de usuário.
+- **Groups Service (planejado):** gestão de grupos, membros e saldos consolidados.
+- **Expenses Service (planejado):** gestão de despesas, divisão e histórico de atividades.
 
 #### 4. Camada de Dados (MongoDB NoSQL)
-* **`auth_db` (implementado):** coleção `auth_credentials`.
-* **`user_db` (implementado):** coleção `user_profiles`.
-* **`group_db` (planejado):** coleção `groups`.
-* **`expense_db` (planejado):** coleções `expenses` e `activities`.
+
+- **`auth_db` (implementado):** coleção `auth_credentials`.
+- **`user_db` (implementado):** coleção `user_profiles`.
+- **`group_db` (planejado):** coleção `groups`.
+- **`expense_db` (planejado):** coleções `expenses` e `activities`.
 
 ### Arquitetura da Solução Baseada em API
 
@@ -43,21 +47,23 @@ O diagrama abaixo representa o fluxo principal atualmente implementado (Auth + U
 ![Arquitetura baseada em API](img/APIarquitetura.png)
 
 #### Justificativas arquiteturais
-* **Escalabilidade por domínio:** cada serviço pode crescer com seu próprio ciclo de deploy e volume de dados.
-* **Baixo acoplamento:** separação entre autenticação e perfil reduz impacto de mudanças entre módulos.
-* **Soberania de dados:** cada domínio mantém seu banco, reduzindo dependências de esquema entre contextos.
-* **Segurança:** JWT evita sessão em memória no servidor e simplifica a autenticação distribuída.
-* **Evolução incremental:** permite entregar Auth/Users primeiro e expandir para Groups/Expenses mantendo o mesmo contrato de API.
+
+- **Escalabilidade por domínio:** cada serviço pode crescer com seu próprio ciclo de deploy e volume de dados.
+- **Baixo acoplamento:** separação entre autenticação e perfil reduz impacto de mudanças entre módulos.
+- **Soberania de dados:** cada domínio mantém seu banco, reduzindo dependências de esquema entre contextos.
+- **Segurança:** JWT evita sessão em memória no servidor e simplifica a autenticação distribuída.
+- **Evolução incremental:** permite entregar Auth/Users primeiro e expandir para Groups/Expenses mantendo o mesmo contrato de API.
 
 ## Documentação da Implementação da Web API REST
 
 ### Stack de implementação
-* Runtime: Node.js 18+
-* Framework HTTP: Express 5
-* Persistência: Mongoose + MongoDB Atlas
-* Segurança: bcryptjs (hash) + jsonwebtoken (JWT)
-* Configuração: dotenv
-* Qualidade: ESLint + Prettier
+
+- Runtime: Node.js 18+
+- Framework HTTP: Express 5
+- Persistência: Mongoose + MongoDB Atlas
+- Segurança: bcryptjs (hash) + jsonwebtoken (JWT)
+- Configuração: dotenv
+- Qualidade: ESLint + Prettier
 
 ### Configurações de ambiente
 
@@ -73,31 +79,35 @@ MONGO_URI_EXPENSES=<uri-expense_db>
 ```
 
 Regras relevantes do setup atual:
-* `MONGO_URI_AUTH` e `MONGO_URI_USERS` são obrigatórias para subir o backend.
-* `MONGO_URI_GROUPS` e `MONGO_URI_EXPENSES` são opcionais neste estágio.
-* O backend inicia apenas após validação e conexão com os bancos obrigatórios.
-* Em produção, falha de conexão encerra o processo para evitar API em estado inconsistente.
+
+- `MONGO_URI_AUTH` e `MONGO_URI_USERS` são obrigatórias para subir o backend.
+- `MONGO_URI_GROUPS` e `MONGO_URI_EXPENSES` são opcionais neste estágio.
+- O backend inicia apenas após validação e conexão com os bancos obrigatórios.
+- Em produção, falha de conexão encerra o processo para evitar API em estado inconsistente.
 
 ### Modelagem implementada
 
 #### Modelo `Auth` (`auth_credentials`)
-* `email` (único, obrigatório, validado)
-* `password` (hash via hook `pre('save')`)
-* `lastLogin` (data do último acesso)
-* `isActive` (controle lógico de ativação)
-* `createdAt` e `updatedAt` (timestamps automáticos)
+
+- `email` (único, obrigatório, validado)
+- `password` (hash via hook `pre('save')`)
+- `lastLogin` (data do último acesso)
+- `isActive` (controle lógico de ativação)
+- `createdAt` e `updatedAt` (timestamps automáticos)
 
 #### Modelo `User` (`user_profiles`)
-* `name` (obrigatório, mínimo de 2 caracteres)
-* `email` (único, obrigatório)
-* `authId` (referência ao usuário autenticado)
-* `avatarUrl` (opcional)
-* `isActive` (status lógico)
-* `createdAt` e `updatedAt` (timestamps automáticos)
+
+- `name` (obrigatório, mínimo de 2 caracteres)
+- `email` (único, obrigatório)
+- `authId` (referência ao usuário autenticado)
+- `avatarUrl` (opcional)
+- `isActive` (status lógico)
+- `createdAt` e `updatedAt` (timestamps automáticos)
 
 ### Autenticação e autorização
 
 Fluxo implementado:
+
 1. Cliente realiza login com email e senha.
 2. API valida credenciais e retorna JWT com expiração de 1 hora.
 3. Cliente envia token no header `Authorization`.
@@ -105,31 +115,33 @@ Fluxo implementado:
 5. Dados decodificados são anexados em `req.user` para consumo nas rotas protegidas.
 
 Tratamento de erro de autenticação:
-* Token ausente: `401 AUTH_TOKEN_MISSING`
-* Formato inválido: `401 AUTH_TOKEN_FORMAT_INVALID` / `AUTH_TOKEN_SCHEME_INVALID`
-* Token expirado: `401 AUTH_TOKEN_EXPIRED`
-* Token inválido: `401 AUTH_TOKEN_INVALID`
+
+- Token ausente: `401 AUTH_TOKEN_MISSING`
+- Formato inválido: `401 AUTH_TOKEN_FORMAT_INVALID` / `AUTH_TOKEN_SCHEME_INVALID`
+- Token expirado: `401 AUTH_TOKEN_EXPIRED`
+- Token inválido: `401 AUTH_TOKEN_INVALID`
 
 ### Recursos e rotas da API (estado atual)
 
 #### Base URL local
+
 `http://localhost:3000`
 
 #### Rotas públicas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/` | Health-check simples da API |
-| POST | `/api/auth/register` | Cadastra credencial e cria perfil automaticamente |
-| POST | `/api/auth/login` | Autentica usuário e retorna JWT |
+| Método | Rota                 | Descrição                                         |
+| ------ | -------------------- | ------------------------------------------------- |
+| GET    | `/`                  | Health-check simples da API                       |
+| POST   | `/api/auth/register` | Cadastra credencial e cria perfil automaticamente |
+| POST   | `/api/auth/login`    | Autentica usuário e retorna JWT                   |
 
 #### Rotas protegidas (`Authorization: Bearer <token>`)
 
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/api/users` | Cria perfil (fallback para fluxos sem criação automática) |
-| GET | `/api/users/profile` | Retorna perfil ativo associado ao `authId` do token |
-| PUT | `/api/users/profile` | Atualiza `name` e/ou `avatarUrl` do perfil |
+| Método | Rota                 | Descrição                                                 |
+| ------ | -------------------- | --------------------------------------------------------- |
+| POST   | `/api/users`         | Cria perfil (fallback para fluxos sem criação automática) |
+| GET    | `/api/users/profile` | Retorna perfil ativo associado ao `authId` do token       |
+| PUT    | `/api/users/profile` | Atualiza `name` e/ou `avatarUrl` do perfil                |
 
 ### Fluxo de implementação REST (registro e autenticação)
 
@@ -138,7 +150,6 @@ Tratamento de erro de autenticação:
 ## Diagrama de Classes
 
 O diagrama de classes ilustra graficamente como será a estrutura do software, e como cada uma das classes da sua estrutura estarão interligadas. Essas classes servem de modelo para materializar os objetos que executarão na memória.
-
 
 ![Diagrama de Arquitetura Distribuída RATE.IO](img/diagram-class.drawio.png)
 
@@ -149,6 +160,7 @@ Este documento descreve a estrutura e o esquema do banco de dados não relaciona
 ## Esquema do Banco de Dados
 
 ### auth_db
+
 Focado na autenticação, segurança e credenciais de usuário
 
 ```JSON
@@ -173,13 +185,14 @@ Focado na autenticação, segurança e credenciais de usuário
 ```
 
 Implementação atual no backend:
-* Coleção utilizada: `auth_credentials`
-* Índice único em `email` para evitar duplicidade de credencial.
-* Senha persistida com hash BCrypt (não armazenada em texto puro).
-* Campo `lastLogin` atualizado no login com sucesso.
 
+- Coleção utilizada: `auth_credentials`
+- Índice único em `email` para evitar duplicidade de credencial.
+- Senha persistida com hash BCrypt (não armazenada em texto puro).
+- Campo `lastLogin` atualizado no login com sucesso.
 
 ### user_db
+
 Armazena o perfil do usuário e informações de apresentação.
 
 ```JSON
@@ -204,12 +217,14 @@ Armazena o perfil do usuário e informações de apresentação.
 ```
 
 Implementação atual no backend:
-* Coleção utilizada: `user_profiles`
-* Vínculo com autenticação por `authId`.
-* Método de acesso principal: busca por `authId` ativo (`findByAuthId`).
-* Criação do perfil ocorre automaticamente no registro e pode ser feita também por rota protegida.
+
+- Coleção utilizada: `user_profiles`
+- Vínculo com autenticação por `authId`.
+- Método de acesso principal: busca por `authId` ativo (`findByAuthId`).
+- Criação do perfil ocorre automaticamente no registro e pode ser feita também por rota protegida.
 
 ### group_db
+
 Armazena a estrutura do grupo e o saldo consolidade de cada membro.
 
 ```Json
@@ -230,7 +245,7 @@ Armazena a estrutura do grupo e o saldo consolidade de cada membro.
     "members": [
         {
             "userId": "ObjectId", // Referencia ao ID do Auth
-            "name": "String", 
+            "name": "String",
             "balance": {
               "type": "number",
               "default": 0
@@ -243,9 +258,12 @@ Armazena a estrutura do grupo e o saldo consolidade de cada membro.
 ```
 
 Status de implementação:
-* Banco e URI já previstos em configuração de ambiente.
-* Modelos e rotas ainda não publicados nesta versão do backend.
+
+- Banco e URI já previstos em configuração de ambiente.
+- Modelos e rotas ainda não publicados nesta versão do backend.
+
 ### expense_db
+
 Armazena as despesas de cada grupo disponíveis no sistema.
 
 ```Json
@@ -282,40 +300,47 @@ Armazena as despesas de cada grupo disponíveis no sistema.
 ```
 
 Status de implementação:
-* Banco e URI já previstos em configuração de ambiente.
-* Modelos e rotas ainda não publicados nesta versão do backend.
+
+- Banco e URI já previstos em configuração de ambiente.
+- Modelos e rotas ainda não publicados nesta versão do backend.
 
 ### Funcionalidades NoSQL implementadas (armazenamento e recuperação)
 
 No estado atual, as operações NoSQL em produção no backend são:
 
 1. **Cadastro de credenciais**
-  * Inserção de documento em `auth_credentials` com validações e hash da senha.
+
+- Inserção de documento em `auth_credentials` com validações e hash da senha.
 
 2. **Cadastro de perfil**
-  * Inserção de documento em `user_profiles` vinculado por `authId`.
+
+- Inserção de documento em `user_profiles` vinculado por `authId`.
 
 3. **Autenticação de usuário**
-  * Consulta em `auth_credentials` por `email` e `isActive`.
-  * Atualização de `lastLogin` após sucesso.
+
+- Consulta em `auth_credentials` por `email` e `isActive`.
+- Atualização de `lastLogin` após sucesso.
 
 4. **Recuperação de perfil autenticado**
-  * Consulta em `user_profiles` por `authId` obtido do JWT.
+
+- Consulta em `user_profiles` por `authId` obtido do JWT.
 
 5. **Atualização de perfil**
-  * Persistência de alterações de `name` e `avatarUrl` em `user_profiles`.
+
+- Persistência de alterações de `name` e `avatarUrl` em `user_profiles`.
 
 ### Justificativas de escolhas NoSQL no contexto do projeto
 
-* **Flexibilidade de esquema:** os domínios (auth, users, groups, expenses) possuem evolução diferente; documentos permitem adaptação rápida.
-* **Escala horizontal natural:** MongoDB Atlas facilita crescimento por volume de usuários e transações.
-* **Produtividade com JSON/BSON:** reduz transformação de dados entre API e persistência.
-* **Isolamento de falhas por domínio:** problemas em um banco não bloqueiam necessariamente todos os serviços.
-* **Aderência ao cenário distribuído:** combina com estratégia de microsserviços e comunicação por API.
+- **Flexibilidade de esquema:** os domínios (auth, users, groups, expenses) possuem evolução diferente; documentos permitem adaptação rápida.
+- **Escala horizontal natural:** MongoDB Atlas facilita crescimento por volume de usuários e transações.
+- **Produtividade com JSON/BSON:** reduz transformação de dados entre API e persistência.
+- **Isolamento de falhas por domínio:** problemas em um banco não bloqueiam necessariamente todos os serviços.
+- **Aderência ao cenário distribuído:** combina com estratégia de microsserviços e comunicação por API.
 
 <br>
 
 ---
+
 ### Boas Práticas
 
 Validação de Dados: Implementar validação de esquema e restrições na aplicação para garantir a consistência dos dados.
@@ -328,7 +353,6 @@ Escalabilidade: Considere estratégias de sharding e replicação para lidar com
 
 Na etapa 2, em máterial de apoio, estão disponíveis vídeos com a configuração do mongo.db e a utilização com Bson no C#
 
-
 ## Modelo ER (Somente se tiver mais de um banco e outro for relacional)
 
 O Modelo ER representa através de um diagrama como as entidades (coisas, objetos) se relacionam entre si na aplicação interativa.
@@ -340,7 +364,7 @@ As referências abaixo irão auxiliá-lo na geração do artefato “Modelo ER�
 ## Esquema Relacional (Somente se tiver mais de um banco e outro for relacional)
 
 O Esquema Relacional corresponde à representação dos dados em tabelas juntamente com as restrições de integridade e chave primária.
- 
+
 As referências abaixo irão auxiliá-lo na geração do artefato “Esquema Relacional”.
 
 > - [Criando um modelo relacional - Documentação da IBM](https://www.ibm.com/docs/pt-br/cognos-analytics/10.2.2?topic=designer-creating-relational-model)
@@ -353,13 +377,13 @@ Entregar um arquivo banco.sql contendo os scripts de criação das tabelas do ba
 
 As tecnologias adotadas para a arquitetura atual são:
 
-* **Node.js + Express 5:** implementação da API REST.
-* **MongoDB Atlas + Mongoose:** persistência NoSQL por domínio.
-* **JWT + bcryptjs:** autenticação e segurança de credenciais.
-* **dotenv:** configuração por variáveis de ambiente.
-* **CORS:** controle de acesso entre origens no consumo da API.
-* **Postman:** validação e testes de rotas REST.
-* **ESLint + Prettier + Nodemon:** qualidade de código e produtividade no desenvolvimento.
+- **Node.js + Express 5:** implementação da API REST.
+- **MongoDB Atlas + Mongoose:** persistência NoSQL por domínio.
+- **JWT + bcryptjs:** autenticação e segurança de credenciais.
+- **dotenv:** configuração por variáveis de ambiente.
+- **CORS:** controle de acesso entre origens no consumo da API.
+- **Postman:** validação e testes de rotas REST.
+- **ESLint + Prettier + Nodemon:** qualidade de código e produtividade no desenvolvimento.
 
 Diagrama de relação entre tecnologias:
 
@@ -379,10 +403,11 @@ flowchart TD
 No ambiente de desenvolvimento e validação da disciplina, a API está sendo executada localmente com `nodemon` e conectada ao MongoDB Atlas em nuvem.
 
 Estratégia prevista para publicação:
-* Containerização da API.
-* Deploy em serviço de nuvem com variáveis de ambiente seguras.
-* Banco de dados mantido no MongoDB Atlas com controle de acesso por IP/usuário.
-* Pipeline de CI para lint e validações antes de promoção para produção.
+
+- Containerização da API.
+- Deploy em serviço de nuvem com variáveis de ambiente seguras.
+- Banco de dados mantido no MongoDB Atlas com controle de acesso por IP/usuário.
+- Pipeline de CI para lint e validações antes de promoção para produção.
 
 > **Links Úteis**:
 >

@@ -10,16 +10,16 @@ O projeto consiste no desenvolvimento de uma aplicação distribuída voltada pa
 
 ## Integrantes
 
-* Samuel Filipe dos reis
-* Louise Dias Santos
-* Heitor Oliveiro Soares Domingos
-* Vinícius Nogueira
-* Rondinelli Silva de Oliveira
-* Icaro de Jesus Souza e Cota
+- Samuel Filipe dos reis
+- Louise Dias Santos
+- Heitor Oliveiro Soares Domingos
+- Vinícius Nogueira
+- Rondinelli Silva de Oliveira
+- Icaro de Jesus Souza e Cota
 
 ## Orientador
 
-* Leonardo Vilela Cardoso
+- Leonardo Vilela Cardoso
 
 ## Instruções de utilização
 

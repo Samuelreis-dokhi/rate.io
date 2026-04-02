@@ -16,7 +16,7 @@ Coletar e documentar todos os requisitos necessários para o desenvolvimento do 
 
 - **Reunião com stakeholders**: Realizar reuniões com as partes interessadas para entender as necessidades e expectativas (professor).
 - **Documentação de contexto da aplicação**: Documentar o contexto da aplicação, abordando o problema que ela resolve, assim como a solução proposta, a justificativa e os seus objetivos (específicos e gerais).
-- **Especificações do projeto**: Conhecer o Público Alvo e os Perfis de Usuário para que seja possível desenvolver as Histórias de usuário. Dessa forma, é possível documentar os requisitos funcionais e não funcionais do projeto, assim como suas restrições. 
+- **Especificações do projeto**: Conhecer o Público Alvo e os Perfis de Usuário para que seja possível desenvolver as Histórias de usuário. Dessa forma, é possível documentar os requisitos funcionais e não funcionais do projeto, assim como suas restrições.
 - **Definição da arquitetura e modelagem de dados**: Foco no desenvolvimento de um sistema distribuído. Criar o diagrama que descreve a arquitetura distribuída do projeto e modelar o banco de dados, com suas entidades e esquemas.
 - **Gestão de projetos e planejamento geral**: Documentar todo o planejamento do projeto, detalhando a gestão de custos, pessoal, recursos e tempo.
 
@@ -138,6 +138,3 @@ Garantir que a solução desenvolvida esteja pronta para produção e apresentar
 - **Reunião de revisão**: Ao final de cada etapa para revisar o progresso e ajustar o plano.
 
 ---
-
-
-

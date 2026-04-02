@@ -21,27 +21,27 @@ Para começar a escrever testes de sistema em um projeto backend utilizando C#, 
 
 2. **Crie um projeto de testes de sistema**: No terminal, navegue até o diretório do seu projeto e execute o seguinte comando para criar um projeto de testes:
 
-    ```bash
-    dotnet new xunit -o tests
-    ```
+   ```bash
+   dotnet new xunit -o tests
+   ```
 
 3. **Adicione uma referência ao seu projeto principal**: No diretório do projeto de testes, adicione uma referência ao seu projeto principal:
 
-    ```bash
-    dotnet add reference ../src/MyProject.csproj
-    ```
+   ```bash
+   dotnet add reference ../src/MyProject.csproj
+   ```
 
 4. **Configure o ambiente de teste**: Isso pode incluir a configuração de servidores, bancos de dados, e outros serviços necessários para que o sistema funcione como um todo.
 
 5. **Organize sua estrutura de diretórios**: Uma estrutura comum de projeto é a seguinte:
 
-    ```
-    MyProject/
-    ├── src/
-    │   └── MyProject.cs
-    └── tests/
-        └── MyProject.SystemTests.cs
-    ```
+   ```
+   MyProject/
+   ├── src/
+   │   └── MyProject.cs
+   └── tests/
+       └── MyProject.SystemTests.cs
+   ```
 
 ## Exemplo de Teste de Sistema
 
@@ -85,3 +85,4 @@ namespace MyProject
         public string Email { get; set; }
     }
 }
+```

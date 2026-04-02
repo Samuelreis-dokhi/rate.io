@@ -20,27 +20,27 @@ Para começar a escrever testes de integração em um projeto backend utilizando
 
 2. **Crie um projeto de testes**: No terminal, navegue até o diretório do seu projeto e execute o seguinte comando para criar um projeto de testes usando xUnit:
 
-    ```bash
-    dotnet new xunit -o tests
-    ```
+   ```bash
+   dotnet new xunit -o tests
+   ```
 
 3. **Adicione uma referência ao seu projeto principal**: No diretório do projeto de testes, adicione uma referência ao seu projeto principal:
 
-    ```bash
-    dotnet add reference ../src/MyProject.csproj
-    ```
+   ```bash
+   dotnet add reference ../src/MyProject.csproj
+   ```
 
 4. **Configure um banco de dados para testes**: Se seu projeto interage com um banco de dados, considere usar um banco de dados em memória (como o SQLite in-memory) ou configurar um ambiente de banco de dados separado para os testes.
 
 5. **Organize sua estrutura de diretórios**: Uma estrutura comum de projeto é a seguinte:
 
-    ```
-    MyProject/
-    ├── src/
-    │   └── MyProject.cs
-    └── tests/
-        └── MyProject.IntegrationTests.cs
-    ```
+   ```
+   MyProject/
+   ├── src/
+   │   └── MyProject.cs
+   └── tests/
+       └── MyProject.IntegrationTests.cs
+   ```
 
 ## Exemplo de Teste de Integração
 
@@ -89,3 +89,4 @@ namespace MyProject
         }
     }
 }
+```
