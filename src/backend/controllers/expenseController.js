@@ -39,14 +39,15 @@ const addExpense = async (req, res) => {
       _id: groupId,
       members: [
         { user: 'prima', balance: 0 },
-        { user: 'segundo', balance: 0 }
-      ]
+        { user: 'segundo', balance: 0 },
+      ],
     };
 
     if (!group) return res.status(404).json({ message: 'Grupo não encontrado' });
 
-    const isPaidByMember = group.members.some(m => m.user.toString() === paidBy);
-    if (!isPaidByMember) return res.status(400).json({ message: 'O usuário que pagou deve ser um membro do grupo' });
+    const isPaidByMember = group.members.some((m) => m.user.toString() === paidBy);
+    if (!isPaidByMember)
+      return res.status(400).json({ message: 'O usuário que pagou deve ser um membro do grupo' });
 
     const distributions = calculateSplit(amount, splitType, splitDetails, group.members);
 
@@ -57,22 +58,22 @@ const addExpense = async (req, res) => {
       paidBy,
       splitType,
       splitDetails,
-      receiptImage
+      receiptImage,
     });
 
-    group.members.forEach(member => {
+    group.members.forEach((member) => {
       const memberId = member.user.toString();
       if (memberId === paidBy) {
         member.balance += amount - distributions[memberId];
-      } 
+      }
       if (distributions[memberId]) {
         member.balance -= distributions[memberId];
       }
-  });
+    });
 
-  //await group.save();
-  
-  rest.status(201).json({ message: 'Despesa adicionada com sucesso', expense });
+    //await group.save();
+
+    res.status(201).json({ message: 'Despesa adicionada com sucesso', expense });
   } catch (error) {
     console.error('Erro ao adicionar despesa:', error);
     res.status(500).json({ message: 'Erro ao adicionar despesa', error: error.message });
