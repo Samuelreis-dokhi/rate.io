@@ -1,75 +1,56 @@
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
-dotenv.config();
+const requiredDatabases = ['auth', 'user', 'expense', 'group'];
+const connections = {};
 
-const CONNECTION_TIMEOUT_MS = 10000;
-
-let registry;
-
-const getOrCreateRegistry = () => {
-  if (registry) return registry;
-
-  const requiredVars = ['MONGO_URI_AUTH', 'MONGO_URI_USERS'];
-  for (const envKey of requiredVars) {
-    if (!process.env[envKey]) {
-      throw new Error(`Variável de ambiente obrigatória ausente: ${envKey}`);
-    }
-  }
-
-  const auth = mongoose.createConnection(process.env.MONGO_URI_AUTH, {
-    serverSelectionTimeoutMS: CONNECTION_TIMEOUT_MS,
-  });
-
-  const user = mongoose.createConnection(process.env.MONGO_URI_USERS, {
-    serverSelectionTimeoutMS: CONNECTION_TIMEOUT_MS,
-  });
-
-  const group = process.env.MONGO_URI_GROUPS
-    ? mongoose.createConnection(process.env.MONGO_URI_GROUPS, {
-        serverSelectionTimeoutMS: CONNECTION_TIMEOUT_MS,
-      })
-    : null;
-
-  const expense = process.env.MONGO_URI_EXPENSES
-    ? mongoose.createConnection(process.env.MONGO_URI_EXPENSES, {
-        serverSelectionTimeoutMS: CONNECTION_TIMEOUT_MS,
-      })
-    : null;
-
-  registry = {
-    auth,
-    user,
-    group,
-    expense,
+const getMongoUris = () => {
+  const singleUri = process.env.MONGO_URI;
+  return {
+    auth: process.env.MONGO_URI_AUTH || singleUri,
+    user: process.env.MONGO_URI_USERS || singleUri,
+    expense: process.env.MONGO_URI_EXPENSES,
+    group: process.env.MONGO_URI_GROUPS,
   };
-
-  return registry;
 };
 
-const connectDatabases = async () => {
-  const connections = getOrCreateRegistry();
+const connectDB = async () => {
+  const mongoUris = getMongoUris();
 
-  await connections.auth.asPromise();
-  console.log('MongoDB conectado: auth_db');
+  for (const dbName of Object.keys(mongoUris)) {
+    const uri = mongoUris[dbName];
 
-  await connections.user.asPromise();
-  console.log('MongoDB conectado: user_db');
+    if (!uri) {
+      if (requiredDatabases.includes(dbName)) {
+        throw new Error(
+          `URI para o banco de dados "${dbName}" não configurada. Variável de ambiente esperada: MONGO_URI_${dbName.toUpperCase()}`
+        );
+      }
+      continue; // Pula bancos de dados opcionais
+    }
+    if (connections[dbName] && connections[dbName].readyState === 1) {
+      continue; // Já conectado
+    }
 
-  if (connections.group) {
-    await connections.group.asPromise();
-    console.log('MongoDB conectado: group_db');
-  }
+    const connection = mongoose.createConnection(uri, {
+      maxPoolSize: 10,
+    });
 
-  if (connections.expense) {
-    await connections.expense.asPromise();
-    console.log('MongoDB conectado: expense_db');
+    await connection.asPromise();
+    connections[dbName] = connection;
+    console.log(`MongoDB conectado: ${dbName}`);
   }
 };
-
-const getConnections = () => getOrCreateRegistry();
+const getConnections = (dbName) => {
+  const connection = connections[dbName];
+  if (!connection) {
+    throw new Error(
+      `Conexão para o banco de dados "${dbName}" não encontrada. Verifique a configuração e conexão.`
+    );
+  }
+  return connection;
+};
 
 module.exports = {
-  connectDatabases,
+  connectDB,
   getConnections,
 };
