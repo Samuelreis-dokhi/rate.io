@@ -57,13 +57,29 @@ O diagrama abaixo representa o fluxo principal atualmente implementado (Auth + U
 ## Documentação da Implementação da Web API REST
 
 ### Stack de implementação
+* Runtime: Node.js 18+
+* Framework HTTP: Express 5
+* Persistência: Mongoose + MongoDB Atlas
+* Segurança: bcryptjs (hash) + jsonwebtoken (JWT)
+* Configuração: dotenv
+* Qualidade: ESLint + Prettier
+* Padronização de ambiente: Docker + Docker Compose
 
-- Runtime: Node.js 18+
-- Framework HTTP: Express 5
-- Persistência: Mongoose + MongoDB Atlas
-- Segurança: bcryptjs (hash) + jsonwebtoken (JWT)
-- Configuração: dotenv
-- Qualidade: ESLint + Prettier
+### Execução e padronização de ambiente (Docker)
+
+A execução de desenvolvimento do backend está padronizada com containerização, com os seguintes artefatos:
+
+1. `docker-compose.yml` na raiz do repositório (orquestração do ambiente local).
+2. `src/backend/Dockerfile` com multi-stage (`development` e `production`).
+3. `src/backend/.dockerignore` para reduzir contexto de build e evitar inclusão de segredos.
+4. `src/backend/.env.example` para onboarding seguro sem credenciais reais.
+
+Fluxo padrão no ambiente local:
+
+1. Criar `src/backend/.env` a partir de `.env.example`.
+2. Preencher variáveis obrigatórias de conexão (`MONGO_URI_AUTH`, `MONGO_URI_USERS`) e `JWT_SECRET`.
+3. Subir com `docker compose up --build`.
+4. Validar disponibilidade em `/health`.
 
 ### Configurações de ambiente
 
@@ -377,19 +393,21 @@ Entregar um arquivo banco.sql contendo os scripts de criação das tabelas do ba
 
 As tecnologias adotadas para a arquitetura atual são:
 
-- **Node.js + Express 5:** implementação da API REST.
-- **MongoDB Atlas + Mongoose:** persistência NoSQL por domínio.
-- **JWT + bcryptjs:** autenticação e segurança de credenciais.
-- **dotenv:** configuração por variáveis de ambiente.
-- **CORS:** controle de acesso entre origens no consumo da API.
-- **Postman:** validação e testes de rotas REST.
-- **ESLint + Prettier + Nodemon:** qualidade de código e produtividade no desenvolvimento.
+* **Node.js + Express 5:** implementação da API REST.
+* **MongoDB Atlas + Mongoose:** persistência NoSQL por domínio.
+* **JWT + bcryptjs:** autenticação e segurança de credenciais.
+* **dotenv:** configuração por variáveis de ambiente.
+* **Docker + Docker Compose:** padronização e execução local do backend.
+* **CORS:** controle de acesso entre origens no consumo da API.
+* **Postman:** validação e testes de rotas REST.
+* **ESLint + Prettier + Nodemon:** qualidade de código e produtividade no desenvolvimento.
 
 Diagrama de relação entre tecnologias:
 
 ```mermaid
 flowchart TD
   FE[React Web / React Native] --> API[Express API]
+  DKR[Docker Compose + Dockerfile] --> API
   QA[Postman] --> API
   API --> SEC[JWT + bcryptjs]
   API --> ODM[Mongoose]
@@ -400,7 +418,7 @@ flowchart TD
 
 ## Hospedagem
 
-No ambiente de desenvolvimento e validação da disciplina, a API está sendo executada localmente com `nodemon` e conectada ao MongoDB Atlas em nuvem.
+No ambiente de desenvolvimento e validação da disciplina, a API é executada localmente em container com Docker Compose e conectada ao MongoDB Atlas em nuvem. O fluxo com `nodemon` local permanece disponível como alternativa para depuração fora do container.
 
 Estratégia prevista para publicação:
 

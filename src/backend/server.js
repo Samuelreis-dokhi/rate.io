@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const { connectDatabases } = require('./config/database');
 
+const expenseRoutes = require('./routes/expenseRoutes');
+
 dotenv.config();
 
 const app = express();
@@ -13,6 +15,12 @@ app.use(express.json());
 // Rota de teste inicial
 app.get('/', (req, res) => {
   res.send('API rodando...');
+});
+
+app.use('/api/groups', expenseRoutes);
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
