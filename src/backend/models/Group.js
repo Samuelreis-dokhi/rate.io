@@ -1,22 +1,23 @@
 const mongoose = require('mongoose');
-const { GroupCategory } = require('../enums/groupCategory');
+const { getConnections } = require('../config/database');
 
+/* Vamos separar no mesmo model, membros e grupos */
 const memberSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
       required: true,
     },
 
-    name: {
+    role: {
       type: String, //aparentemente assim pegaremos o cache do nome, o que é melhor para performance
-      required: [true, 'Nome do membro é obrigatório'],
+      enum: ['admin', 'member'],
+      default: 'member',
     },
 
-    balance: {
-      type: Number,
-      default: 0,
+    joinedAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   { _id: false } // não criar um _id para cada membro, pois eles já terão o userId como referência única
@@ -29,48 +30,37 @@ const groupSchema = new mongoose.Schema(
       required: [true, 'Nome é obrigatório'],
       trim: true,
       minlength: [2, 'Nome deve ter no mínimo 2 caracteres'],
+      maxlength: [100, 'Nome deve ter no máximo 100 caracteres'],
     },
 
-    icon: {
+    description: {
       type: String,
-      default: null,
+      trim: true,
+      maxlength: [300, 'Descrição deve ter no máximo 300 caracteres'],
     },
 
-    category: {
-      type: String,
-      enum: Object.values(GroupCategory),
-      required: [true, 'Categoria é obrigatória'],
-    },
-
-    adminId: {
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
       required: true,
     },
 
     members: {
       type: [memberSchema],
-      // inserir validação para garantir que o admin seja sempre um membro do grupo
-      // idealmente validar no service e avaliar proteção adicional no schema
-      // algo do tipo:
-      /*  validate: {
-      validator: function (members) {
-        if (!this.adminId) return true;
-
-        return members.some(
-          (m) => m.userId.toString() === this.adminId.toString()
-        );
-      },
-      message: 'Admin deve estar entre os membros',
-      */
+      default: [],
     },
 
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Group', groupSchema);
+groupSchema.index({ 'members.userId': 1 }); // Índice para otimizar consultas por membro
+
+/* Aqui nós definimos a conexão e o modelo do grupo */
+const groupConnection = getConnections('group');
+const Group = groupConnection.model.Group || groupConnection.model('Group', groupSchema, 'groups');
+
+module.exports = Group;
