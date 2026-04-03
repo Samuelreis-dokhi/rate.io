@@ -18,7 +18,7 @@ const balanceService = require('../services/balanceService');
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const isGroupMember = (group, userId) => {
-  return group.members.some((member) => member.user.toString() === userId.toString());
+  return group.members.some((member) => member.userId.toString() === userId.toString());
 };
 
 const getActiveGroupOrNull = async (groupId) => {
