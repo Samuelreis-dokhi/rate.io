@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { getConnection } = require('../config/database');
+const { getConnections } = require('../config/database');
 
 const splitDetailSchema = new mongoose.Schema(
   {
@@ -85,7 +85,7 @@ const expenseSchema = new mongoose.Schema(
 
 expenseSchema.index({ groupId: 1, createdAt: -1 });
 
-const expenseConnection = getConnection('expense');
+const expenseConnection = getConnections('expense');
 const Expense =
   expenseConnection.models.Expense || expenseConnection.model('Expense', expenseSchema);
 

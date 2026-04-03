@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { getConnection } = require('../config/database');
+const { getConnections } = require('../config/database');
 
 const activitySchema = new mongoose.Schema(
   {
@@ -44,7 +44,7 @@ const activitySchema = new mongoose.Schema(
 
 activitySchema.index({ groupId: 1, createdAt: -1 });
 
-const groupConnection = getConnection('groups');
+const groupConnection = getConnections('group');
 const Activity =
   groupConnection.models.Activity || groupConnection.model('Activity', activitySchema);
 
