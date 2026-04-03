@@ -87,7 +87,7 @@ exports.createExpense = async (req, res) => {
     let calculatedSplits;
 
     try {
-      calculatedSplits = splitService.calculateSplits(splitType, normalizedAmount, splitsData);
+      calculatedSplits = splitService.calculateSplit(splitType, normalizedAmount, splitsData);
     } catch (error) {
       return res.status(400).json({ message: `Erro na divisão da despesa: ${error.message}` });
     }
