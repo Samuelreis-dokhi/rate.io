@@ -1,161 +1,245 @@
+const mongoose = require('mongoose');
 const Expense = require('../models/Expense');
-// const Group = require('../models/Group');
+const Group = require('../models/Group');
+const User = require('../models/User');
+const Activity = require('../models/Activity');
+const splitService = require('../services/splitService');
+const balanceService = require('../services/balanceService');
 
-const normalizeSplitType = (splitType) => {
-  const aliases = {
-    equal: 'igual',
-    percentage: 'porcentagem',
-    exact: 'exato',
-    igual: 'igual',
-    porcentagem: 'porcentagem',
-    exato: 'exato',
-  };
+/**
+ * First things first: Precisamos validar os dados de entrada, especialmente o tipo de divisão e os detalhes da divisão.
+ * Aqui, nos vamos lidar com:
+ * - Criar novas despesas
+ * - Listar despesas de um grupo
+ * - Marcar despesas como pagas
+ * - Listar balanços de um grupo
+ */
 
-  return aliases[String(splitType || '').toLowerCase()] || null;
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
+const isGroupMember = (group, userId) => {
+  return group.members.some((member) => member.user.toString() === userId.toString());
 };
 
-const calculateSplit = (amount, splitType, splitDetails, members) => {
-  const distributions = {};
-  let totalCheck = 0;
-  const totalAmount = Number(amount);
-
-  if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
-    throw new Error('Valor da despesa inválido');
-  }
-
-  if (!Array.isArray(members) || members.length === 0) {
-    throw new Error('Grupo sem membros para dividir a despesa');
-  }
-
-  if (splitType === 'igual') {
-    const perPerson = totalAmount / members.length;
-    members.forEach((member) => {
-      distributions[member.user.toString()] = perPerson;
-    });
-  } else if (splitType === 'porcentagem') {
-    if (!Array.isArray(splitDetails) || splitDetails.length === 0) {
-      throw new Error('Detalhes da divisão são obrigatórios para porcentagem');
-    }
-
-    let totalPercentage = 0;
-    splitDetails.forEach((detail) => {
-      const percentage = Number(detail.percentage || 0);
-      totalPercentage += percentage;
-      distributions[detail.userId.toString()] = totalAmount * (percentage / 100);
-    });
-
-    if (Math.abs(totalPercentage - 100) > 0.0001) {
-      throw new Error('A soma das porcentagens deve ser 100%');
-    }
-  } else if (splitType === 'exato') {
-    if (!Array.isArray(splitDetails) || splitDetails.length === 0) {
-      throw new Error('Detalhes da divisão são obrigatórios para divisão exata');
-    }
-
-    splitDetails.forEach((detail) => {
-      const splitAmount = Number(detail.amount || 0);
-      totalCheck += splitAmount;
-      distributions[detail.userId.toString()] = splitAmount;
-    });
-
-    if (Math.abs(totalCheck - totalAmount) > 0.0001) {
-      throw new Error('A soma dos valores exatos não batem com o total');
-    }
-  } else {
-    throw new Error('Tipo de divisão inválido');
-  }
-
-  return distributions;
+const getActiveGroupOrNull = async (groupId) => {
+  return Group.findOne({ _id: groupId, isActive: true });
 };
 
-const addExpense = async (req, res) => {
+// Vamos às funções:
+exports.createExpense = async (req, res) => {
+  const { groupId, description, amount, currency, paidBy, createdBy, splitType, splitsData } =
+    req.body;
+
   try {
-    const { groupId } = req.params;
-    const {
-      description,
-      amount,
-      paidByUserId,
-      splitType,
-      splitDetails = [],
-      receiptImage,
-    } = req.body;
-    const normalizedSplitType = normalizeSplitType(splitType);
-    const payerId = paidByUserId || req.user.id;
-
-    if (!description || !String(description).trim()) {
-      return res.status(400).json({ message: 'Descrição é obrigatória' });
+    if (
+      !groupId ||
+      !description ||
+      !amount ||
+      !paidBy ||
+      !createdBy ||
+      !splitType ||
+      !Array.isArray(splitsData)
+    ) {
+      return res.status(400).json({
+        message: 'Dados obrigatórios estão pendentes ou inválidos.',
+      });
     }
 
-    if (!normalizedSplitType) {
-      return res.status(400).json({ message: 'Tipo de divisão inválido' });
+    if (!splitService.isSupportedSplitType(splitType)) {
+      return res.status(400).json({
+        message: 'Tipo de divisão não suportado. Use "igual", "porcentagem" ou "exato".',
+      });
     }
 
-    if (!payerId) {
-      return res.status(400).json({ message: 'Usuário pagador não informado' });
+    const idsToCheck = [groupId, paidBy, createdBy, ...splitsData.map((split) => split.userId)];
+    const invalidId = idsToCheck.find((id) => !isValidObjectId(id));
+    if (invalidId) {
+      return res.status(400).json({ message: `ID inválido: ${invalidId}` });
     }
 
-    // Mock de grupo para viabilizar testes até o serviço de Groups estar implementado.
-    const uniqueMemberIds = new Set([payerId]);
-    splitDetails.forEach((detail) => {
-      if (detail?.userId) uniqueMemberIds.add(detail.userId);
-    });
+    const [group, payerUser] = await Promise.all([
+      getActiveGroupOrNull(groupId),
+      User.findById(paidBy),
+    ]);
 
-    //const group = await Group.findById(groupId);
-    const group = {
-      _id: groupId,
-      members: [...uniqueMemberIds].map((userId) => ({ user: String(userId), balance: 0 })),
-    };
+    if (!group) {
+      return res.status(404).json({ message: 'Grupo não encontrado ou inativo' });
+    }
+    if (!payerUser) {
+      return res.status(404).json({ message: 'Usuário pagador não encontrado' });
+    }
+    if (!isGroupMember(group, paidBy) || !isGroupMember(group, createdBy)) {
+      return res.status(403).json({ message: 'Os usuários devem ser membros do grupo' });
+    }
 
-    if (!group) return res.status(404).json({ message: 'Grupo não encontrado' });
+    for (const split of splitsData) {
+      if (!split.userId) {
+        return res.status(400).json({ message: 'Cada divisão deve conter um userId' });
+      }
+      if (!isGroupMember(group, split.userId)) {
+        return res.status(403).json({
+          message: `Usuário ${split.userId} na divisão não é membro do grupo`,
+        });
+      }
+    }
 
-    const isPaidByMember = group.members.some((m) => m.user.toString() === String(payerId));
-    if (!isPaidByMember)
-      return res.status(400).json({ message: 'O usuário que pagou deve ser um membro do grupo' });
+    const normalizedAmount = Number(amount);
+    let calculatedSplits;
 
-    const parsedSplitDetails = splitDetails.map((detail) => ({
-      userId: detail.userId,
-      amount: Number(detail.amount || 0),
-      percentage: Number(detail.percentage || 0),
-      isPaid: Boolean(detail.isPaid || false),
-      paidAt: detail.paidAt || null,
-    }));
-
-    const distributions = calculateSplit(
-      Number(amount),
-      normalizedSplitType,
-      parsedSplitDetails,
-      group.members
-    );
+    try {
+      calculatedSplits = splitService.calculateSplits(splitType, normalizedAmount, splitsData);
+    } catch (error) {
+      return res.status(400).json({ message: `Erro na divisão da despesa: ${error.message}` });
+    }
 
     const expense = await Expense.create({
-      group: groupId,
-      description: String(description).trim(),
-      amount: Number(amount),
-      paidByUserId: payerId,
-      splitType: normalizedSplitType,
-      splitDetails: parsedSplitDetails,
-      receiptImage,
+      groupId,
+      description,
+      amount: normalizedAmount,
+      currency: currency || 'BRL',
+      paidBy,
+      createdBy,
+      splitType,
+      splits: calculatedSplits.map((split) => ({
+        userId: split.userId,
+        amount: Number(split.amount),
+        status: split.userId === paidBy ? 'pago' : 'pendente',
+        paidAt: split.userId === paidBy ? new Date() : null,
+      })),
     });
 
-    group.members.forEach((member) => {
-      const memberId = member.user.toString();
-      if (memberId === String(payerId)) member.balance += Number(amount);
-      if (distributions[memberId]) {
-        member.balance -= distributions[memberId];
-      }
+    await Activity.create({
+      groupId,
+      actorUserId: createdBy,
+      type: 'EXPENSE_CREATED',
+      message: `${payerUser.name} adicionou uma despesa de ${normalizedAmount} ${currency || 'BRL'}: ${description}`,
+      metadata: {
+        expenseId: expense._id,
+        amount: normalizedAmount,
+        currency: currency || 'BRL',
+        splitType,
+      },
     });
 
-    //await group.save();
-
-    res.status(201).json({
-      message: 'Despesa adicionada com sucesso',
-      expense,
-      distributions,
-      mockGroupBalances: group.members,
-    });
+    return res.status(201).json({ message: 'Despesa criada com sucesso', expense });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao adicionar despesa', error: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { addExpense };
+exports.getGroupExpenses = async (req, res) => {
+  const { groupId } = req.params;
+  const { userId } = req.query;
+
+  try {
+    if (!isValidObjectId(groupId) || !isValidObjectId(userId)) {
+      return res.status(400).json({ message: 'IDs inválidos' });
+    }
+
+    const group = await getActiveGroupOrNull(groupId);
+    if (!group) {
+      return res.status(404).json({ message: 'Grupo não encontrado ou inativo' });
+    }
+    if (!isGroupMember(group, userId)) {
+      return res.status(403).json({ message: 'Usuário não é membro do grupo' });
+    }
+
+    const expenses = await Expense.find({ groupId }).sort({ createdAt: -1 });
+
+    return res.status(200).json({ expenses });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * Aqui temos uma função para marcar uma parte da despesa como paga. Isso é útil para dividir o pagamento em etapas ou para permitir que os usuários confirmem que pagaram sua parte.
+ */
+exports.settleExpenseShare = async (req, res) => {
+  const { expenseId } = req.params;
+  const { userId, paidBy } = req.body;
+
+  try {
+    if (!isValidObjectId(expenseId) || !isValidObjectId(userId) || !isValidObjectId(paidBy)) {
+      return res.status(400).json({ message: 'IDs inválidos' });
+    }
+
+    const expense = await Expense.findById(expenseId);
+    if (!expense) {
+      return res.status(404).json({ message: 'Despesa não encontrada' });
+    }
+
+    const group = await getActiveGroupOrNull(expense.groupId);
+    if (!group) {
+      return res.status(404).json({ message: 'Grupo não encontrado ou inativo' });
+    }
+    if (!isGroupMember(group, userId) || !isGroupMember(group, paidBy)) {
+      return res.status(403).json({ message: 'Usuários devem ser membros do grupo' });
+    }
+
+    const splitIndex = expense.splits.findIndex(
+      (split) => split.userId.toString() === userId.toString()
+    );
+    if (splitIndex === -1) {
+      return res.status(404).json({ message: 'Divisão para o usuário não encontrada' });
+    }
+    if (expense.splits[splitIndex].status === 'pago') {
+      return res.status(400).json({ message: 'Essa parte da despesa já foi marcada como paga' });
+    }
+
+    const [settledUser, paidUser] = await Promise.all([
+      User.findById(expense.paidBy),
+      User.findById(userId),
+    ]);
+
+    expense.splits[splitIndex].status = 'pago';
+    expense.splits[splitIndex].paidAt = new Date();
+    await expense.save();
+
+    await Activity.create({
+      groupId: expense.groupId,
+      actorUserId: paidBy,
+      targetUserId: expense.paidBy,
+      type: 'EXPENSE_SETTLED',
+      message: `${paidUser.name} marcou sua parte da despesa "${expense.description}" como paga para ${settledUser.name}`,
+      metadata: {
+        expenseId: expense._id,
+        settledUserId: userId,
+        paidBy: expense.paidBy,
+        amount: expense.splits[splitIndex].amount,
+        currency: expense.currency,
+      },
+    });
+
+    return res.status(200).json({ message: 'Despesa marcada como paga com sucesso' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getGroupBalances = async (req, res) => {
+  const { groupId } = req.params;
+  const { userId } = req.query;
+
+  try {
+    if (!isValidObjectId(groupId) || !isValidObjectId(userId)) {
+      return res.status(400).json({ message: 'IDs inválidos' });
+    }
+
+    const group = await getActiveGroupOrNull(groupId);
+    if (!group) {
+      return res.status(404).json({ message: 'Grupo não encontrado ou inativo' });
+    }
+    if (!userId || !isValidObjectId(userId)) {
+      return res.status(400).json({ message: 'ID de usuário inválido' });
+    }
+    if (!isGroupMember(group, userId)) {
+      return res.status(403).json({ message: 'Usuário não é membro do grupo' });
+    }
+
+    const balance = await balanceService.getUserGroupBalance(userId, groupId);
+    return res.status(200).json({ balance });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
