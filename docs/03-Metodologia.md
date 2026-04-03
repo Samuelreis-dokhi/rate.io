@@ -1,4 +1,3 @@
-
 # Metodologia
 
 A equipe utiliza uma metodologia ágil baseada em Scrum e Kanban, organizando o trabalho em Sprints curtas para garantir entregas contínuas e melhor controle das atividades.
@@ -7,9 +6,8 @@ São utilizadas ferramentas como Visual Studio Code para desenvolvimento, GitHub
 
 Para padronizar o ambiente de desenvolvimento entre os integrantes, a equipe adotou Docker e Docker Compose como estratégia principal de execução local da API. Com isso, as versões de Node, dependências e processo de inicialização ficam consistentes para todos os membros.
 
-A comunicação da equipe acontece por meio do Discord, Microsoft Teams e Gather.
+O código será organizado em branches (main, develop, feature e bugfix), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
 
-O código é organizado em branches (main, develop, feature, bugfix e docs), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
 ## Relação de Ambientes de Trabalho
 
 Os artefatos do projeto são desenvolvidos utilizando diferentes plataformas, cada uma com uma função específica dentro do processo de desenvolvimento. O ambiente de desenvolvimento utiliza o Visual Studio Code para a criação do código, enquanto o versionamento é realizado no GitHub.
@@ -83,11 +81,11 @@ Com essa configuração, a equipe conseguiu manter controle sobre o desenvolvime
 Apresente a divisão de papéis entre os membros do grupo.
 
 Exemplificação: A equipe utiliza metodologias ágeis, tendo escolhido o Scrum como base para definição do processo de desenvolvimento. A equipe está organizada da seguinte maneira:
+
 - Scrum Master: Icaro e Heitor;
 - Product Owner: Rondinelli e samuel;
 - Equipe de Desenvolvimento: Samuel, Vinicius, Icaro, Heitor, Rondinelli, Louise;
 - Equipe de Design: Vinicius e Louise.
-
 
 ### Processo
 
@@ -129,6 +127,3 @@ Draw.io:
 Ferramenta usada para criar diagramas, como fluxogramas e modelos do sistema.
 Postman:
 Utilizado para testar APIs, verificando o funcionamento das requisições e respostas do sistema.
-
-
-

@@ -21,25 +21,25 @@ Para começar a escrever testes unitários em um projeto backend utilizando C#, 
 
 2. **Crie um projeto de testes**: No terminal, navegue até o diretório do seu projeto e execute o seguinte comando para criar um projeto de testes usando xUnit (um framework popular de testes unitários para .NET):
 
-    ```bash
-    dotnet new xunit -o tests
-    ```
+   ```bash
+   dotnet new xunit -o tests
+   ```
 
 3. **Adicione uma referência ao seu projeto principal**: No diretório do projeto de testes, adicione uma referência ao seu projeto principal:
 
-    ```bash
-    dotnet add reference ../src/MyProject.csproj
-    ```
+   ```bash
+   dotnet add reference ../src/MyProject.csproj
+   ```
 
 4. **Organize sua estrutura de diretórios**: Uma estrutura comum de projeto é a seguinte:
 
-    ```
-    MyProject/
-    ├── src/
-    │   └── MyProject.cs
-    └── tests/
-        └── MyProject.Tests.cs
-    ```
+   ```
+   MyProject/
+   ├── src/
+   │   └── MyProject.cs
+   └── tests/
+       └── MyProject.Tests.cs
+   ```
 
 ## Exemplo de Teste Unitário
 
@@ -58,3 +58,4 @@ namespace MyProject
         }
     }
 }
+```

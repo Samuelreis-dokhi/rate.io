@@ -163,10 +163,11 @@ Com o servidor ativo, testar endpoints de autenticacao.
 
 ```json
 {
-	"email": "seuemail@dominio.com",
-	"password": "123456"
+  "email": "seuemail@dominio.com",
+  "password": "123456"
 }
 ```
+
 ![Teste de registro com Postman](../pmv-ads-2026-1-e4-infra-t1-segunda-20h/docs/img/registroPostman.png)
 
 Resposta esperada:
@@ -183,10 +184,11 @@ Resposta esperada:
 
 ```json
 {
-	"email": "seuemail@dominio.com",
-	"password": "123456"
+  "email": "seuemail@dominio.com",
+  "password": "123456"
 }
 ```
+
 ![Teste de registro com Postman](../pmv-ads-2026-1-e4-infra-t1-segunda-20h/docs/img/loginPostman.png)
 
 Resposta esperada:
