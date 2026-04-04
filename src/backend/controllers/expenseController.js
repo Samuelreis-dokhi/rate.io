@@ -6,15 +6,6 @@ const Activity = require('../models/Activity');
 const splitService = require('../services/splitService');
 const balanceService = require('../services/balanceService');
 
-/**
- * First things first: Precisamos validar os dados de entrada, especialmente o tipo de divisão e os detalhes da divisão.
- * Aqui, nos vamos lidar com:
- * - Criar novas despesas
- * - Listar despesas de um grupo
- * - Marcar despesas como pagas
- * - Listar balanços de um grupo
- */
-
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const isGroupMember = (group, userId) => {
@@ -25,7 +16,6 @@ const getActiveGroupOrNull = async (groupId) => {
   return Group.findOne({ _id: groupId, isActive: true });
 };
 
-// Vamos às funções:
 exports.createExpense = async (req, res) => {
   const { groupId, description, amount, currency, paidBy, createdBy, splitType, splitsData } =
     req.body;
@@ -152,14 +142,15 @@ exports.getGroupExpenses = async (req, res) => {
   }
 };
 
-/**
- * Aqui temos uma função para marcar uma parte da despesa como paga. Isso é útil para dividir o pagamento em etapas ou para permitir que os usuários confirmem que pagaram sua parte.
- */
 exports.settleExpenseShare = async (req, res) => {
   const { expenseId } = req.params;
-  const { userId, paidBy } = req.body;
+  const { userId, paidBy } = req.body || {};
 
   try {
+    if (!userId || !paidBy) {
+      return res.status(400).json({ message: 'userId e paidBy são obrigatórios' });
+    }
+
     if (!isValidObjectId(expenseId) || !isValidObjectId(userId) || !isValidObjectId(paidBy)) {
       return res.status(400).json({ message: 'IDs inválidos' });
     }

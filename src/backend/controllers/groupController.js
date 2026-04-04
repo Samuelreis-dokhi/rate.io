@@ -28,7 +28,7 @@ const getActiveGroupOrNull = async (groupId) => {
 };
 
 exports.createGroup = async (req, res) => {
-  const { name, description, createdBy, membersIds } = req.body;
+  const { name, description, createdBy, membersIds = [] } = req.body;
   try {
     if (!name || !createdBy) {
       return res.status(400).json({ message: 'Nome e ID do criador são obrigatórios' });
@@ -44,6 +44,10 @@ exports.createGroup = async (req, res) => {
     }
 
     /* Valida os IDs dos membros */
+    if (!Array.isArray(membersIds)) {
+      return res.status(400).json({ message: 'membersIds deve ser um array' });
+    }
+
     const normalizedMemberIds = [...new Set(membersIds.map((id) => String(id)))]; // Remove duplicatas e garante que sejam strings
     const invalidMemberId = normalizedMemberIds.find((id) => !isValidObjectId(id));
     if (invalidMemberId) {
@@ -284,7 +288,7 @@ exports.deleteGroup = async (req, res) => {
 
     const openExpense = await Expense.findOne({
       groupId,
-      'splits.status': 'owed',
+      'splits.status': 'pendente',
     }).select('_id');
 
     if (openExpense) {

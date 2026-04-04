@@ -64,13 +64,13 @@ const getGroupBalances = async (groupId) => {
  */
 const getUserGroupBalance = async (userId, groupId) => {
   const balances = await getGroupBalances(groupId);
-  const userBalance = balances[userId || { paid: 0, owed: 0, netBalance: 0 }];
+  const userBalance = balances[userId] || { paid: 0, owed: 0, balance: 0 };
 
   const summary =
-    userBalance.balance.netBalance > 0
-      ? `${userBalance.netBalance} a receber`
-      : userBalance.netBalance < 0
-        ? `${Math.abs(userBalance.netBalance)} a pagar`
+    userBalance.balance > 0
+      ? `${userBalance.balance} a receber`
+      : userBalance.balance < 0
+        ? `${Math.abs(userBalance.balance)} a pagar`
         : 'Saldo equilibrado';
 
   return {
