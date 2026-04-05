@@ -168,39 +168,335 @@ npm run lint:fix   # tenta corrigir automaticamente
 npm run format     # formata com prettier
 ```
 
-### Teste inicial no Postman
+# Guia de Testes da API no Postman
 
-Com a API em execução, teste os endpoints básicos.
+## Visão Geral
+Este guia permite testar todo o fluxo da API na máquina de outra pessoa, do zero, com Postman:
+1. Autenticação
+2. Perfil
+3. Grupo
+4. Despesa
+5. Liquidação (settle)
+6. Balanço
+7. Atividades
+8. Exclusão de grupo
 
-1. Registro
-	- Método: POST
-	- URL: `http://localhost:3000/api/auth/register`
-	- Body JSON:
+---
 
+## Pré-requisitos
+1. Docker e Docker Compose instalados
+2. Postman instalado
+3. Projeto clonado
+4. Backend configurado com variáveis de ambiente
+
+---
+
+## Subindo o backend
+1. Entrar na pasta do backend
+2. Subir os serviços
+3. Validar saúde da API
+
+### Healthcheck
+Método: GET  
+URL: `http://localhost:3000/health`  
+Esperado: `200 OK` com status da API
+
+---
+
+## Configuração do Environment no Postman
+Crie um Environment com estas variáveis:
+1. `baseUrl` = `http://localhost:3000`
+2. `tokenUser1`
+3. `tokenUser2`
+4. `profileIdUser1`
+5. `profileIdUser2`
+6. `groupId`
+7. `expenseId`
+
+---
+
+## Regras importantes
+1. Rotas de users, groups e expenses exigem Bearer Token.
+2. Para groups/expenses, use ID de perfil do usuário (não authId do login).
+3. Requests com body devem estar em `raw -> JSON`.
+4. `update profile` é `PUT`, não `POST`.
+5. `settle` exige body com `userId` e `paidBy`.
+
+---
+
+## Fluxo completo (ordem recomendada)
+
+## 1) Registrar usuário 1
+Método: POST  
+URL: `{{baseUrl}}/api/auth/register`  
+Auth: sem token  
+Body:
 ```json
 {
-  "name": "Seu Nome",
-  "email": "seuemail@dominio.com",
+  "name": "User 1",
+  "email": "user1@puc.com",
   "password": "123456"
 }
 ```
+Esperado:
+1. 201
+2. Usuário criado
 
-2. Login
-	- Método: POST
-	- URL: `http://localhost:3000/api/auth/login`
-	- Body JSON:
-
+## 2) Login usuário 1
+Método: POST  
+URL: `{{baseUrl}}/api/auth/login`  
+Auth: sem token  
+Body:
 ```json
 {
-  "email": "seuemail@dominio.com",
+  "email": "user1@puc.com",
   "password": "123456"
 }
 ```
+Esperado:
+1. 200
+2. Salvar `token` em `tokenUser1`
 
-3. Perfil protegido
-	- Método: GET
-	- URL: `http://localhost:3000/api/users/profile`
-	- Header: `Authorization: Bearer <token>`
+## 3) Registrar usuário 2
+Método: POST  
+URL: `{{baseUrl}}/api/auth/register`  
+Auth: sem token  
+Body:
+```json
+{
+  "name": "User 2",
+  "email": "user2@puc.com",
+  "password": "123456"
+}
+```
+Esperado:
+1. 201
+
+## 4) Login usuário 2
+Método: POST  
+URL: `{{baseUrl}}/api/auth/login`  
+Auth: sem token  
+Body:
+```json
+{
+  "email": "user2@puc.com",
+  "password": "123456"
+}
+```
+Esperado:
+1. 200
+2. Salvar `token` em `tokenUser2`
+
+## 5) Buscar perfil usuário 1
+Método: GET  
+URL: `{{baseUrl}}/api/users/profile`  
+Auth: Bearer `{{tokenUser1}}`  
+Body: vazio  
+Esperado:
+1. 200
+2. Copiar `_id` para `profileIdUser1`
+
+## 6) Buscar perfil usuário 2
+Método: GET  
+URL: `{{baseUrl}}/api/users/profile`  
+Auth: Bearer `{{tokenUser2}}`  
+Body: vazio  
+Esperado:
+1. 200
+2. Copiar `_id` para `profileIdUser2`
+
+## 7) Atualizar perfil usuário 1
+Método: PUT  
+URL: `{{baseUrl}}/api/users/profile`  
+Auth: Bearer `{{tokenUser1}}`  
+Body:
+```json
+{
+  "name": "User 1 Updated",
+  "avatarUrl": "https://example.com/avatar.png"
+}
+```
+Esperado:
+1. 200
+2. Perfil atualizado
+
+## 8) Criar grupo
+Método: POST  
+URL: `{{baseUrl}}/api/groups`  
+Auth: Bearer `{{tokenUser1}}`  
+Body:
+```json
+{
+  "name": "Viagem Floripa",
+  "description": "Despesas da viagem",
+  "createdBy": "{{profileIdUser1}}",
+  "membersIds": []
+}
+```
+Esperado:
+1. 201
+2. Copiar `_id` para `groupId`
+
+## 9) Adicionar usuário 2 no grupo
+Método: POST  
+URL: `{{baseUrl}}/api/groups/{{groupId}}/members`  
+Auth: Bearer `{{tokenUser1}}`  
+Body:
+```json
+{
+  "userId": "{{profileIdUser2}}",
+  "addedBy": "{{profileIdUser1}}"
+}
+```
+Esperado:
+1. 200
+2. Membro incluído no array `members`
+
+## 10) Listar grupos do usuário 1
+Método: GET  
+URL: `{{baseUrl}}/api/groups/user/{{profileIdUser1}}`  
+Auth: Bearer `{{tokenUser1}}`  
+Body: vazio  
+Esperado:
+1. 200
+2. Lista com o grupo criado
+
+## 11) Criar despesa (split igual)
+Método: POST  
+URL: `{{baseUrl}}/api/expenses`  
+Auth: Bearer `{{tokenUser1}}`  
+Body:
+```json
+{
+  "groupId": "{{groupId}}",
+  "description": "Jantar",
+  "amount": 120,
+  "currency": "BRL",
+  "paidBy": "{{profileIdUser1}}",
+  "createdBy": "{{profileIdUser1}}",
+  "splitType": "igual",
+  "splitsData": [
+    { "userId": "{{profileIdUser1}}" },
+    { "userId": "{{profileIdUser2}}" }
+  ]
+}
+```
+Esperado:
+1. 201
+2. Copiar `expense._id` para `expenseId`
+
+## 12) Listar despesas do grupo
+Método: GET  
+URL: `{{baseUrl}}/api/expenses/group/{{groupId}}?userId={{profileIdUser1}}`  
+Auth: Bearer `{{tokenUser1}}`  
+Body: vazio  
+Esperado:
+1. 200
+2. Array `expenses` contendo a despesa
+
+## 13) Marcar parcela como paga (settle)
+Método: POST  
+URL: `{{baseUrl}}/api/expenses/{{expenseId}}/settle`  
+Auth: Bearer `{{tokenUser2}}`  
+Body:
+```json
+{
+  "userId": "{{profileIdUser2}}",
+  "paidBy": "{{profileIdUser1}}"
+}
+```
+Esperado:
+1. 200
+2. Mensagem de sucesso
+
+## 14) Consultar balanço do grupo
+Método: GET  
+URL: `{{baseUrl}}/api/expenses/group/{{groupId}}/balances?userId={{profileIdUser1}}`  
+Auth: Bearer `{{tokenUser1}}`  
+Body: vazio  
+Esperado:
+1. 200
+2. Objeto `balance` com totais e saldo líquido
+
+## 15) Listar atividades do grupo
+Método: GET  
+URL: `{{baseUrl}}/api/groups/{{groupId}}/activities?userId={{profileIdUser1}}&limit=50`  
+Auth: Bearer `{{tokenUser1}}`  
+Body: vazio  
+Esperado:
+1. 200
+2. Lista de atividades
+
+## 16) Deletar grupo
+Método: DELETE  
+URL: `{{baseUrl}}/api/groups/{{groupId}}`  
+Auth: Bearer `{{tokenUser1}}`  
+Body:
+```json
+{
+  "userId": "{{profileIdUser1}}"
+}
+```
+Esperado:
+1. 200 se não houver despesas pendentes
+2. 400 se houver despesas em aberto
+
+---
+
+## Testes de erro obrigatórios (documentação)
+1. Rota protegida sem token: esperado 401
+2. Token inválido ou expirado: esperado 401
+3. ObjectId inválido: esperado 400
+4. Usuário sem permissão: esperado 403
+5. Recurso inexistente: esperado 404
+
+---
+
+## Troubleshooting rápido
+
+## 401 Token ausente ou mal formatado
+1. Confirmar Authorization tipo Bearer Token
+2. Gerar token novo com login
+3. Não enviar token com espaços extras
+
+## 404 Endpoint não encontrado
+1. Conferir método HTTP
+2. Exemplo clássico: update profile usa PUT
+
+## 200 com lista vazia em grupos do usuário
+1. Pode ser válido
+2. Verificar se `userId` é de perfil
+3. Verificar se grupo está ativo e usuário é membro
+
+## 500 em add member
+1. Body deve estar em JSON
+2. Confirmar `groupId`, `userId`, `addedBy` válidos
+
+## 500 em create expense ou settle
+1. Validar IDs de perfil
+2. Garantir que usuários pertencem ao grupo
+3. Em settle, enviar `userId` e `paidBy` no body
+
+---
+
+## Entregáveis recomendados para o relatório
+1. Export da Collection do Postman
+2. Export do Environment
+3. Evidência de sucesso de cada rota
+4. Evidência de pelo menos um erro esperado por módulo
+5. Tabela final com método, endpoint, payload, esperado e obtido
+
+---
+
+## Observação final
+Se quiser padronizar para toda equipe, crie uma pasta por módulo na Collection:
+1. Auth
+2. Users
+3. Groups
+4. Expenses
+5. Validation Errors
+
+Isso facilita revisão, apresentação e reaproveitamento nos próximos testes.
 
 ### Boas práticas para o time
 
