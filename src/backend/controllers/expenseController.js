@@ -191,7 +191,7 @@ exports.settleExpenseShare = async (req, res) => {
       groupId: expense.groupId,
       actorUserId: paidBy,
       targetUserId: expense.paidBy,
-      type: 'EXPENSE_SETTLED',
+      type: 'PAYMENT_SETTLED',
       message: `${paidUser.name} marcou sua parte da despesa "${expense.description}" como paga para ${settledUser.name}`,
       metadata: {
         expenseId: expense._id,
