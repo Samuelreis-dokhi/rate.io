@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { getConnections } = require('../config/database');
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,7 +19,6 @@ const userSchema = new mongoose.Schema(
     },
     authId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Auth',
       required: [true, 'O ID de autenticação é obrigatório'],
     },
     avatarUrl: {
@@ -37,5 +37,9 @@ const userSchema = new mongoose.Schema(
 userSchema.statics.findByAuthId = function (authId) {
   return this.findOne({ authId, isActive: true });
 };
+// Esse método pode ir para o Controller
 
-module.exports = mongoose.model('User', userSchema, 'user_profiles');
+const userConnection = getConnections('user');
+const User = userConnection.models.User || userConnection.model('User', userSchema);
+
+module.exports = User;

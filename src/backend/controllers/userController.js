@@ -1,5 +1,10 @@
 const User = require('../models/User');
-const Auth = require('../models/Auth');
+
+// const buildDefaultName = (email) => {
+//   const localPart = String(email || '').split('@')[0] || '';
+//   const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
+//   return cleaned.length >= 2 ? cleaned : 'Usuario';
+// };
 
 exports.getProfile = async (req, res) => {
   try {
@@ -20,18 +25,30 @@ exports.getProfile = async (req, res) => {
 
 exports.createProfile = async (req, res) => {
   try {
-    const { name, email, authId } = req.body;
+    const { name, email } = req.body;
+    const normalizedName = String(name || '').trim();
+    const authId = req.user?.id;
+    const profileEmail = (email || req.user?.email || '').toLowerCase();
 
-    if (!name || !email || !authId) {
-      return res.status(400).json({ error: 'Nome, email e authId são obrigatórios' });
+    if (!authId || !profileEmail || !normalizedName) {
+      return res.status(400).json({ error: 'Nome é obrigatório para criação de perfil' });
     }
 
-    const existingProfile = await User.findOne({ email: email.toLowerCase() });
+    const existingProfileByAuth = await User.findByAuthId(authId);
+    if (existingProfileByAuth) {
+      return res.status(409).json({ error: 'Perfil já existe para este usuário' });
+    }
+
+    const existingProfile = await User.findOne({ email: profileEmail });
     if (existingProfile) {
       return res.status(409).json({ error: 'Perfil já existe para este email' });
     }
 
-    const user = await User.create({ name, email, authId });
+    const user = await User.create({
+      name: normalizedName,
+      email: profileEmail,
+      authId,
+    });
 
     res.status(201).json({
       message: 'Perfil criado com sucesso!',
