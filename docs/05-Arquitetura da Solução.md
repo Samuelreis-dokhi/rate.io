@@ -10,7 +10,7 @@ Abaixo, apresentamos o diagrama que ilustra a integração crítica entre os com
 
 ### Detalhamento dos Componentes
 
-A arquitetura do RATE.IO evoluiu para um modelo **orientado a API** com separação de responsabilidades por domínio e soberania de dados por banco. No estado atual, os módulos de **Auth** e **Users** já estão implementados e operacionais no backend; **Groups** e **Expenses** permanecem como próximos incrementos planejados.
+A arquitetura do RATE.IO evoluiu para um modelo **orientado a API** com separação de responsabilidades por domínio e soberania de dados por banco. No estado atual, os módulos de **Auth**, **Users**, **Groups** e **Expenses** já estão implementados e operacionais no backend.
 
 A solução está organizada em quatro camadas:
 
@@ -30,19 +30,19 @@ A solução está organizada em quatro camadas:
 
 - **Auth Service (implementado):** registro, login, hash de senha e emissão de token.
 - **Users Service (implementado):** criação automática e manutenção de perfil de usuário.
-- **Groups Service (planejado):** gestão de grupos, membros e saldos consolidados.
-- **Expenses Service (planejado):** gestão de despesas, divisão e histórico de atividades.
+- **Groups Service (implementado):** gestão de grupos, membros, histórico de atividades e remoção lógica.
+- **Expenses Service (implementado):** gestão de despesas, divisão, quitação de partes e cálculo de saldos.
 
 #### 4. Camada de Dados (MongoDB NoSQL)
 
 - **`auth_db` (implementado):** coleção `auth_credentials`.
 - **`user_db` (implementado):** coleção `user_profiles`.
-- **`group_db` (planejado):** coleção `groups`.
-- **`expense_db` (planejado):** coleções `expenses` e `activities`.
+- **`group_db` (implementado):** coleções `groups` e `activities`.
+- **`expense_db` (implementado):** coleção `expenses`.
 
 ### Arquitetura da Solução Baseada em API
 
-O diagrama abaixo representa o fluxo principal atualmente implementado (Auth + Users) e os domínios previstos para evolução.
+O diagrama abaixo representa o fluxo principal implementado na API, incluindo autenticação, usuários, grupos e despesas.
 
 ![Arquitetura baseada em API](img/APIarquitetura.png)
 
@@ -52,7 +52,7 @@ O diagrama abaixo representa o fluxo principal atualmente implementado (Auth + U
 - **Baixo acoplamento:** separação entre autenticação e perfil reduz impacto de mudanças entre módulos.
 - **Soberania de dados:** cada domínio mantém seu banco, reduzindo dependências de esquema entre contextos.
 - **Segurança:** JWT evita sessão em memória no servidor e simplifica a autenticação distribuída.
-- **Evolução incremental:** permite entregar Auth/Users primeiro e expandir para Groups/Expenses mantendo o mesmo contrato de API.
+- **Evolução incremental:** permitiu entregar Auth/Users primeiro e evoluir para Groups/Expenses mantendo o mesmo contrato de API.
 
 ## Documentação da Implementação da Web API REST
 
@@ -96,8 +96,7 @@ MONGO_URI_EXPENSES=<uri-expense_db>
 
 Regras relevantes do setup atual:
 
-- `MONGO_URI_AUTH` e `MONGO_URI_USERS` são obrigatórias para subir o backend.
-- `MONGO_URI_GROUPS` e `MONGO_URI_EXPENSES` são opcionais neste estágio.
+- `MONGO_URI_AUTH`, `MONGO_URI_USERS`, `MONGO_URI_GROUPS` e `MONGO_URI_EXPENSES` são obrigatórias para subir o backend.
 - O backend inicia apenas após validação e conexão com os bancos obrigatórios.
 - Em produção, falha de conexão encerra o processo para evitar API em estado inconsistente.
 
@@ -119,6 +118,40 @@ Regras relevantes do setup atual:
 - `avatarUrl` (opcional)
 - `isActive` (status lógico)
 - `createdAt` e `updatedAt` (timestamps automáticos)
+
+#### Modelo `Group` (`groups`)
+
+- `name` (obrigatório, trim, mínimo de 2 e máximo de 100 caracteres)
+- `description` (opcional, trim, máximo de 300 caracteres)
+- `createdBy` (ObjectId obrigatório do usuário criador)
+- `members` (array com `userId`, `role` = `admin|member` e `joinedAt`)
+- `isActive` (status lógico para remoção suave)
+- `createdAt` e `updatedAt` (timestamps automáticos)
+- Índice: `members.userId`
+
+#### Modelo `Expense` (`expenses`)
+
+- `groupId` (ObjectId obrigatório, indexado)
+- `description` (obrigatória, trim, máximo de 255 caracteres)
+- `amount` (obrigatório, mínimo de 0.01)
+- `currency` (default `BRL`, enum `BRL|USD`, uppercase)
+- `paidBy` (ObjectId obrigatório do pagador)
+- `createdBy` (ObjectId obrigatório de quem criou a despesa)
+- `splitType` (enum `igual|porcentagem|exato`, default `igual`)
+- `splits` (array obrigatório com `userId`, `amount`, `percentage`, `status`, `paidAt`)
+- `createdAt` e `updatedAt` (timestamps automáticos)
+- Índice composto: `{ groupId: 1, createdAt: -1 }`
+
+#### Modelo `Activity` (`activities`)
+
+- `groupId` (ObjectId obrigatório, indexado)
+- `actorUserId` (ObjectId obrigatório, indexado)
+- `targetUserId` (ObjectId opcional, indexado)
+- `type` (enum `GROUP_CREATED|MEMBER_ADDED|EXPENSE_CREATED|PAYMENT_SETTLED|GROUP_DELETED`)
+- `message` (obrigatória, trim, máximo de 300 caracteres)
+- `metadata` (Mixed, default `{}`)
+- `createdAt` e `updatedAt` (timestamps automáticos)
+- Índice composto: `{ groupId: 1, createdAt: -1 }`
 
 ### Autenticação e autorização
 
@@ -153,11 +186,21 @@ Tratamento de erro de autenticação:
 
 #### Rotas protegidas (`Authorization: Bearer <token>`)
 
-| Método | Rota                 | Descrição                                                 |
-| ------ | -------------------- | --------------------------------------------------------- |
-| POST   | `/api/users`         | Cria perfil (fallback para fluxos sem criação automática) |
-| GET    | `/api/users/profile` | Retorna perfil ativo associado ao `authId` do token       |
-| PUT    | `/api/users/profile` | Atualiza `name` e/ou `avatarUrl` do perfil                |
+| Método | Rota                                    | Descrição                                                                    |
+| ------ | --------------------------------------- | ---------------------------------------------------------------------------- |
+| POST   | `/api/users`                            | Cria perfil (fallback para fluxos sem criação automática)                    |
+| GET    | `/api/users/profile`                    | Retorna perfil ativo associado ao `authId` do token                          |
+| PUT    | `/api/users/profile`                    | Atualiza `name` e/ou `avatarUrl` do perfil                                   |
+| POST   | `/api/groups`                           | Cria grupo e registra atividade de criação                                    |
+| POST   | `/api/groups/:groupId/members`          | Adiciona membro existente ao grupo                                            |
+| POST   | `/api/groups/:groupId/invite`           | Adiciona membro por email (usuário já cadastrado)                            |
+| GET    | `/api/groups/user/:userId`              | Lista grupos ativos em que o usuário participa                                |
+| GET    | `/api/groups/:groupId/activities`       | Lista atividades do grupo (requer `userId` em query)                         |
+| DELETE | `/api/groups/:groupId`                  | Remove grupo logicamente (`isActive=false`) se não houver despesas pendentes |
+| POST   | `/api/expenses`                         | Cria despesa com divisão por tipo (`igual`, `porcentagem`, `exato`)          |
+| GET    | `/api/expenses/group/:groupId`          | Lista despesas do grupo (requer `userId` em query)                           |
+| POST   | `/api/expenses/:expenseId/settle`       | Marca a parte de um usuário como paga em uma despesa                         |
+| GET    | `/api/expenses/group/:groupId/balances` | Retorna saldo consolidado de um usuário no grupo (requer `userId` em query)  |
 
 ### Fluxo de implementação REST (registro e autenticação)
 
@@ -189,11 +232,23 @@ Focado na autenticação, segurança e credenciais de usuário
       "unique": true,
       "required": true
     },
-    "passwordHash": {
+    "password": {
       "type": "String",
       "required": true
     },
+    "lastLogin": {
+      "type": "Date",
+      "default": null
+    },
+    "isActive": {
+      "type": "Boolean",
+      "default": true
+    },
     "createdAt": {
+      "type": "Date",
+      "default": "Date.now"
+    },
+    "updatedAt": {
       "type": "Date",
       "default": "Date.now"
     }
@@ -241,7 +296,7 @@ Implementação atual no backend:
 
 ### group_db
 
-Armazena a estrutura do grupo e o saldo consolidade de cada membro.
+Armazena a estrutura do grupo e o histórico de atividades de colaboração.
 
 ```Json
 // Coleção: groups
@@ -251,32 +306,56 @@ Armazena a estrutura do grupo e o saldo consolidade de cada membro.
       "type": "String",
       "required": true
     },
-    "icon": "String",
-    "description": "Descrição opcional do grupo.",
-    "type": {
+    "description": {
       "type": "String",
-      "enum": ["viagem","moradia","casal","outros"],
-    }, // RF-003 (Flexibilidade)
-    "adminId": "ObjectId", // _id de quem criou o grupo
+      "maxlength": 300
+    },
+    "createdBy": "ObjectId", // _id de quem criou o grupo
     "members": [
         {
-            "userId": "ObjectId", // Referencia ao ID do Auth
-            "name": "String",
-            "balance": {
-              "type": "number",
-              "default": 0
+            "userId": "ObjectId", // Referência ao _id de user_profiles
+            "role": {
+              "type": "String",
+              "enum": ["admin", "member"],
+              "default": "member"
+            },
+            "joinedAt": {
+              "type": "Date",
+              "default": "Date.now"
             }
         },
     ],
+    "isActive": {
+      "type": "Boolean",
+      "default": true
+    },
     "createdAt": "2024-08-29T10:30:00Z",
     "updatedAt": "2024-08-29T11:30:00Z"
 }
 ```
 
+```Json
+// Coleção: activities
+{
+  "_id": "ObjectId",
+  "groupId": "ObjectId",
+  "actorUserId": "ObjectId",
+  "targetUserId": "ObjectId",
+  "type": {
+    "type": "String",
+    "enum": ["GROUP_CREATED", "MEMBER_ADDED", "EXPENSE_CREATED", "PAYMENT_SETTLED", "GROUP_DELETED"]
+  },
+  "message": "String",
+  "metadata": "Mixed",
+  "createdAt": "2024-08-29T10:00:00Z",
+  "updatedAt": "2024-08-29T12:00:00Z"
+}
+```
+
 Status de implementação:
 
-- Banco e URI já previstos em configuração de ambiente.
-- Modelos e rotas ainda não publicados nesta versão do backend.
+- Banco, modelos e rotas já implementados e publicados no backend.
+- Remoção de grupo é lógica por `isActive=false`.
 
 ### expense_db
 
@@ -287,38 +366,60 @@ Armazena as despesas de cada grupo disponíveis no sistema.
 {
   "_id": "ObjectId",
   "groupId": "ObjectId",
-  "description": "String",
-  "totalAmount": "Number",
-  "paidById": "ObjectId",
-  "divisionType": {
+  "description": {
     "type": "String",
-    "enum": ["igualmente","porcentagem", "fixo"]
-  }, // RF-005 (Motor de cálculo do backend)
-  "receiptPhoto": "String",
-  "expenseDetail": [
+    "required": true,
+    "maxlength": 255
+  },
+  "amount": {
+    "type": "Number",
+    "required": true,
+    "min": 0.01
+  },
+  "currency": {
+    "type": "String",
+    "enum": ["BRL", "USD"],
+    "default": "BRL"
+  },
+  "paidBy": "ObjectId",
+  "createdBy": "ObjectId",
+  "splitType": {
+    "type": "String",
+    "enum": ["igual", "porcentagem", "exato"],
+    "default": "igual"
+  },
+  "splits": [
     {
-      "userId": "ObjectId", // Heitor
-      "name": "String",
-      "amoutToPay": "Number" // Sua parte na divisão
+      "userId": "ObjectId",
+      "amount": {
+        "type": "Number",
+        "min": 0
+      },
+      "percentage": {
+        "type": "Number",
+        "min": 0,
+        "max": 100
+      },
+      "status": {
+        "type": "String",
+        "enum": ["pendente", "pago"],
+        "default": "pendente"
+      },
+      "paidAt": {
+        "type": "Date",
+        "default": null
+      }
     }
   ],
-  "date": {"type": "Date", "default": "Date.now"}, // RF-004
-}
-
-// Coleção: activities
-{
-  "_id": "ObjectId",
-  "userId": "ObjectId",
-  "groupId": "ObjectId",
-  "actionDescription": "String",
-  "timestamp": { "type": "Date", "default": "Date.now"}
+  "createdAt": "2024-08-29T10:00:00Z",
+  "updatedAt": "2024-08-29T12:00:00Z"
 }
 ```
 
 Status de implementação:
 
-- Banco e URI já previstos em configuração de ambiente.
-- Modelos e rotas ainda não publicados nesta versão do backend.
+- Banco, modelo e rotas já implementados e publicados no backend.
+- As atividades relacionadas a despesas são registradas em `group_db.activities`.
 
 ### Funcionalidades NoSQL implementadas (armazenamento e recuperação)
 
@@ -345,6 +446,25 @@ No estado atual, as operações NoSQL em produção no backend são:
 
 - Persistência de alterações de `name` e `avatarUrl` em `user_profiles`.
 
+6. **Criação e manutenção de grupos**
+
+- Inserção de grupos em `groups` com `members` e controle de `isActive`.
+- Atualização de membros por inclusão direta e por convite via email.
+
+7. **Criação, consulta e quitação de despesas**
+
+- Inserção de despesas em `expenses` com divisão calculada por tipo.
+- Consulta de despesas por grupo com ordenação por data de criação.
+- Atualização de status de parcelas (`pendente` para `pago`) com registro de data de quitação.
+
+8. **Registro de atividades de grupo**
+
+- Inserção de eventos em `activities` para criação de grupo, adição de membro, criação de despesa, quitação e exclusão lógica.
+
+9. **Consulta de saldos consolidados**
+
+- Leitura de despesas para cálculo de saldo por usuário e grupo via serviço de balanço.
+
 ### Justificativas de escolhas NoSQL no contexto do projeto
 
 - **Flexibilidade de esquema:** os domínios (auth, users, groups, expenses) possuem evolução diferente; documentos permitem adaptação rápida.
@@ -365,30 +485,6 @@ Monitoramento e Logs: Utilize ferramentas de monitoramento e logging para acompa
 
 Escalabilidade: Considere estratégias de sharding e replicação para lidar com crescimento do banco de dados e alta disponibilidade.
 
-### Material de Apoio da Etapa
-
-Na etapa 2, em máterial de apoio, estão disponíveis vídeos com a configuração do mongo.db e a utilização com Bson no C#
-
-## Modelo ER (Somente se tiver mais de um banco e outro for relacional)
-
-O Modelo ER representa através de um diagrama como as entidades (coisas, objetos) se relacionam entre si na aplicação interativa.
-
-As referências abaixo irão auxiliá-lo na geração do artefato “Modelo ER”.
-
-> - [Como fazer um diagrama entidade relacionamento | Lucidchart](https://www.lucidchart.com/pages/pt/como-fazer-um-diagrama-entidade-relacionamento)
-
-## Esquema Relacional (Somente se tiver mais de um banco e outro for relacional)
-
-O Esquema Relacional corresponde à representação dos dados em tabelas juntamente com as restrições de integridade e chave primária.
-
-As referências abaixo irão auxiliá-lo na geração do artefato “Esquema Relacional”.
-
-> - [Criando um modelo relacional - Documentação da IBM](https://www.ibm.com/docs/pt-br/cognos-analytics/10.2.2?topic=designer-creating-relational-model)
-
-## Modelo Físico (Somente se tiver mais de um banco e outro for relacional)
-
-Entregar um arquivo banco.sql contendo os scripts de criação das tabelas do banco de dados. Este arquivo deverá ser incluído dentro da pasta src\bd.
-
 ## Tecnologias Utilizadas
 
 As tecnologias adotadas para a arquitetura atual são:
@@ -404,17 +500,7 @@ As tecnologias adotadas para a arquitetura atual são:
 
 Diagrama de relação entre tecnologias:
 
-```mermaid
-flowchart TD
-  FE[React Web / React Native] --> API[Express API]
-  DKR[Docker Compose + Dockerfile] --> API
-  QA[Postman] --> API
-  API --> SEC[JWT + bcryptjs]
-  API --> ODM[Mongoose]
-  ODM --> MDB[MongoDB Atlas]
-  ENV[dotenv/.env] --> API
-  DEV[ESLint + Prettier + Nodemon] --> API
-```
+![Diagrama de relação entre tecnologias](img/techDiagram.png)
 
 ## Hospedagem
 
