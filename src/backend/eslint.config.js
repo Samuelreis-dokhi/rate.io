@@ -32,6 +32,22 @@ module.exports = [
     },
   },
   {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        jest: 'readonly',
+      },
+    },
+  },
+  {
     files: ['server.js', 'config/database.js'],
     rules: {
       'no-console': 'off',
