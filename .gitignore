@@ -7,6 +7,8 @@ yarn-error.log*
 # Segurança: Nunca suba suas URIs do MongoDB e chaves JWT para o repositório
 .env
 .env.local
+.env.*.local
+.env.test
 
 # Builds e Distribuições
 dist/
