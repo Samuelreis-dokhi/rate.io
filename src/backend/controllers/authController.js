@@ -13,7 +13,7 @@ const validatePassword = (password) => password && password.length >= 6;
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name } = req.body || {};
     const normalizedName = String(name || '').trim();
 
     // Validação de entrada
@@ -81,7 +81,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     // Validação de entrada
     if (!email || !password) {
