@@ -13,6 +13,9 @@
     "test:unit": "jest tests/unit --runInBand",
     "test:integration": "jest tests/integration --runInBand",
     "test:system": "jest tests/system --runInBand",
+    "test:auth": "jest --selectProjects integration --runTestsByPath tests/integration/auth.routes.test.js --runInBand",
+    "test:expense": "jest --selectProjects integration --runTestsByPath tests/integration/expense.routes.test.js --runInBand",
+    "test:group": "jest --selectProjects integration --runTestsByPath tests/integration/group.routes.test.js --runInBand",
     "test:coverage": "jest --coverage --runInBand"
   },
   "jest": {
@@ -61,7 +64,8 @@
     "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.0.0",
     "prettier": "^3.0.0",
-    "superset": "^3.0.3"
+    "superset": "^3.0.3",
+    "supertest": "^7.2.2"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
