@@ -1,92 +1,135 @@
-# Testes de Integração no Backend
+# Registro de Testes de Integracao
 
-## O que são Testes de Integração?
+## 1. Objetivo do Documento
+Este documento registra o planejamento, a execucao, os resultados e os incidentes dos testes de integracao do backend, seguindo a estrutura recomendada pela IEEE Std para documentacao de testes.
 
-Testes de integração são testes automatizados que verificam se diferentes módulos ou componentes de um sistema funcionam corretamente quando integrados. Ao contrário dos testes unitários, que testam pequenas unidades isoladas de código, os testes de integração focam na interação entre várias partes do sistema, como classes, bancos de dados, APIs externas, entre outros.
+Escopo atual:
+- Integracao de Auth: implementada e validada.
+- Integracao de Groups: campo preparado para preenchimento.
+- Integracao de Expenses: campo preparado para preenchimento.
 
-## Por que são Importantes?
+## 2. Referencias
+- IEEE Std (Software Test Documentation) para organizacao de artefatos de teste.
+- Requisitos funcionais e nao funcionais do projeto RATE.IO.
+- Implementacao de backend em Node.js + Express + Mongoose.
 
-Testes de integração ajudam a:
+## 3. Contexto e Itens de Integracao
+Itens sob teste de integracao:
+- API REST de autenticacao e autorizacao.
+- Integracao entre rotas, controllers, models e banco em memoria para testes.
 
-- Garantir que os diferentes componentes do sistema funcionem bem juntos.
-- Detectar problemas que possam surgir da interação entre módulos, como erros de comunicação ou incompatibilidades.
-- Validar cenários de uso realistas, onde múltiplas partes do sistema precisam interagir.
+Itens ja cobertos:
+- Modulo Auth (registro e login).
 
-## Configuração do Ambiente
+Itens pendentes:
+- Modulo Groups.
+- Modulo Expenses.
 
-Para começar a escrever testes de integração em um projeto backend utilizando C#, siga os passos abaixo:
+## 4. Ambiente de Teste de Integracao
+Configuracao utilizada:
+- Runtime: Node.js.
+- Runner: Jest (projeto integration).
+- Requisicoes HTTP: Supertest.
+- Banco para testes: MongoDB em memoria (mongodb-memory-server).
+- Setup global de integracao:
+  - Inicializacao de banco em memoria.
+  - Configuracao das variaveis de ambiente de teste.
+  - Conexao com os bancos de dominio necessarios.
+  - Limpeza de colecoes entre testes.
 
-1. **Instale o .NET SDK**: Certifique-se de ter o [.NET SDK](https://dotnet.microsoft.com/download) instalado.
+Comando principal da suite de auth:
+- npm run test:auth
 
-2. **Crie um projeto de testes**: No terminal, navegue até o diretório do seu projeto e execute o seguinte comando para criar um projeto de testes usando xUnit:
+## 5. Especificacao de Projeto de Teste (Integration Design)
+### 5.1 Estrategia
+- Validar o comportamento integrado de endpoint HTTP + regra de negocio + persistencia.
+- Cobrir casos de sucesso e falha de validacao/negocio.
+- Garantir respostas HTTP coerentes com o contrato da API.
 
-   ```bash
-   dotnet new xunit -o tests
-   ```
+### 5.2 Criterios de Entrada
+- Dependencias instaladas.
+- Variaveis de ambiente de teste configuradas pelo helper global.
+- Banco em memoria iniciado e conexoes ativas.
 
-3. **Adicione uma referência ao seu projeto principal**: No diretório do projeto de testes, adicione uma referência ao seu projeto principal:
+### 5.3 Criterios de Saida
+- Todos os casos da suite em status PASS.
+- Sem erros de lint nos arquivos alterados.
+- Registro de incidentes atualizado quando houver falha.
 
-   ```bash
-   dotnet add reference ../src/MyProject.csproj
-   ```
+## 6. Especificacao dos Casos de Teste
 
-4. **Configure um banco de dados para testes**: Se seu projeto interage com um banco de dados, considere usar um banco de dados em memória (como o SQLite in-memory) ou configurar um ambiente de banco de dados separado para os testes.
+### 6.1 Modulo Auth (Implementado)
 
-5. **Organize sua estrutura de diretórios**: Uma estrutura comum de projeto é a seguinte:
+| ID | Endpoint | Cenario | Entrada | Resultado esperado |
+|---|---|---|---|---|
+| INT-AUTH-001 | POST /api/auth/register | Registro com payload valido | name, email, password validos | HTTP 201 e retorno com id, name e email |
+| INT-AUTH-002 | POST /api/auth/register | Registro com email duplicado | email ja cadastrado | HTTP 409 |
+| INT-AUTH-003 | POST /api/auth/register | Registro com payload invalido | payload vazio | HTTP 400 |
+| INT-AUTH-004 | POST /api/auth/login | Login com credenciais validas | email e senha corretos | HTTP 200 e token JWT |
+| INT-AUTH-005 | POST /api/auth/login | Login com senha invalida | email valido + senha incorreta | HTTP 401 |
 
-   ```
-   MyProject/
-   ├── src/
-   │   └── MyProject.cs
-   └── tests/
-       └── MyProject.IntegrationTests.cs
-   ```
+Resultado consolidado atual:
+- Suite executada com sucesso.
+- 5 testes executados, 5 aprovados.
 
-## Exemplo de Teste de Integração
+### 6.2 Modulo Groups (Template para preenchimento)
 
-Vamos supor que temos um método na classe `UserService` que adiciona um usuário a um banco de dados. Queremos testar se esse método funciona corretamente ao interagir com o banco de dados.
+| ID | Endpoint | Cenario | Entrada | Resultado esperado | Status |
+|---|---|---|---|---|---|
+| INT-GRP-001 | POST /api/groups | Criacao de grupo valida | [preencher] | [preencher] | Planejado |
+| INT-GRP-002 | POST /api/groups/:groupId/members | Adicao de membro valida | [preencher] | [preencher] | Planejado |
+| INT-GRP-003 | GET /api/groups/user/:userId | Listagem de grupos do usuario | [preencher] | [preencher] | Planejado |
+| INT-GRP-004 | GET /api/groups/:groupId/activities | Consulta de atividades | [preencher] | [preencher] | Planejado |
+| INT-GRP-005 | DELETE /api/groups/:groupId | Exclusao logica sem pendencias | [preencher] | [preencher] | Planejado |
 
-### Código de Exemplo
+### 6.3 Modulo Expenses (Template para preenchimento)
 
-Aqui está a implementação da classe `UserService`:
+| ID | Endpoint | Cenario | Entrada | Resultado esperado | Status |
+|---|---|---|---|---|---|
+| INT-EXP-001 | POST /api/expenses | Criacao de despesa valida | [preencher] | [preencher] | Planejado |
+| INT-EXP-002 | GET /api/expenses/group/:groupId | Consulta de despesas por grupo | [preencher] | [preencher] | Planejado |
+| INT-EXP-003 | POST /api/expenses/:expenseId/settle | Quitacao de parcela | [preencher] | [preencher] | Planejado |
+| INT-EXP-004 | GET /api/expenses/group/:groupId/balances | Consulta de saldo por grupo | [preencher] | [preencher] | Planejado |
 
-```csharp
-// src/MyProject.cs
+## 7. Especificacao de Procedimentos de Teste
+Procedimento padrao:
+1. Garantir que a branch local esteja atualizada.
+2. Entrar no diretorio do backend.
+3. Executar a suite alvo.
+4. Registrar saida (PASS/FAIL) e tempo de execucao.
+5. Em caso de falha, abrir incidente no registro da Secao 8.
 
-using System.Data.SqlClient;
+Comandos sugeridos:
+- Auth: npm run test:auth
+- Groups: npm run test:group
+- Expenses: npm run test:expense
+- Integracao completa: npm run test:integration
 
-namespace MyProject
-{
-    public class UserService
-    {
-        private readonly string _connectionString;
+## 8. Registro de Incidentes de Teste
 
-        public UserService(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+| ID Incidente | Data | Suite | Descricao | Impacto | Acao tomada | Status |
+|---|---|---|---|---|---|---|
+| INC-INT-001 | 2026-04-07 | Auth | Falta da dependencia supertest para testes HTTP | Impediu execucao da suite auth | Dependencia instalada e suite reexecutada | Resolvido |
+| INC-INT-002 | 2026-04-07 | Auth | Setup de banco sem connectDB no helper global | Erro de conexao dos models ao subir app de teste | connectDB adicionado no setup global | Resolvido |
+| INC-INT-003 | 2026-04-07 | Auth | Duplicidade de setup local no teste auth | Risco de conflitos e manutencao mais dificil | Centralizacao no setup global e simplificacao do teste | Resolvido |
 
-        public void AddUser(string name, string email)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                var command = new SqlCommand("INSERT INTO Users (Name, Email) VALUES (@Name, @Email)", connection);
-                command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@Email", email);
-                command.ExecuteNonQuery();
-            }
-        }
+## 9. Diario de Execucao
 
-        public int GetUserCount()
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                var command = new SqlCommand("SELECT COUNT(*) FROM Users", connection);
-                return (int)command.ExecuteScalar();
-            }
-        }
-    }
-}
-```
+| Data | Executor | Suite | Comando | Resultado | Observacao |
+|---|---|---|---|---|---|
+| 2026-04-07 | Heitor | Auth | npm run test:auth | PASS (5/5) | Fluxo de registro e login validado em integracao |
+
+## 10. Relatorio de Resumo de Teste de Integracao
+Resumo atual:
+- Cobertura de integracao implementada para Auth com casos positivos e negativos principais.
+- Estrutura de ambiente de integracao estabilizada (Jest + Supertest + Mongo em memoria).
+- Templates de casos e procedimentos preparados para avancar com Groups e Expenses.
+
+Riscos remanescentes:
+- Suites de Groups e Expenses ainda sem casos implementados.
+- Necessidade de definir massa de dados e cenarios de borda para modulos pendentes.
+
+Proximos passos recomendados:
+1. Implementar os primeiros casos de Groups (criacao, adicao de membro e listagem).
+2. Implementar os primeiros casos de Expenses (criacao e consulta por grupo).
+3. Atualizar este registro a cada execucao com status e incidentes.
