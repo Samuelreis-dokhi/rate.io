@@ -100,6 +100,48 @@ Regras relevantes do setup atual:
 - O backend inicia apenas após validação e conexão com os bancos obrigatórios.
 - Em produção, falha de conexão encerra o processo para evitar API em estado inconsistente.
 
+### Estratégia de hospedagem
+
+Definição adotada para publicação da solução:
+
+1. API backend hospedada em plataforma de containers com suporte a deploy por branch e variáveis de ambiente seguras.
+2. Banco de dados hospedado no MongoDB Atlas (serviço gerenciado), mantendo separação lógica por domínio (`auth`, `users`, `groups`, `expenses`).
+3. Ambientes mínimos do ciclo:
+  - `desenvolvimento`: execução local com Docker Compose.
+  - `homologação`: deploy automático da branch `develop` para validação funcional.
+  - `produção`: deploy controlado da branch `main`, com rollback pela imagem anterior.
+
+Requisitos de operação em hospedagem:
+
+- `healthcheck` exposto em `/health` para monitoramento de disponibilidade.
+- Injeção de segredos por variáveis de ambiente (sem credenciais em código).
+- Logs estruturados em stdout/stderr para coleta pelo provedor de hospedagem.
+- Política de restart automático em falhas do processo.
+
+### Estratégia de qualidade
+
+Qualidade técnica definida em quatro frentes:
+
+1. Qualidade de código:
+  - ESLint para conformidade de padrão e prevenção de erros comuns.
+  - Prettier para padronização de formatação.
+2. Qualidade de build e execução:
+  - Dockerfile e Docker Compose para reprodutibilidade do ambiente.
+  - Validação obrigatória de variáveis de ambiente antes do start.
+3. Qualidade funcional:
+  - Testes automatizados com Jest (unit, integration e system).
+  - Testes de API por fluxo crítico no Postman para validação manual de ponta a ponta.
+4. Qualidade de entrega:
+  - Pull Request com revisão obrigatória.
+  - Checklist mínimo para merge: lint/format sem erros, testes relevantes executados e documentação atualizada quando necessário.
+
+Indicadores acompanhados na qualidade:
+
+- Pass rate das suítes automatizadas.
+- Regressões por módulo após merge.
+- Tempo de execução dos testes de integração.
+- Incidentes de ambiente e correções registradas no repositório.
+
 ### Modelagem implementada
 
 #### Modelo `Auth` (`auth_credentials`)
@@ -502,35 +544,18 @@ Diagrama de relação entre tecnologias:
 
 ![Diagrama de relação entre tecnologias](img/techDiagram.png)
 
-## Hospedagem
+## Qualidade de Software (Referencial)
 
-No ambiente de desenvolvimento e validação da disciplina, a API é executada localmente em container com Docker Compose e conectada ao MongoDB Atlas em nuvem. O fluxo com `nodemon` local permanece disponível como alternativa para depuração fora do container.
+Como base conceitual, o projeto considera o modelo ISO/IEC 25010 para orientar decisões de qualidade. No ciclo atual, as subcaracterísticas priorizadas foram:
 
-Estratégia prevista para publicação:
+1. Adequação funcional: validação dos fluxos de autenticação, grupos e despesas por testes de integração.
+2. Confiabilidade: execução automatizada de testes e controle de regressão por suíte.
+3. Segurança: autenticação com JWT, hash de senha e proteção de rotas por middleware.
+4. Manutenibilidade: padronização com ESLint/Prettier e separação por camadas (rotas, controllers, services, models).
 
-- Containerização da API.
-- Deploy em serviço de nuvem com variáveis de ambiente seguras.
-- Banco de dados mantido no MongoDB Atlas com controle de acesso por IP/usuário.
-- Pipeline de CI para lint e validações antes de promoção para produção.
+Métricas práticas adotadas pela equipe:
 
-> **Links Úteis**:
->
-> - [Website com GitHub Pages](https://pages.github.com/)
-> - [Programação colaborativa com Repl.it](https://repl.it/)
-> - [Getting Started with Heroku](https://devcenter.heroku.com/start)
-> - [Publicando Seu Site No Heroku](http://pythonclub.com.br/publicando-seu-hello-world-no-heroku.html)
-
-## Qualidade de Software
-
-Conceituar qualidade de fato é uma tarefa complexa, mas ela pode ser vista como um método gerencial que através de procedimentos disseminados por toda a organização, busca garantir um produto final que satisfaça às expectativas dos stakeholders.
-
-No contexto de desenvolvimento de software, qualidade pode ser entendida como um conjunto de características a serem satisfeitas, de modo que o produto de software atenda às necessidades de seus usuários. Entretanto, tal nível de satisfação nem sempre é alcançado de forma espontânea, devendo ser continuamente construído. Assim, a qualidade do produto depende fortemente do seu respectivo processo de desenvolvimento.
-
-A norma internacional ISO/IEC 25010, que é uma atualização da ISO/IEC 9126, define oito características e 30 subcaracterísticas de qualidade para produtos de software.
-Com base nessas características e nas respectivas sub-características, identifique as sub-características que sua equipe utilizará como base para nortear o desenvolvimento do projeto de software considerando-se alguns aspectos simples de qualidade. Justifique as subcaracterísticas escolhidas pelo time e elenque as métricas que permitirão a equipe avaliar os objetos de interesse.
-
-> **Links Úteis**:
->
-> - [ISO/IEC 25010:2011 - Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) — System and software quality models](https://www.iso.org/standard/35733.html/)
-> - [Análise sobre a ISO 9126 – NBR 13596](https://www.tiespecialistas.com.br/analise-sobre-iso-9126-nbr-13596/)
-> - [Qualidade de Software - Engenharia de Software 29](https://www.devmedia.com.br/qualidade-de-software-engenharia-de-software-29/18209/)
+- taxa de aprovação das suítes de teste;
+- número de regressões por módulo após merge;
+- tempo de execução das suítes de integração;
+- quantidade de incidentes corrigidos por ciclo.

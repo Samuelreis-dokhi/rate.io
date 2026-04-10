@@ -37,12 +37,14 @@ Gerenciamento de Branches
 
 A equipe adotou uma estrutura de branches para organizar as versões do sistema:
 
-main: versão final, estável e pronta para entrega
-unstable: versão já funcional, porém ainda sujeita a ajustes
-testing: versão em fase de testes
-dev: ambiente principal de desenvolvimento
+main: versão estável e pronta para entrega
+develop: integração contínua das funcionalidades validadas
+feature/*: desenvolvimento de novas funcionalidades
+bugfix/*: correções de defeitos
+docs/*: atualizações de documentação
+test/*: criação ou ajuste de testes
 
-O fluxo de trabalho consiste na criação de novas branches a partir da dev para desenvolvimento de funcionalidades. Após a implementação, as alterações passam por testes na branch testing, podendo seguir para unstable e, posteriormente, serem integradas à main quando estiverem estáveis.
+O fluxo de trabalho consiste na criação de branches temáticas a partir da develop. Após implementação e validações, as alterações seguem por Pull Request para develop. Em marcos de release, a develop é consolidada na main.
 
 Além da revisão de código por Pull Request, a equipe considera como critérios mínimos de pronto para merge:
 
