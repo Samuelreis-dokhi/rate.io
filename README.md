@@ -42,34 +42,6 @@ node -v
 npm -v
 ```
 
-## Dependências do Back-end
-
-Dependências principais (instaladas via `npm install`):
-
-- express
-- cors
-- mongoose
-- bcryptjs
-- jsonwebtoken
-- dotenv
-
-Dependências de desenvolvimento:
-
-- nodemon
-- jest
-- supertest
-- eslint
-- prettier
-- mongodb-memory-server
-
-## Estrutura do Projeto
-
-Principais caminhos:
-
-- `src/backend` -> API Node.js
-- `docs` -> documentação técnica
-- `setupconfig.md` -> guia detalhado de setup e testes Postman
-
 ## Instalação e Configuração
 
 ### 1. Clonar o repositório
@@ -128,20 +100,6 @@ npm install
 npm run dev
 ```
 
-## Scripts Úteis (src/backend)
-
-```bash
-npm run start
-npm run dev
-npm run lint
-npm run lint:fix
-npm run format
-npm run test
-npm run test:unit
-npm run test:integration
-npm run test:system
-```
-
 ## Passo a Passo Rápido de Uso
 
 1. Suba a API (Docker ou Node local).
@@ -149,13 +107,6 @@ npm run test:system
 3. Faça registro e login para obter token JWT.
 4. Use o token para acessar rotas protegidas (`/api/users`, `/api/groups`, `/api/expenses`).
 
-## Postman
-
-O guia de Postman foi movido para `setupconfig.md` para reaproveitamento e manutenção centralizada.
-
-Acesse diretamente:
-
-- `setupconfig.md` -> seção **Guia Reutilizável de Testes no Postman**
 
 ## Documentação
 
@@ -176,4 +127,5 @@ Acesse diretamente:
 ## Código e Apresentação
 
 - [Código Fonte](src/README.md)
+- [Guia do Backend](src/backend/README.md)
 - [Apresentação da Solução](presentation/README.md)
