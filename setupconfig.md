@@ -1,267 +1,219 @@
 # Setup Inicial do Projeto (Back-end)
 
-Este documento descreve o passo a passo para configurar o ambiente de desenvolvimento do back-end, executar a API localmente e validar os endpoints iniciais no Postman.
+Este documento centraliza o setup do ambiente e o guia reutilizável de testes no Postman.
 
 ## 1. Objetivo
 
-Padronizar o setup da equipe para evitar problemas de ambiente, garantir consistência de código e facilitar o onboarding de novos integrantes.
+Padronizar o onboarding da equipe, reduzir erros de ambiente e manter um fluxo único para instalação, configuração, execução e validação da API.
 
 ## 2. Pré-requisitos
 
-Antes de começar, confirme que sua máquina possui:
+1. Git
+2. Node.js 18+ e npm 9+
+3. Docker e Docker Compose (recomendado)
+4. VS Code (recomendado)
+5. Postman
+6. Acesso ao MongoDB Atlas (ou Mongo local)
 
-1. Git instalado.
-2. Node.js 18+ e npm 9+.
-3. VS Code (recomendado).
-4. Postman para testes de API.
-5. Acesso ao MongoDB (Atlas ou local via Docker).
-
-Comandos úteis para validar:
+Validação rápida:
 
 ```bash
 git --version
 node -v
 npm -v
+docker --version
+docker compose version
 ```
 
-## 3. Clonar repositório e acessar pasta correta
-
-Clone o projeto e acesse a pasta do backend (importante: o package.json está no backend, nao na raiz):
+## 3. Clonar o repositório
 
 ```bash
 git clone <url-do-repositorio>
-cd pmv-ads-2026-1-e4-infra-t1-segunda-20h/src/backend
+cd pmv-ads-2026-1-e4-infra-t1-segunda-20h
 ```
 
-## 4. Instalar dependências
-
-Na pasta src/backend, instale todas as dependências:
+## 4. Configurar ambiente do backend
 
 ```bash
-npm install
+cp src/backend/.env.example src/backend/.env
 ```
 
-Dependências principais usadas no projeto:
-
-- express
-- dotenv
-- cors
-- mongoose
-- bcryptjs
-- jsonwebtoken
-
-Dependências de desenvolvimento:
-
-- nodemon
-- eslint
-- prettier
-- eslint-config-prettier
-- eslint-plugin-prettier
-
-## 5. Estrutura de pastas esperada
-
-A estrutura inicial do backend deve ficar assim:
-
-```text
-src/backend/
-├── config/
-│   └── db.js
-├── controllers/
-│   └── authController.js
-├── middleware/
-├── models/
-│   └── Auth.js
-├── routes/
-│   └── authRoutes.js
-├── .env
-├── .prettierrc
-├── .prettierignore
-├── eslint.config.js
-├── nodemon.json
-├── package.json
-└── server.js
-```
-
-## 6. Configurar variáveis de ambiente (.env)
-
-Crie ou atualize o arquivo .env em src/backend com os dados do ambiente:
+Preencha `src/backend/.env`:
 
 ```env
 PORT=3000
 JWT_SECRET=<sua-chave-jwt>
-
 MONGO_URI_AUTH=<uri-do-mongo-auth>
 MONGO_URI_USERS=<uri-do-mongo-users>
 MONGO_URI_EXPENSES=<uri-do-mongo-expenses>
 MONGO_URI_GROUPS=<uri-do-mongo-groups>
 ```
 
-Exemplo Atlas:
+Observações:
 
-```env
-MONGO_URI_AUTH=mongodb+srv://usuario:senha@cluster.mongodb.net/auth?retryWrites=true&w=majority
+1. Faça URL encode da senha do Atlas, se necessário.
+2. Libere seu IP em Network Access no Atlas.
+3. Garanta permissão de leitura/escrita para o usuário do banco.
+
+## 5. Instalar dependências
+
+```bash
+cd src/backend
+npm install
 ```
 
-Observacoes:
+## 6. Rodar a API
 
-1. Se a senha tiver caracteres especiais, faca URL encode.
-2. No Atlas, liberar IP em Network Access.
-3. No Atlas, garantir usuario com permissao de leitura/escrita.
+### Opção A: Docker (na raiz do projeto)
 
-## 7. Rodar o projeto em desenvolvimento
+```bash
+docker compose up --build
+```
 
-Ainda em src/backend:
+### Opção B: Node local (em `src/backend`)
 
 ```bash
 npm run dev
 ```
 
-Saida esperada:
-
-1. Servidor rodando na porta configurada.
-2. Mensagem de conexao MongoDB estabelecida.
-
-Se aparecer erro ENOENT de package.json, voce esta na pasta errada. Entre em src/backend e rode novamente.
-
-## 8. Scripts disponiveis
+## 7. Verificar se a API subiu
 
 ```bash
-npm run start      # executa com node
-npm run dev        # executa com nodemon
-npm run lint       # valida padrao de codigo
-npm run lint:fix   # tenta corrigir automaticamente
-npm run format     # formata com prettier
+curl http://localhost:3000/
+curl http://localhost:3000/health
 ```
 
-## 9. Padronizacao com ESLint e Prettier
-
-O projeto usa ESLint 9 no formato Flat Config (arquivo eslint.config.js).
-
-Fluxo recomendado no dia a dia:
+## 8. Scripts disponíveis
 
 ```bash
-npm run format
+npm run start
+npm run dev
 npm run lint
+npm run lint:fix
+npm run format
+npm run test
+npm run test:unit
+npm run test:integration
+npm run test:system
 ```
 
-Boas praticas:
+## 9. Guia Reutilizável de Testes no Postman
 
-1. Rodar format e lint antes de commit.
-2. Nao desativar regras globalmente sem alinhamento com o time.
-3. Manter consistencia de estilo para facilitar code review.
+### 9.1 Criar Environment
 
-## 10. Testes iniciais no Postman
+Crie um Environment no Postman com:
 
-Com o servidor ativo, testar endpoints de autenticacao.
+1. `baseUrl` = `http://localhost:3000`
+2. `tokenUser1`
+3. `tokenUser2`
+4. `profileIdUser1`
+5. `profileIdUser2`
+6. `groupId`
+7. `expenseId`
 
-### 10.1 Registrar usuario
+### 9.2 Regras importantes
 
-- Metodo: POST
-- URL: http://localhost:3000/api/auth/register
-- Header: Content-Type: application/json
-- Body:
+1. Rotas protegidas exigem `Authorization: Bearer <token>`.
+2. Para grupos e despesas, use IDs de perfil (não `authId`).
+3. Body em `raw -> JSON`.
+4. `update profile` usa `PUT`.
+5. `settle` exige `userId` e `paidBy` no body.
 
-```json
-{
-  "email": "seuemail@dominio.com",
-  "password": "123456"
-}
-```
+### 9.3 Fluxo recomendado de requests
 
-![Teste de registro com Postman](../pmv-ads-2026-1-e4-infra-t1-segunda-20h/docs/img/registroPostman.png)
+1. Registrar usuário 1
+2. Login usuário 1 (salvar token em `tokenUser1`)
+3. Registrar usuário 2
+4. Login usuário 2 (salvar token em `tokenUser2`)
+5. Buscar perfil do usuário 1 (salvar `_id` em `profileIdUser1`)
+6. Buscar perfil do usuário 2 (salvar `_id` em `profileIdUser2`)
+7. Criar grupo com usuário 1 (salvar `_id` em `groupId`)
+8. Adicionar usuário 2 no grupo
+9. Listar grupos do usuário 1
+10. Criar despesa no grupo (salvar `expense._id` em `expenseId`)
+11. Listar despesas do grupo
+12. Marcar parcela como paga (`settle`)
+13. Consultar balanço do grupo
+14. Listar atividades do grupo
+15. Deletar grupo
 
-Resposta esperada:
+### 9.4 Endpoints principais (referência rápida)
 
-- 201 Created
-- id do usuario e email retornados.
+Autenticação:
 
-### 10.2 Login
+- `POST {{baseUrl}}/api/auth/register`
+- `POST {{baseUrl}}/api/auth/login`
 
-- Metodo: POST
-- URL: http://localhost:3000/api/auth/login
-- Header: Content-Type: application/json
-- Body:
+Usuário:
 
-```json
-{
-  "email": "seuemail@dominio.com",
-  "password": "123456"
-}
-```
+- `GET {{baseUrl}}/api/users/profile`
+- `PUT {{baseUrl}}/api/users/profile`
 
-![Teste de registro com Postman](../pmv-ads-2026-1-e4-infra-t1-segunda-20h/docs/img/loginPostman.png)
+Grupo:
 
-Resposta esperada:
+- `POST {{baseUrl}}/api/groups`
+- `POST {{baseUrl}}/api/groups/{{groupId}}/members`
+- `GET {{baseUrl}}/api/groups/user/{{profileIdUser1}}`
+- `GET {{baseUrl}}/api/groups/{{groupId}}/activities?userId={{profileIdUser1}}&limit=50`
+- `DELETE {{baseUrl}}/api/groups/{{groupId}}`
 
-- 200 OK
-- token JWT para uso em rotas protegidas.
+Despesas:
 
-## 11. Problemas comuns e como resolver
+- `POST {{baseUrl}}/api/expenses`
+- `GET {{baseUrl}}/api/expenses/group/{{groupId}}?userId={{profileIdUser1}}`
+- `POST {{baseUrl}}/api/expenses/{{expenseId}}/settle`
+- `GET {{baseUrl}}/api/expenses/group/{{groupId}}/balances?userId={{profileIdUser1}}`
 
-### 11.1 ENOENT package.json
+### 9.5 Erros esperados (checklist)
 
-Erro comum:
+1. Sem token em rota protegida -> `401`
+2. Token inválido/expirado -> `401`
+3. ObjectId inválido -> `400`
+4. Usuário sem permissão -> `403`
+5. Recurso inexistente -> `404`
 
-```text
-npm ERR! enoent ENOENT: no such file or directory, open '.../package.json'
-```
+## 10. Troubleshooting rápido
 
-Causa: comando executado fora da pasta src/backend.
+### ENOENT package.json
 
-Correcao:
+Causa: comando executado fora de `src/backend`.
+
+Correção:
 
 ```bash
 cd src/backend
 npm run dev
 ```
 
-### 11.2 Erro de autenticacao no Mongo (bad auth)
+### Erro de autenticação MongoDB
 
-Causas:
+Verifique:
 
-1. Usuario/senha incorretos.
-2. Senha sem URL encode.
-3. Usuario sem permissao no Atlas.
+1. Usuário e senha.
+2. URL encode da senha.
+3. Permissões no Atlas.
+4. IP liberado em Network Access.
 
-Correcao: revisar URI, permissao de usuario e acesso de rede no Atlas.
+### Erro 401 no Postman
 
-### 11.3 next is not a function
+Verifique:
 
-Causa: middleware pre('save') do Mongoose com assinatura incorreta para async.
+1. Bearer Token preenchido corretamente.
+2. Token atualizado após novo login.
 
-Correcao aplicada no projeto: hook async sem callback next.
+## 11. Boas práticas
 
-### 11.4 Erro 500 no registro
+1. Não versionar `src/backend/.env`.
+2. Versionar somente `src/backend/.env.example`.
+3. Rodar `npm run format` e `npm run lint` antes de commit.
+4. Usar branch por contexto (`feature/...`, `bugfix/...`, `docs/...`, `test/...`).
 
-Verificar:
-
-1. Conexao com Mongo ativa.
-2. Colecao com indice unico e email duplicado.
-3. Campo email/senha validos no body.
-
-## 12. Convenção de branch e commit (sugestão)
-
-1. Criar branch por funcionalidade:
-
-```bash
-git checkout -b feature/<nome-da-feature>
-```
-
-2. Commitar com mensagem clara:
-
-```bash
-git add .
-git commit -m "feat(auth): configura registro e login com JWT"
-```
-
-## 13. Checklist rapido de onboarding
+## 12. Checklist de onboarding
 
 1. Clonei o repositório.
-2. Entrei em src/backend.
-3. Rodei npm install.
-4. Configurei .env com URI valida.
-5. Rodei npm run dev sem erro.
-6. Rodei npm run format e npm run lint.
-7. Testei register e login no Postman.
-
-Se todos os itens acima estiverem ok, seu ambiente esta pronto para desenvolvimento.
+2. Configurei `src/backend/.env`.
+3. Instalei dependências.
+4. Subi a API (Docker ou Node local).
+5. Validei `GET /health`.
+6. Rodei lint/format.
+7. Testei fluxo principal no Postman.
