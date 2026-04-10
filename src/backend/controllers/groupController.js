@@ -317,3 +317,123 @@ exports.deleteGroup = async (req, res) => {
     return res.status(500).json({ error: 'Erro ao deletar o grupo', details: error.message });
   }
 };
+
+// Teste
+exports.send = async (req, res) => {
+  const { name, createdBy, members } = req.body;
+  try {
+    if (!name || !createdBy) {
+      return res.status(400).json({ message: 'Nome e ID do criador são obrigatórios' });
+    }
+
+    if (!isValidObjectId(createdBy)) {
+      return res.status(400).json({ message: 'ID do criador inválido' });
+    }
+
+    const creator = await User.findById(createdBy);
+    if (!creator) {
+      return res.status(404).json({ message: 'Usuário criador não encontrado' });
+    }
+
+    if (!Array.isArray(members)) {
+      return res.status(400).json({ message: 'members deve ser um array' });
+    }
+
+    const normalizedMemberIds = [...new Set(members.map((id) => String(id)))]; // Remove duplicatas e garante que sejam strings
+    const invalidMemberId = normalizedMemberIds.find((id) => !isValidObjectId(id));
+    if (invalidMemberId) {
+      return res.status(400).json({ message: 'ID de membro inválido: ' + invalidMemberId });
+    }
+
+    /* Cria a lista de membros para o grupo */
+    const members = [
+      { userId: createdBy, role: 'admin' },
+      ...normalizedMemberIds
+        .filter((id) => id !== String(createdBy)) // Evita adicionar o criador como membro novamente
+        .map((id) => ({ userId: id, role: 'member' })),
+    ];
+
+    // Criação do grupo
+    const group = await Group.create({
+      name,
+      description,
+      createdBy,
+      members,
+    });
+
+    await Activity.create({
+      groupId: group._id,
+      actorUserId: createdBy,
+      type: 'GROUP_CREATED',
+      message: `${creator.name} criou o grupo '${group.name}'`,
+      metadata: {
+        groupId: group._id,
+        membersCount: group.members.length,
+      },
+    });
+
+    return res.status(201).json(group);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao criar o grupo', details: error.message });
+  }
+};
+
+// Teste
+exports.send = async (req, res) => {
+  const { name, createdBy, membersIds } = req.body;
+  try {
+    if (!name || !createdBy) {
+      return res.status(400).json({ message: 'Nome e ID do criador são obrigatórios' });
+    }
+
+    if (!isValidObjectId(createdBy)) {
+      return res.status(400).json({ message: 'ID do criador inválido' });
+    }
+
+    const creator = await User.findById(createdBy);
+    if (!creator) {
+      return res.status(404).json({ message: 'Usuário criador não encontrado' });
+    }
+
+    if (!Array.isArray(membersIds)) {
+      return res.status(400).json({ message: 'membersIds deve ser um array' });
+    }
+
+    const normalizedMemberIds = [...new Set(membersIds.map((id) => String(id)))]; // Remove duplicatas e garante que sejam strings
+    const invalidMemberId = normalizedMemberIds.find((id) => !isValidObjectId(id));
+    if (invalidMemberId) {
+      return res.status(400).json({ message: 'ID de membro inválido: ' + invalidMemberId });
+    }
+
+    /* Cria a lista de membros para o grupo */
+    const members = [
+      { userId: createdBy, role: 'admin' },
+      ...normalizedMemberIds
+        .filter((id) => id !== String(createdBy)) // Evita adicionar o criador como membro novamente
+        .map((id) => ({ userId: id, role: 'member' })),
+    ];
+
+    // Criação do grupo
+    const group = await Group.create({
+      name,
+      description,
+      createdBy,
+      members,
+    });
+
+    await Activity.create({
+      groupId: group._id,
+      actorUserId: createdBy,
+      type: 'GROUP_CREATED',
+      message: `${creator.name} criou o grupo '${group.name}'`,
+      metadata: {
+        groupId: group._id,
+        membersCount: group.members.length,
+      },
+    });
+
+    return res.status(201).json(group);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao criar o grupo', details: error.message });
+  }
+};
