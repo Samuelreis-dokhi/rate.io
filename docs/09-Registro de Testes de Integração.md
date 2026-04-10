@@ -94,14 +94,18 @@ Resultado consolidado atual:
 - Suite executada com sucesso.
 - 21 testes executados, 21 aprovados.
 
-### 6.3 Modulo Expenses (Template para preenchimento)
+### 6.3 Modulo Expenses (Implementado)
 
 | ID | Endpoint | Cenario | Entrada | Resultado esperado | Status |
 |---|---|---|---|---|---|
-| INT-EXP-001 | POST /api/expenses | Criacao de despesa valida | [preencher] | [preencher] | Planejado |
-| INT-EXP-002 | GET /api/expenses/group/:groupId | Consulta de despesas por grupo | [preencher] | [preencher] | Planejado |
-| INT-EXP-003 | POST /api/expenses/:expenseId/settle | Quitacao de parcela | [preencher] | [preencher] | Planejado |
-| INT-EXP-004 | GET /api/expenses/group/:groupId/balances | Consulta de saldo por grupo | [preencher] | [preencher] | Planejado |
+| INT-EXP-001 | POST /api/expenses | Criacao de despesa valida | groupId, description, amount, paidBy, createdBy, splitType, splitsData | HTTP 201 e retorno com expense contendo splits calculados corretamente | Aprovado |
+| INT-EXP-002 | GET /api/expenses/group/:groupId | Consulta de despesas por grupo | groupId válido + userId query | HTTP 200 e retorno com array expenses do grupo, ordenado por createdAt decrescente | Aprovado |
+| INT-EXP-003 | POST /api/expenses/:expenseId/settle | Quitacao de parcela | expenseId, body com userId e paidBy | HTTP 200 e parcela marcada como quitada | Planejado |
+| INT-EXP-004 | GET /api/expenses/group/:groupId/balances | Consulta de saldo por grupo | groupId válido + userId query | HTTP 200 com balance contendo totalPaid, totalOwed, netBalance e summary | Aprovado |
+
+Resultado consolidado atual:
+- Suite executada com sucesso.
+- 25 testes executados, 25 aprovados.
 
 ## 7. Especificacao de Procedimentos de Teste
 Procedimento padrao:
@@ -125,6 +129,7 @@ Comandos sugeridos:
 | INC-INT-002 | 2026-04-07 | Auth | Setup de banco sem connectDB no helper global | Erro de conexao dos models ao subir app de teste | connectDB adicionado no setup global | Resolvido |
 | INC-INT-003 | 2026-04-07 | Auth | Duplicidade de setup local no teste auth | Risco de conflitos e manutencao mais dificil | Centralizacao no setup global e simplificacao do teste | Resolvido |
 | INC-INT-004 | 2026-04-09 | Groups | Validacao de tamanho de nome retornando 500 em vez de 400 | Falha em 2 cenarios de contrato da rota de criacao | Validacao explicita de tamanho no controller `createGroup` | Resolvido |
+| INC-INT-004 | 2026-04-10 | Expense | Setup inicial de teste de quitação sem criação do segundo usuário userId2, usando apenas paidBy (userId1) | Impediu validação correta do cenário de quitação de parcela de outro membro | Ajuste no setup para criar userId2 e incluir membro adicional no grupo antes de executar os testes | Resolvido |
 
 ## 9. Diario de Execucao
 
@@ -132,6 +137,7 @@ Comandos sugeridos:
 |---|---|---|---|---|---|
 | 2026-04-07 | Heitor | Auth | npm run test:auth | PASS (18/18) | Fluxo de autenticação e middleware validado em integracao |
 | 2026-04-09 | Heitor | Groups | npm run test:group | PASS (21/21) | Fluxo completo de grupos validado com cenarios de sucesso, erro e seguranca |
+| 2026-04-10 | Icaro | Expense | npm run test:expense | PASS (25/25) | Fluxo de criação, listagem, quitação e balanço de despesas validado |
 
 ## 10. Relatorio de Resumo de Teste de Integracao
 Resumo atual:
