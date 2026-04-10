@@ -5,7 +5,7 @@ Este documento registra o planejamento, a execucao, os resultados e os incidente
 
 Escopo atual:
 - Integracao de Auth: implementada e validada.
-- Integracao de Groups: campo preparado para preenchimento.
+- Integracao de Groups: implementada e validada.
 - Integracao de Expenses: campo preparado para preenchimento.
 
 ## 2. Referencias
@@ -20,9 +20,9 @@ Itens sob teste de integracao:
 
 Itens ja cobertos:
 - Modulo Auth (registro e login).
+- Modulo Groups (criacao, membros, consulta de grupos, atividades e exclusao logica).
 
 Itens pendentes:
-- Modulo Groups.
 - Modulo Expenses.
 
 ## 4. Ambiente de Teste de Integracao
@@ -39,6 +39,9 @@ Configuracao utilizada:
 
 Comando principal da suite de auth:
 - npm run test:auth
+
+Comando principal da suite de groups:
+- npm run test:group
 
 ## 5. Especificacao de Projeto de Teste (Integration Design)
 ### 5.1 Estrategia
@@ -70,17 +73,26 @@ Comando principal da suite de auth:
 
 Resultado consolidado atual:
 - Suite executada com sucesso.
-- 5 testes executados, 5 aprovados.
+- 18 testes executados, 18 aprovados.
 
-### 6.2 Modulo Groups (Template para preenchimento)
+### 6.2 Modulo Groups (Implementado)
 
 | ID | Endpoint | Cenario | Entrada | Resultado esperado | Status |
 |---|---|---|---|---|---|
-| INT-GRP-001 | POST /api/groups | Criacao de grupo valida | [preencher] | [preencher] | Planejado |
-| INT-GRP-002 | POST /api/groups/:groupId/members | Adicao de membro valida | [preencher] | [preencher] | Planejado |
-| INT-GRP-003 | GET /api/groups/user/:userId | Listagem de grupos do usuario | [preencher] | [preencher] | Planejado |
-| INT-GRP-004 | GET /api/groups/:groupId/activities | Consulta de atividades | [preencher] | [preencher] | Planejado |
-| INT-GRP-005 | DELETE /api/groups/:groupId | Exclusao logica sem pendencias | [preencher] | [preencher] | Planejado |
+| INT-GRP-001 | POST /api/groups | Criacao de grupo valida | nome valido, createdBy valido, token | HTTP 201 e criador como admin | Aprovado |
+| INT-GRP-002 | POST /api/groups | Validacao de nome invalido | nome vazio, 1 caractere, >100 caracteres | HTTP 400 | Aprovado |
+| INT-GRP-003 | POST /api/groups | Acesso sem autenticacao | sem token | HTTP 401 | Aprovado |
+| INT-GRP-004 | POST /api/groups/:groupId/members | Adicao de membro valida | groupId valido, userId valido, addedBy membro | HTTP 200 e membro com role member | Aprovado |
+| INT-GRP-005 | POST /api/groups/:groupId/members | Duplicidade de membro | mesmo userId adicionado duas vezes | HTTP 400 | Aprovado |
+| INT-GRP-006 | POST /api/groups/:groupId/members | Grupo inexistente | groupId inexistente | HTTP 404 | Aprovado |
+| INT-GRP-007 | GET /api/groups/user/:userId | Listagem de grupos do usuario | userId valido e token | HTTP 200 com array | Aprovado |
+| INT-GRP-008 | GET /api/groups/:groupId/activities | Consulta de atividades | groupId valido, userId valido e token | HTTP 200 com historico | Aprovado |
+| INT-GRP-009 | GET /api/groups/:groupId/activities | Integracao com expenses | criacao de despesa no grupo antes da consulta | atividade `EXPENSE_CREATED` presente | Aprovado |
+| INT-GRP-010 | DELETE /api/groups/:groupId | Exclusao logica sem pendencias | groupId valido, userId criador e token | HTTP 200 e grupo oculto em consultas futuras | Aprovado |
+
+Resultado consolidado atual:
+- Suite executada com sucesso.
+- 21 testes executados, 21 aprovados.
 
 ### 6.3 Modulo Expenses (Template para preenchimento)
 
@@ -112,24 +124,26 @@ Comandos sugeridos:
 | INC-INT-001 | 2026-04-07 | Auth | Falta da dependencia supertest para testes HTTP | Impediu execucao da suite auth | Dependencia instalada e suite reexecutada | Resolvido |
 | INC-INT-002 | 2026-04-07 | Auth | Setup de banco sem connectDB no helper global | Erro de conexao dos models ao subir app de teste | connectDB adicionado no setup global | Resolvido |
 | INC-INT-003 | 2026-04-07 | Auth | Duplicidade de setup local no teste auth | Risco de conflitos e manutencao mais dificil | Centralizacao no setup global e simplificacao do teste | Resolvido |
+| INC-INT-004 | 2026-04-09 | Groups | Validacao de tamanho de nome retornando 500 em vez de 400 | Falha em 2 cenarios de contrato da rota de criacao | Validacao explicita de tamanho no controller `createGroup` | Resolvido |
 
 ## 9. Diario de Execucao
 
 | Data | Executor | Suite | Comando | Resultado | Observacao |
 |---|---|---|---|---|---|
-| 2026-04-07 | Heitor | Auth | npm run test:auth | PASS (5/5) | Fluxo de registro e login validado em integracao |
+| 2026-04-07 | Heitor | Auth | npm run test:auth | PASS (18/18) | Fluxo de autenticação e middleware validado em integracao |
+| 2026-04-09 | Heitor | Groups | npm run test:group | PASS (21/21) | Fluxo completo de grupos validado com cenarios de sucesso, erro e seguranca |
 
 ## 10. Relatorio de Resumo de Teste de Integracao
 Resumo atual:
-- Cobertura de integracao implementada para Auth com casos positivos e negativos principais.
+- Cobertura de integracao implementada para Auth e Groups com casos positivos, negativos e de seguranca.
 - Estrutura de ambiente de integracao estabilizada (Jest + Supertest + Mongo em memoria).
-- Templates de casos e procedimentos preparados para avancar com Groups e Expenses.
+- Templates de casos e procedimentos preparados para avancar com Expenses.
 
 Riscos remanescentes:
-- Suites de Groups e Expenses ainda sem casos implementados.
-- Necessidade de definir massa de dados e cenarios de borda para modulos pendentes.
+- Suite de Expenses ainda sem casos implementados.
+- Necessidade de definir massa de dados e cenarios de borda para modulo pendente.
 
 Proximos passos recomendados:
-1. Implementar os primeiros casos de Groups (criacao, adicao de membro e listagem).
-2. Implementar os primeiros casos de Expenses (criacao e consulta por grupo).
+1. Implementar os primeiros casos de Expenses (criacao e consulta por grupo).
+2. Evoluir a suite de integracao para cobrir settle e balances em Expenses.
 3. Atualizar este registro a cada execucao com status e incidentes.
