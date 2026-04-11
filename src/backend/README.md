@@ -190,77 +190,77 @@ Despesas:
 1. Registrar usuário 1
     - **Endpoint**: `{{baseUrl}}/api/auth/register`
     - **Auth**: sem token
-![Registro do usuario 1](../docs/img/registerUser1.png)
+![Registro do usuario 1](../../docs/img/registerUser1.png)
 
 2. Login usuário 1 (salvar token em `tokenUser1`)
     - **Endpoint**: `{{baseUrl}}/api/auth/login`
     - **Auth**: sem token
-![Login do usuario 1](../docs/img/loginUser1.png)
+![Login do usuario 1](../../docs/img/loginUser1.png)
 
 3. Registrar usuário 2
     - **Endpoint**: `{{baseUrl}}/api/auth/login`
     - **Auth**: sem token
-![Registro do usuario 2](../docs/img/registerUser2.png)
+![Registro do usuario 2](../../docs/img/registerUser2.png)
 
 4. Login usuário 2 (salvar token em `tokenUser2`)
     - **Endpoint**: ``
     - **Auth**:
-![Login do usuario 2](../docs/img/loginUser2.png)
+![Login do usuario 2](../../docs/img/loginUser2.png)
 
 5. Buscar perfil do usuário 1 (salvar `_id` em `profileIdUser1`)
     - **Endpoint**: `{{baseUrl}}/api/users/profile`
     - **Auth**:`{{tokenUser1}}`
-![Busca perfil do usuario 1](../docs/img/getUser1.png)
+![Busca perfil do usuario 1](../../docs/img/getUser1.png)
 
 6. Buscar perfil do usuário 2 (salvar `_id` em `profileIdUser2`)
     - **Endpoint**: `{{baseUrl}}/api/users/profile`
     - **Auth**: `{{tokenUser2}}`
-![Busca perfil do usuario 2](../docs/img/getUser2.png)
+![Busca perfil do usuario 2](../../docs/img/getUser2.png)
 
 7. Criar grupo com usuário 1 (salvar `_id` em `groupId`)
     - **Endpoint**: `{{baseUrl}}/api/groups`
     - **Auth**:`{{tokenUser1}}`
-![Cria grupo com usuário 1](../docs/img/createGroup.png)
+![Cria grupo com usuário 1](../../docs/img/createGroup.png)
 
 8. Adicionar usuário 2 no grupo
     - **Endpoint**: `{{baseUrl}}/api/groups/{{groupId}}/members`
     - **Auth**: `{{tokenUser1}}`
-![Adiciona membro 2 ao grupo](../docs/img/addMember.png)
+![Adiciona membro 2 ao grupo](../../docs/img/addMember.png)
 
 9. Listar grupos do usuário 1
     - **Endpoint**: `{{baseUrl}}/api/groups/user/{{profileUser1}}`
     - **Auth**: `{{tokenUser1}}`
-![Lista grupos do usuário 1](../docs/img/listGroupsUser1.png)
+![Lista grupos do usuário 1](../../docs/img/listGroupsUser1.png)
 
 10. Criar despesa no grupo (salvar `expense._id` em `expenseId`)
     - **Endpoint**: `{{baseUrl}}/api/expenses`
     - **Auth**: `{{tokenUser1}}`
-![Cria despesa no grupo](../docs/img/createExpense.png)
+![Cria despesa no grupo](../../docs/img/createExpense.png)
 
 11. Listar despesas do grupo
     - **Endpoint**: `{{baseUrl}}/api/expenses/group/{{groupId}}?userId={{profileUser1}}`
     - **Auth**: `{{tokenUser1}}`
-![Lista despesas do grupo](../docs/img/getGroupExpense.png)
+![Lista despesas do grupo](../../docs/img/getGroupExpense.png)
 
 12. Marcar parcela como paga (`settle`)
     - **Endpoint**: `{{baseUrl}}/api/expenses/{{expenseId}}/settle`
     - **Auth**:  `{{tokenUser2}}`
-![Marcar parcela como paga](../docs/img/settlePayment.png)
+![Marcar parcela como paga](../../docs/img/settlePayment.png)
 
 13. Consultar balanço do grupo
     - **Endpoint**: `{{baseUrl}}/api/expenses/group/{{groupId}}/balances?userId={{profileUser1}}`
     - **Auth**:`{{tokenUser1}}`
-![Consultar balanço do grupo](../docs/img/getGroupBalance.png)
+![Consultar balanço do grupo](../../docs/img/getGroupBalance.png)
 
 14. Listar atividades do grupo
     - **Endpoint**: `{{baseUrl}}/api/groups/{{groupId}}/activities?userId={{profileUser1}}&limit=50`
     - **Auth**:`{{tokenUser1}}`
-![Listar atividades do grupo](../docs/img/getGroupActivity.png)
+![Listar atividades do grupo](../../docs/img/getGroupActivity.png)
 
 15. Deletar grupo
     - **Endpoint**: `{{baseUrl}}/api/groups/{{groupId}}`
     - **Auth**:`{{tokenUser1}}`
-![Deletar grupo](../docs/img/deleteGroup.png)
+![Deletar grupo](../../docs/img/deleteGroup.png)
 
 ### Erros esperados (checklist)
 
