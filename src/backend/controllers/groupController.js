@@ -39,10 +39,15 @@ exports.createGroup = async (req, res) => {
       return res.status(400).json({ message: 'Nome deve ter no mínimo 2 caracteres' });
     }
 
-    if (normalizedName.length < 100){
+    const normalizedName = String(name).trim();
+    if (normalizedName.length < 2) {
+      return res.status(400).json({ message: 'Nome deve ter no mínimo 2 caracteres' });
+    }
+
+    if (normalizedName.length > 100) {
       return res.status(400).json({ message: 'Nome deve ter no máximo 100 caracteres' });
     }
-    
+
     if (!isValidObjectId(createdBy)) {
       return res.status(400).json({ message: 'ID do criador inválido' });
     }
