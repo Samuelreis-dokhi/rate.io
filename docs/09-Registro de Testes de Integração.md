@@ -153,3 +153,21 @@ Proximos passos recomendados:
 1. Implementar os primeiros casos de Expenses (criacao e consulta por grupo).
 2. Evoluir a suite de integracao para cobrir settle e balances em Expenses.
 3. Atualizar este registro a cada execucao com status e incidentes.
+
+## 11. Execucao Atualizada - 2026-04-10
+
+Comando executado:
+- `npm run test`
+
+Recorte de integracao:
+- Suite `tests/integration/expense.routes.test.js`: **PASS**
+- Suite `tests/integration/group.routes.test.js`: **PASS**
+- Suite `tests/integration/auth.routes.test.js`: **PASS**
+
+Incidentes corrigidos nesta execucao:
+- Correcao de matcher no helper local de criacao de grupo (`tobe` -> `toBe`).
+- Correcao do payload de membros no setup de despesas (`{ membersIds: [userId2] }`).
+
+Resultado consolidado apos correcao:
+- Integracao: 3 suites aprovadas.
+- Nenhuma falha remanescente nas suites de integracao.
