@@ -88,6 +88,11 @@ const getUserGroupBalance = async (userId, groupId) => {
 const getGroupPaymentGraph = async (groupId) => {
   const balances = await getGroupBalances(groupId);
   const users = Object.keys(balances);
+  const remainingCredits = {};
+
+  users.forEach((userId) => {
+    remainingCredits[userId] = Math.max(balances[userId].balance, 0);
+  });
 
   const paymentGraph = [];
 
@@ -95,9 +100,9 @@ const getGroupPaymentGraph = async (groupId) => {
     const debtorId = users[i];
     const debtorBalance = balances[debtorId];
 
-    if (debtorBalance.netBalance < 0) {
+    if (debtorBalance.balance < 0) {
       // Esse usuário é um devedor, precisa pagar a alguém
-      const totalOwed = Math.abs(debtorBalance.netBalance);
+      const totalOwed = Math.abs(debtorBalance.balance);
       let remainingDebt = totalOwed;
 
       // Tenta casar o devedor com os credores
@@ -105,15 +110,16 @@ const getGroupPaymentGraph = async (groupId) => {
         const creditorId = users[j];
         if (debtorId === creditorId) continue; // Não pode pagar a si mesmo
 
-        const creditorBalance = balances[creditorId];
-        if (creditorBalance.netBalance > 0.01) {
-          const paymentAmount = Math.min(remainingDebt, creditorBalance.netBalance);
+        const creditorRemainingCredit = remainingCredits[creditorId];
+        if (creditorRemainingCredit > 0.01) {
+          const paymentAmount = Math.min(remainingDebt, creditorRemainingCredit);
           paymentGraph.push({
             devedor: debtorId,
             credor: creditorId,
             valor: parseFloat(paymentAmount.toFixed(2)),
           });
           remainingDebt -= paymentAmount;
+          remainingCredits[creditorId] -= paymentAmount;
         }
       }
     }
