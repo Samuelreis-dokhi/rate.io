@@ -37,7 +37,7 @@ const createGroup = async (token, userId, overrides = {}) => {
       ...overrides,
     });
 
-  expect(res.status).tobe(201);
+  expect(res.status).toBe(201);
   return res.body;
 };
 
@@ -48,7 +48,7 @@ describe('POST /api/expenses (createExpense)', () => {
   beforeEach(async () => {
     ({ token, userId } = await createUserAndLogin('A'));
     ({ userId: userId2 } = await createUserAndLogin('B'));
-    const group = await createGroup(token, userId, [userId2]);
+    const group = await createGroup(token, userId, { membersIds: [userId2] });
     groupId = group._id;
   });
 
@@ -334,7 +334,7 @@ describe('POST /api/expenses/:expenseId/settle', () => {
   beforeEach(async () => {
     ({ token, userId } = await createUserAndLogin('G'));
     ({ userId: userId2 } = await createUserAndLogin('H'));
-    const group = await createGroup(token, userId, [userId2]);
+    const group = await createGroup(token, userId, { membersIds: [userId2] });
     groupId = group._id;
 
     const expRes = await request(app)
@@ -422,7 +422,7 @@ describe('GET /api/expenses/group/:groupId/balances', () => {
   beforeEach(async () => {
     ({ token, userId } = await createUserAndLogin('J'));
     ({ userId: userId2 } = await createUserAndLogin('K'));
-    const group = await createGroup(token, userId, [userId2]);
+    const group = await createGroup(token, userId, { membersIds: [userId2] });
     groupId = group._id;
 
     await request(app)
