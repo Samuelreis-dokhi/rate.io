@@ -33,6 +33,11 @@ exports.createGroup = async (req, res) => {
     if (!name || !createdBy) {
       return res.status(400).json({ message: 'Nome e ID do criador são obrigatórios' });
     }
+    /* Validação de nome para que seja compatível com o teste de grupos */
+    const normalizedName = String(name).trim();
+    if (normalizedName.length < 2) {
+      return res.status(400).json({ message: 'Nome deve ter no mínimo 2 caracteres' });
+    }
 
     const normalizedName = String(name).trim();
     if (normalizedName.length < 2) {
