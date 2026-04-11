@@ -2,7 +2,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const { createApp } = require('../helpers/app');
 
-let app, mongod;
+let app;
 /* A função beforeAll() já existe em helpers/app, basta que importemos a função */
 beforeAll(async () => {
   app = createApp();
@@ -36,7 +36,7 @@ const createGroup = async (token, userId, overrides = {}) => {
       createdBy: userId,
       ...overrides,
     });
-  
+
   expect(res.status).tobe(201);
   return res.body;
 };
