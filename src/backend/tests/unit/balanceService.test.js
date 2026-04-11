@@ -1,13 +1,4 @@
-jest.mock('../../config/database', () => ({
-  getConnections: jest.fn(() => ({
-    models: {},
-    model: jest.fn(() => ({ find: jest.fn() })),
-  })),
-}));
-
-jest.mock('../../models/Expense', () => ({
-  find: jest.fn(),
-}));
+const Expense = require('../../models/Expense');
 
 const {
   getGroupBalances,
@@ -15,7 +6,9 @@ const {
   getGroupPaymentGraph,
 } = require('../../services/balanceService');
 
-const Expense = require('../../models/Expense');
+jest.mock('../../models/Expense', () => ({
+  find: jest.fn(),
+}));
 
 describe('balanceService', () => {
   afterEach(() => {
@@ -36,8 +29,17 @@ describe('balanceService', () => {
 
       const result = await getGroupBalances('grupo123');
 
-      expect(result['user_a'].balance).toBe(50);
-      expect(result['user_b'].balance).toBe(-50);
+      expect(result['user_a']).toEqual({
+        paid: 100,
+        owed: 50,
+        balance: 50,
+      });
+
+      expect(result['user_b']).toEqual({
+        paid: 0,
+        owed: 50,
+        balance: -50,
+      });
     });
 
     test('ignora splits com status "pago"', async () => {
@@ -49,6 +51,12 @@ describe('balanceService', () => {
       ]);
 
       const result = await getGroupBalances('grupo123');
+
+      expect(result['user_a']).toEqual({
+        paid: 0,
+        owed: 0,
+        balance: 0,
+      });
 
       expect(result['user_b']).toBeUndefined();
     });
@@ -92,6 +100,14 @@ describe('balanceService', () => {
       expect(result['user_a'].balance).toBe(50);
       expect(result['user_b'].balance).toBe(-50);
     });
+
+    test('chama Expense.find com groupId', async () => {
+      Expense.find.mockResolvedValue([]);
+
+      await getGroupBalances('grupo_xyz');
+
+      expect(Expense.find).toHaveBeenCalledWith({ groupId: 'grupo_xyz' });
+    });
   });
 
   describe('getUserGroupBalance', () => {
@@ -105,8 +121,12 @@ describe('balanceService', () => {
 
       const result = await getUserGroupBalance('user_a', 'grupo123');
 
-      expect(result.netBalance).toBe(100);
-      expect(result.summary).toBe('100 a receber');
+      expect(result).toEqual({
+        totalPaid: 100,
+        totalOwed: 0,
+        netBalance: 100,
+        summary: '100 a receber',
+      });
     });
 
     test('retorna summary "a pagar" quando saldo é negativo', async () => {
@@ -119,8 +139,12 @@ describe('balanceService', () => {
 
       const result = await getUserGroupBalance('user_b', 'grupo123');
 
-      expect(result.netBalance).toBe(-100);
-      expect(result.summary).toBe('100 a pagar');
+      expect(result).toEqual({
+        totalPaid: 0,
+        totalOwed: 100,
+        netBalance: -100,
+        summary: '100 a pagar',
+      });
     });
 
     test('retorna "Saldo equilibrado" quando saldo é zero', async () => {
@@ -128,31 +152,17 @@ describe('balanceService', () => {
 
       const result = await getUserGroupBalance('user_a', 'grupo123');
 
-      expect(result.netBalance).toBe(0);
-      expect(result.summary).toBe('Saldo equilibrado');
-    });
-
-    test('retorna zeros para usuário sem movimentações no grupo', async () => {
-      Expense.find.mockResolvedValue([]);
-
-      const result = await getUserGroupBalance('user_inexistente', 'grupo123');
-
-      expect(result.totalPaid).toBe(0);
-      expect(result.totalOwed).toBe(0);
-      expect(result.netBalance).toBe(0);
+      expect(result).toEqual({
+        totalPaid: 0,
+        totalOwed: 0,
+        netBalance: 0,
+        summary: 'Saldo equilibrado',
+      });
     });
   });
 
   describe('getGroupPaymentGraph', () => {
-    test('retorna array vazio quando não há dívidas', async () => {
-      Expense.find.mockResolvedValue([]);
-
-      const result = await getGroupPaymentGraph('grupo123');
-
-      expect(result).toEqual([]);
-    });
-
-    test('retorna array para qualquer grupo', async () => {
+    test('retorna lista de pagamentos quando há credor e devedor', async () => {
       Expense.find.mockResolvedValue([
         {
           paidBy: 'user_a',
@@ -162,10 +172,16 @@ describe('balanceService', () => {
 
       const result = await getGroupPaymentGraph('grupo123');
 
-      expect(Array.isArray(result)).toBe(true);
+      expect(result).toEqual([
+        {
+          devedor: 'user_b',
+          credor: 'user_a',
+          valor: 60,
+        },
+      ]);
     });
 
-    test('retorna array para múltiplas despesas', async () => {
+    test('retorna lista de pagamentos para múltiplos credores', async () => {
       Expense.find.mockResolvedValue([
         {
           paidBy: 'user_a',
@@ -179,7 +195,26 @@ describe('balanceService', () => {
 
       const result = await getGroupPaymentGraph('grupo123');
 
-      expect(Array.isArray(result)).toBe(true);
+      expect(result).toEqual([
+        {
+          devedor: 'user_c',
+          credor: 'user_a',
+          valor: 40,
+        },
+        {
+          devedor: 'user_c',
+          credor: 'user_b',
+          valor: 60,
+        },
+      ]);
+    });
+
+    test('retorna array vazio quando não há dívidas', async () => {
+      Expense.find.mockResolvedValue([]);
+
+      const result = await getGroupPaymentGraph('grupo123');
+
+      expect(result).toEqual([]);
     });
   });
 });
