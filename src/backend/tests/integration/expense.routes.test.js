@@ -1,64 +1,45 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const request = require('supertest');
+const mongoose = require('mongoose');
+const { createApp } = require('../helpers/app');
 
 let app, mongod;
-
+/* A função beforeAll() já existe em helpers/app, basta que importemos a função */
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
-  process.env.MONGO_URI = uri;
-  process.env.MONGO_URI_AUTH = uri;
-  process.env.MONGO_URI_USERS = uri;
-  process.env.MONGO_URI_EXPENSES = uri;
-  process.env.MONGO_URI_GROUPS = uri;
-  process.env.JWT_SECRET = 'test-secret-key';
-  process.env.NODE_ENV = 'test';
-
-  const { connectDB } = require('../../config/database');
-  await connectDB();
-
-  const { createApp } = require('../helpers/app');
   app = createApp();
 });
-
-afterEach(async () => {
-  for (const conn of mongoose.connections) {
-    for (const [, col] of Object.entries(conn.collections)) {
-      await col.deleteMany({});
-    }
-  }
-});
-
-afterAll(async () => {
-  await Promise.all(mongoose.connections.map((c) => c.close()));
-  if (mongod) await mongod.stop();
-});
-
-// ─── Helper: cria usuário e retorna token + userId ────────────────────
-async function createUserAndLogin(suffix = '') {
-  const email = `user${suffix}_${Date.now()}@teste.com`;
-  const regRes = await request(app).post('/api/auth/register').send({
-    name: `Usuário ${suffix}`,
-    email,
+/* Cria um novo usuário mockado e loga */
+const createUserAndLogin = async (suffix = 'user') => {
+  const unique = `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+  const payload = {
+    name: `User ${suffix}`,
+    email: `user_${suffix}_${unique}@teste.com`,
     password: 'senha123',
-  });
-  const loginRes = await request(app).post('/api/auth/login').send({ email, password: 'senha123' });
-  return { token: loginRes.body.token, userId: regRes.body.id };
-}
+  };
 
-// ─── Helper: cria grupo com membros ──────────────────────────────────
-async function createGroup(token, userId, memberIds = []) {
+  const registerRes = await request(app).post('/api/auth/register').send(payload);
+  const userId = registerRes.body.id;
+
+  const loginRes = await request(app).post('/api/auth/login').send({
+    email: payload.email,
+    password: payload.password,
+  });
+
+  return { userId, token: loginRes.body.token, email: payload.email };
+};
+/* Cria um grupo mockado para teste */
+const createGroup = async (token, userId, overrides = {}) => {
   const res = await request(app)
     .post('/api/groups')
     .set('Authorization', `Bearer ${token}`)
     .send({
-      name: 'Grupo Teste',
+      name: `Grupo Teste ${Date.now()}`,
       createdBy: userId,
-      membersIds: [userId, ...memberIds],
+      ...overrides,
     });
-  return res.body.group || res.body;
-}
+  
+  expect(res.status).tobe(201);
+  return res.body;
+};
 
 // ─── POST /api/expenses ───────────────────────────────────────────────
 describe('POST /api/expenses (createExpense)', () => {
