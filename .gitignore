@@ -1,0 +1,29 @@
+# Dependências do Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Segurança: Nunca suba suas URIs do MongoDB e chaves JWT para o repositório
+.env
+.env.local
+.env.*.local
+.env.test
+
+# Builds e Distribuições
+dist/
+build/
+out/
+
+# Sistemas e IDEs
+.DS_Store
+.vscode/
+.idea/
+
+# Logs e arquivos temporários
+logs/
+*.log
+tmp/
+
+# Relatório individual de produção
+relatorio.md

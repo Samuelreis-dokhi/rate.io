@@ -1,0 +1,71 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const { connectDB } = require('./config/database');
+const { authenticateToken } = require('./middleware/authMiddleware');
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+/* Middleware */
+app.use(cors());
+app.use(express.json());
+
+// Inicia o servidor e conecta ao MongoDB
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log('Conectado ao MongoDB com sucesso!');
+
+    const Auth = require('./models/Auth');
+    try {
+      const indexes = await Auth.collection.indexes();
+      const hasLegacyUsernameIndex = indexes.some((index) => index.name === 'username_1');
+
+      if (hasLegacyUsernameIndex) {
+        await Auth.collection.dropIndex('username_1');
+        console.log('Índice antigo "username_1" removido com sucesso.');
+      }
+    } catch (indexError) {
+      if (indexError?.codeName === 'IndexNotFound') {
+        throw indexError;
+      }
+    }
+    const authRoutes = require('./routes/authRoutes');
+    const userRoutes = require('./routes/userRoutes');
+    const groupRoutes = require('./routes/groupRoutes');
+    const expenseRoutes = require('./routes/expenseRoutes');
+
+    app.use('/api/auth', authRoutes);
+    app.use('/api/users', authenticateToken, userRoutes);
+    app.use('/api/groups', authenticateToken, groupRoutes);
+    app.use('/api/expenses', authenticateToken, expenseRoutes);
+
+    app.get('/', (req, res) => {
+      res.send('API rodando...');
+    });
+
+    app.get('/health', (req, res) => {
+      res.status(200).json({ status: 'ok' });
+    });
+
+    app.use((req, res) => {
+      res.status(404).json({ message: 'Endpoint não encontrado' });
+    });
+
+    app.use((err, req, res) => {
+      console.error('Erro no servidor:', err);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    });
+
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  } catch (error) {
+    throw new Error(`Erro ao iniciar o servidor: ${error.message}`);
+  }
+};
+
+startServer();

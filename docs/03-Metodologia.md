@@ -1,45 +1,80 @@
-
 # Metodologia
 
-<span style="color:red">Pré-requisitos: <a href="2-Especificação do Projeto.md"> Documentação de Especificação</a></span>
+A equipe utiliza uma metodologia ágil baseada em Scrum e Kanban, organizando o trabalho em Sprints curtas para garantir entregas contínuas e melhor controle das atividades.
 
-Descreva aqui a metodologia de trabalho do grupo para atacar o problema. Definições sobre os ambiente de trabalho utilizados pela  equipe para desenvolver o projeto. Abrange a relação de ambientes utilizados, a estrutura para gestão do código fonte, além da definição do processo e ferramenta através dos quais a equipe se organiza (Gestão de Times).
+São utilizadas ferramentas como Visual Studio Code para desenvolvimento, GitHub para versionamento de código e GitHub Projects para organização das tarefas. O design das interfaces é feito no Figma, enquanto diagramas são criados no Draw.io. Os testes de API são realizados com o Postman.
+
+Para padronizar o ambiente de desenvolvimento entre os integrantes, a equipe adotou Docker e Docker Compose como estratégia principal de execução local da API. Com isso, as versões de Node, dependências e processo de inicialização ficam consistentes para todos os membros.
+
+O código será organizado em branches (main, develop, feature e bugfix), com uso de Pull Requests para revisão. Dessa forma, a equipe mantém organização, colaboração e qualidade no desenvolvimento do projeto.
 
 ## Relação de Ambientes de Trabalho
 
-Os artefatos do projeto são desenvolvidos a partir de diversas plataformas e a relação dos ambientes com seu respectivo propósito deverá ser apresentada em uma tabela que especifica que detalha Ambiente, Plataforma e Link de Acesso. 
-Nota: Vide documento modelo do estudo de caso "Portal de Notícias" e defina também os ambientes e frameworks que serão utilizados no desenvolvimento de aplicações móveis.
+Os artefatos do projeto são desenvolvidos utilizando diferentes plataformas, cada uma com uma função específica dentro do processo de desenvolvimento. O ambiente de desenvolvimento utiliza o Visual Studio Code para a criação do código, enquanto o versionamento é realizado no GitHub.
+
+A organização das tarefas é feita por meio do GitHub Projects, permitindo acompanhar o andamento das atividades. O design das interfaces é desenvolvido no Figma, e a modelagem de diagramas é realizada no Draw.io.
+
+Para testes de APIs, é utilizado o Postman. A comunicação da equipe ocorre através do Discord, Microsoft Teams e do ambiente virtual Gather.
+
+No setup técnico, o backend pode ser executado de duas formas:
+
+1. Fluxo padrão com Docker Compose na raiz do repositório.
+2. Fluxo alternativo com Node.js local dentro de `src/backend`.
+
+Esse modelo foi adotado para reduzir divergências de ambiente e facilitar o onboarding de novos integrantes.
+
+No desenvolvimento de aplicações móveis, serão utilizados o React Native e o Expo, permitindo a criação de aplicativos multiplataforma de forma eficiente.
+
+Dessa forma, a equipe consegue manter organização, colaboração e qualidade durante todo o desenvolvimento do projeto.
 
 ## Controle de Versão
 
-A ferramenta de controle de versão adotada no projeto foi o
-[Git](https://git-scm.com/), sendo que o [Github](https://github.com)
-foi utilizado para hospedagem do repositório.
+Configuração do Projeto e Controle de Versão
 
-O projeto segue a seguinte convenção para o nome de branches:
+O projeto foi configurado utilizando o GitHub, com controle de versão realizado por meio do Git. Essa abordagem permitiu que a equipe trabalhasse de forma colaborativa, mantendo o histórico de alterações e garantindo maior organização no desenvolvimento.
 
-- `main`: versão estável já testada do software
-- `unstable`: versão já testada do software, porém instável
-- `testing`: versão em testes do software
-- `dev`: versão de desenvolvimento do software
+Gerenciamento de Branches
 
-Quanto à gerência de issues, o projeto adota a seguinte convenção para
-etiquetas:
+A equipe adotou uma estrutura de branches para organizar as versões do sistema:
 
-- `documentation`: melhorias ou acréscimos à documentação
-- `bug`: uma funcionalidade encontra-se com problemas
-- `enhancement`: uma funcionalidade precisa ser melhorada
-- `feature`: uma nova funcionalidade precisa ser introduzida
+main: versão estável e pronta para entrega
+develop: integração contínua das funcionalidades validadas
+feature/*: desenvolvimento de novas funcionalidades
+bugfix/*: correções de defeitos
+docs/*: atualizações de documentação
+test/*: criação ou ajuste de testes
 
-Discuta como a configuração do projeto foi feita na ferramenta de versionamento escolhida. Exponha como a gerência de tags, merges, commits e branchs é realizada. Discuta como a gerência de issues foi realizada.
+O fluxo de trabalho consiste na criação de branches temáticas a partir da develop. Após implementação e validações, as alterações seguem por Pull Request para develop. Em marcos de release, a develop é consolidada na main.
 
-> **Links Úteis**:
-> - [Microfundamento: Gerência de Configuração](https://pucminas.instructure.com/courses/87878/)
-> - [Tutorial GitHub](https://guides.github.com/activities/hello-world/)
-> - [Git e Github](https://www.youtube.com/playlist?list=PLHz_AreHm4dm7ZULPAmadvNhH6vk9oNZA)
->  - [Comparando fluxos de trabalho](https://www.atlassian.com/br/git/tutorials/comparing-workflows)
-> - [Understanding the GitHub flow](https://guides.github.com/introduction/flow/)
-> - [The gitflow workflow - in less than 5 mins](https://www.youtube.com/watch?v=1SXpE08hvGs)
+Além da revisão de código por Pull Request, a equipe considera como critérios mínimos de pronto para merge:
+
+1. Ambiente local validado com Docker Compose.
+2. Lint e formatação executados no backend.
+3. Teste manual dos endpoints principais via Postman.
+
+Gerenciamento de Commits, Merges e Tags
+Commits:
+Foram realizados de forma frequente e com descrições claras, facilitando o entendimento das alterações feitas no código.
+Merges:
+Utilizados para integrar alterações entre branches. Antes de realizar o merge, as funcionalidades eram testadas para garantir estabilidade.
+Tags:
+Utilizadas para marcar versões importantes do projeto, como entregas ou marcos relevantes, facilitando o controle de versões.
+Gerenciamento de Issues
+
+A gestão de tarefas foi feita por meio das issues do GitHub, permitindo organizar, acompanhar e distribuir o trabalho entre os membros da equipe.
+
+Foram utilizadas etiquetas padronizadas para classificar as atividades:
+
+documentation: melhorias ou atualizações na documentação
+bug: correção de erros no sistema
+enhancement: melhorias em funcionalidades existentes
+feature: implementação de novas funcionalidades
+
+Cada issue podia ser atribuída a um responsável, conter descrição detalhada e ser vinculada a uma branch específica. Isso facilitou o acompanhamento do progresso e a organização do trabalho.
+
+Conclusão
+
+Com essa configuração, a equipe conseguiu manter controle sobre o desenvolvimento, organizar melhor as tarefas e garantir a qualidade das entregas, utilizando de forma eficiente os recursos do Git e do GitHub.
 
 ## Gerenciamento de Projeto
 
@@ -48,40 +83,49 @@ Discuta como a configuração do projeto foi feita na ferramenta de versionament
 Apresente a divisão de papéis entre os membros do grupo.
 
 Exemplificação: A equipe utiliza metodologias ágeis, tendo escolhido o Scrum como base para definição do processo de desenvolvimento. A equipe está organizada da seguinte maneira:
-- Scrum Master: Felipe Domingos;
-- Product Owner: Rommel Carneiro;
-- Equipe de Desenvolvimento: Pedro Penna, Pedro Ivo, Rodrigo Richard;
-- Equipe de Design: Simone Nogueira.
 
-> **Links Úteis**:
-> - [11 Passos Essenciais para Implantar Scrum no seu Projeto](https://mindmaster.com.br/scrum-11-passos/)
-> - [Scrum em 9 minutos](https://www.youtube.com/watch?v=XfvQWnRgxG0)
-> - [Os papéis do Scrum e a verdade sobre cargos nessa técnica](https://www.atlassian.com/br/agile/scrum/roles)
+- Scrum Master: Icaro e Heitor;
+- Product Owner: Rondinelli e samuel;
+- Equipe de Desenvolvimento: Samuel, Vinicius, Icaro, Heitor, Rondinelli, Louise;
+- Equipe de Design: Vinicius e Louise.
 
 ### Processo
 
-Coloque  informações sobre detalhes da implementação do Scrum seguido pelo grupo. O grupo deverá fazer uso do recurso de gerenciamento de projeto oferecido pelo GitHub, que permite acompanhar o andamento do projeto, a execução das tarefas e o status de desenvolvimento da solução.
- 
-> **Links Úteis**:
-> - [Planejamento e Gestáo Ágil de Projetos](https://pucminas.instructure.com/courses/87878/pages/unidade-2-tema-2-utilizacao-de-ferramentas-para-controle-de-versoes-de-software)
-> - [Sobre quadros de projeto](https://docs.github.com/pt/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards)
-> - [Project management, made simple](https://github.com/features/project-management/)
-> - [Sobre quadros de projeto](https://docs.github.com/pt/github/managing-your-work-on-github/about-project-boards)
-> - [Como criar Backlogs no Github](https://www.youtube.com/watch?v=RXEy6CFu9Hk)
-> - [Tutorial Slack](https://slack.com/intl/en-br/)
+A equipe adotou a metodologia Scrum para organizar o desenvolvimento do projeto, trabalhando com Sprints curtas, permitindo melhor controle das atividades e entregas contínuas.
+
+Cada Sprint foi planejada com base nas funcionalidades necessárias do sistema, que foram registradas como tarefas (issues) no GitHub. A gestão dessas tarefas foi realizada por meio do GitHub Projects, utilizando quadros no modelo Kanban para acompanhar o andamento do projeto.
+
+As tarefas foram organizadas em colunas como “A fazer”, “Em andamento” e “Concluído”, permitindo visualizar o status de desenvolvimento de forma clara. Além disso, foram utilizados milestones para definir etapas importantes do projeto e acompanhar o progresso ao longo do tempo.
+
+Durante o desenvolvimento, a equipe realizou acompanhamentos frequentes para verificar o progresso das atividades, identificar possíveis problemas e garantir o cumprimento dos prazos definidos. Cada membro ficou responsável por suas tarefas, atualizando seu status diretamente no GitHub Projects.
+
+O fluxo de desenvolvimento seguiu o modelo Gitflow, onde novas funcionalidades foram criadas a partir da branch develop e, após finalizadas, integradas ao projeto. Isso garantiu maior organização e controle das versões.
+
+Ao final de cada Sprint, as funcionalidades concluídas eram revisadas e integradas à versão principal do sistema, garantindo que o projeto evoluísse de forma contínua e estável.
+
+Dessa forma, o uso do Scrum aliado ao GitHub Projects permitiu à equipe acompanhar o andamento do projeto, organizar as tarefas e manter controle sobre o desenvolvimento da solução.
 
 ### Ferramentas
 
 As ferramentas empregadas no projeto são:
 
-- Editor de código.
-- Ferramentas de comunicação
-- Ferramentas de desenho de tela (_wireframing_)
-
-O editor de código foi escolhido porque ele possui uma integração com o sistema de versão. As ferramentas de comunicação utilizadas possuem integração semelhante e por isso foram selecionadas. Por fim, para criar diagramas utilizamos essa ferramenta por melhor captar as necessidades da nossa solução.
-
-Liste quais ferramentas foram empregadas no desenvolvimento do projeto, justificando a escolha delas, sempre que possível.
- 
-> **Possíveis Ferramentas que auxiliarão no gerenciamento**: 
-> - [Slack](https://slack.com/)
-> - [Github](https://github.com/)
+Visual Studio Code:
+Editor de código utilizado para o desenvolvimento do sistema, com suporte a várias linguagens e extensões.
+GitHub:
+Plataforma utilizada para armazenar e versionar o código do projeto, permitindo colaboração entre os membros da equipe.
+GitHub Projects:
+Ferramenta usada para organizar e acompanhar as tarefas do projeto em formato de quadro (Kanban).
+Docker e Docker Compose:
+Ferramentas utilizadas para padronizar e executar o ambiente local da API com configuração única para toda a equipe.
+Figma:
+Utilizado para criação das interfaces, protótipos e design das telas do sistema.
+Gather:
+Ambiente virtual que simula um escritório online, facilitando a interação entre os membros da equipe.
+Discord:
+Plataforma de comunicação utilizada para conversas rápidas e alinhamentos diários.
+Microsoft Teams:
+Utilizado para reuniões formais, apresentações e comunicação mais estruturada.
+Draw.io:
+Ferramenta usada para criar diagramas, como fluxogramas e modelos do sistema.
+Postman:
+Utilizado para testar APIs, verificando o funcionamento das requisições e respostas do sistema.

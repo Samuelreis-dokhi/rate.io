@@ -1,0 +1,78 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "test": "jest --runInBand",
+    "test:unit": "jest tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand",
+    "test:system": "jest tests/system --runInBand",
+    "test:auth": "jest --selectProjects integration --runTestsByPath tests/integration/auth.routes.test.js --runInBand",
+    "test:expense": "jest --selectProjects integration --runTestsByPath tests/integration/expense.routes.test.js --runInBand",
+    "test:group": "jest --selectProjects integration --runTestsByPath tests/integration/group.routes.test.js --runInBand",
+    "test:coverage": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "unit",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/tests/unit/**/*.test.js"
+        ],
+        "testTimeout": 30000
+      },
+      {
+        "displayName": "integration",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/tests/integration/**/*.test.js"
+        ],
+        "testTimeout": 30000,
+        "setupFilesAfterEnv": [
+          "<rootDir>/tests/helpers/db.js"
+        ]
+      },
+      {
+        "displayName": "system",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/tests/system/**/*.test.js"
+        ],
+        "testTimeout": 30000,
+        "setupFilesAfterEnv": [
+          "<rootDir>/tests/helpers/db.js"
+        ]
+      }
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^17.4.1",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.0.1",
+    "nodemon": "^3.0.0",
+    "prettier": "^3.0.0",
+    "superset": "^3.0.3",
+    "supertest": "^7.2.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.3.0"
+  }
+}

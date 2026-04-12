@@ -1,52 +1,131 @@
 # RATE.IO
 
-`Análise e Desenvolvimento de Sistemas`
+Aplicação distribuída para gestão financeira colaborativa e rateio de despesas em grupos (viagens, moradias compartilhadas e eventos).
 
-`Projeto - Desenvolvimento de uma Aplicação Distribuída - Turma 01 - 2026/1`
+## Visão Geral
 
-`Eixo 4`
-
-O projeto consiste no desenvolvimento de uma aplicação distribuída voltada para a gestão financeira e o rateio de despesas coletivas em diversos cenários, como viagens, moradias compartilhadas (repúblicas) e eventos sociais. A solução utiliza uma arquitetura cliente-servidor onde uma API REST centralizada na nuvem, integrada a um banco de dados NoSQL, serve simultaneamente a uma interface Web e a um aplicativo Mobile. Enquanto o foco do dispositivo móvel é a agilidade nos lançamentos cotidianos e notificações em tempo real, a plataforma Web oferece uma visão macro e gerencial dos gastos.
+O projeto adota arquitetura cliente-servidor com API REST no back-end e persistência em MongoDB. A API é consumida por clientes Web e Mobile.
 
 ## Integrantes
 
-* Samuel Filipe dos reis
-* Louise Dias Santos
-* Heitor Oliveiro Soares Domingos
-* Vinícius Nogueira
-* Rondinelli Silva de Oliveira
-* Icaro de Jesus Souza e Cota
+- Samuel Filipe dos Reis
+- Louise Dias Santos
+- Heitor Oliveiro Soares Domingos
+- Vinícius Nogueira
+- Rondinelli Silva de Oliveira
+- Icaro de Jesus Souza e Cota
 
 ## Orientador
 
-* Leonardo Vilela Cardoso
+- Leonardo Vilela Cardoso
 
-## Instruções de utilização
+## Pré-requisitos
 
-Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.
+Obrigatórios:
 
-# Documentação
+1. Git
+2. Docker e Docker Compose
+3. Acesso ao MongoDB Atlas (usuário, senha e permissões)
 
-<ol>
-<li><a href="docs/01-Documentação de Contexto.md"> Documentação de Contexto</a></li>
-<li><a href="docs/02-Especificação do Projeto.md"> Especificação do Projeto</a></li>
-<li><a href="docs/03-Metodologia.md"> Metodologia</a></li>
-<li><a href="docs/04-Projeto de Interface.md"> Projeto de Interface</a></li>
-<li><a href="docs/05-Arquitetura da Solução.md"> Arquitetura da Solução</a></li>
-<li><a href="docs/06-Template Padrão da Aplicação.md"> Template Padrão da Aplicação</a></li>
-<li><a href="docs/07-Programação de Funcionalidades.md"> Programação de Funcionalidades</a></li>
-<li><a href="docs/08-Registro de Testes Unitários.md"> Registro de Testes Unitários</a></li>
-<li><a href="docs/09-Registro de Testes de Integração.md"> Registro de Testes de Integração</a></li>
-<li><a href="docs/10-Registro de Testes de Sistema.md"> Registro de Testes de Sistema</a></li>
-<li><a href="docs/11-Registro de Contribuição.md"> Registro de Contribuição</a></li>
-<li><a href="docs/12-Apresentação do Projeto.md"> Apresentação do Projeto</a></li>
-<li><a href="docs/13-Referências.md"> Referências</a></li>
-</ol>
+Opcionais (execução sem Docker):
 
-# Código
+1. Node.js 18+
+2. npm 9+
 
-<li><a href="src/README.md"> Código Fonte</a></li>
+Validação rápida:
 
-# Apresentação
+```bash
+git --version
+docker --version
+docker compose version
+node -v
+npm -v
+```
 
-<li><a href="presentation/README.md"> Apresentação da solução</a></li>
+## Instalação e Configuração
+
+### 1. Clonar o repositório
+
+```bash
+git clone <url-do-repositorio>
+cd pmv-ads-2026-1-e4-infra-t1-segunda-20h
+```
+
+### 2. Criar arquivo de ambiente
+
+```bash
+cp src/backend/.env.example src/backend/.env
+```
+
+### 3. Configurar variáveis obrigatórias
+
+Edite `src/backend/.env` e configure ao menos:
+
+```env
+PORT=3000
+JWT_SECRET=<sua-chave-jwt>
+MONGO_URI_AUTH=<uri-do-mongo-auth>
+MONGO_URI_USERS=<uri-do-mongo-users>
+MONGO_URI_EXPENSES=<uri-do-mongo-expenses>
+MONGO_URI_GROUPS=<uri-do-mongo-groups>
+```
+
+Observações:
+
+1. Se a senha do MongoDB tiver caracteres especiais, aplique URL encode.
+2. Garanta que seu IP esteja liberado no Atlas.
+
+## Como Rodar o Projeto
+
+### Opção A: Com Docker (recomendado)
+
+Na raiz do projeto:
+
+```bash
+docker compose up --build
+```
+
+Validação:
+
+```bash
+curl http://localhost:3000/
+curl http://localhost:3000/health
+```
+
+### Opção B: Sem Docker (Node local)
+
+```bash
+cd src/backend
+npm install
+npm run dev
+```
+
+## Passo a Passo Rápido de Uso
+
+1. Suba a API (Docker ou Node local).
+2. Verifique o healthcheck em `GET /health`.
+3. Faça registro e login para obter token JWT.
+4. Use o token para acessar rotas protegidas (`/api/users`, `/api/groups`, `/api/expenses`).
+
+
+## Documentação
+
+1. [Documentação de Contexto](docs/01-Documentação%20de%20Contexto.md)
+2. [Especificação do Projeto](docs/02-Especificação%20do%20Projeto.md)
+3. [Metodologia](docs/03-Metodologia.md)
+4. [Projeto de Interface](docs/04-Projeto%20de%20Interface.md)
+5. [Arquitetura da Solução](docs/05-Arquitetura%20da%20Solução.md)
+6. [Template Padrão da Aplicação](docs/06-Template%20Padrão%20da%20Aplicação.md)
+7. [Programação de Funcionalidades](docs/07-Programação%20de%20Funcionalidades.md)
+8. [Registro de Testes Unitários](docs/08-Registro%20de%20Testes%20Unitários.md)
+9. [Registro de Testes de Integração](docs/09-Registro%20de%20Testes%20de%20Integração.md)
+10. [Registro de Testes de Sistema](docs/10-Registro%20de%20Testes%20de%20Sistema.md)
+11. [Registro de Contribuição](docs/11-Registro%20de%20Contribuição.md)
+12. [Apresentação do Projeto](docs/12-Apresentação%20do%20Projeto.md)
+13. [Referências](docs/13-Referencias.md)
+
+## Código e Apresentação
+
+- [Código Fonte](src/README.md)
+- [Guia do Backend](src/backend/README.md)
+- [Apresentação da Solução](presentation/README.md)
