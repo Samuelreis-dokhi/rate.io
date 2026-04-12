@@ -9,8 +9,8 @@ Na nossa aplicação, o groupController irá ser responsável por lidar com as r
 */
 
 const mongoose = require('mongoose'); // mongoose sempre deve ser importado para lidar com os tipos de dados do MongoDB
-const Group = require('../models/Group');
-const User = require('../models/User');
+const getGroupModel = require('../models/Group');
+const getUserModel = require('../models/User');
 const Expense = require('../models/Expense');
 const Activity = require('../models/Activity');
 
@@ -24,10 +24,15 @@ const isMember = (group, userId) => {
 
 /* Verificamos se o grupo está ativo */
 const getActiveGroupOrNull = async (groupId) => {
+  const Group = getGroupModel();
+
   return Group.findOne({ _id: groupId, isActive: true });
 };
 
 exports.createGroup = async (req, res) => {
+  const Group = getGroupModel();
+  const User = getUserModel();
+
   const { name, description, createdBy, membersIds = [] } = req.body;
   try {
     if (!name || !createdBy) {
@@ -97,6 +102,7 @@ exports.createGroup = async (req, res) => {
 };
 
 exports.addMember = async (req, res) => {
+  const User = getUserModel();
   const { groupId } = req.params;
   const { userId, addedBy } = req.body;
 
@@ -152,6 +158,7 @@ exports.addMember = async (req, res) => {
 };
 
 exports.inviteMember = async (req, res) => {
+  const User = getUserModel();
   // Lógica para convidar um membro por email
   const { groupId } = req.params;
   const { email, addedBy } = req.body;
@@ -219,6 +226,8 @@ exports.inviteMember = async (req, res) => {
 };
 
 exports.getUserGroups = async (req, res) => {
+  const Group = getGroupModel();
+
   const { userId } = req.params;
 
   try {
@@ -274,6 +283,7 @@ exports.getGroupActivities = async (req, res) => {
 };
 
 exports.deleteGroup = async (req, res) => {
+  const User = getUserModel();
   const { groupId } = req.params;
   const { userId } = req.body;
 

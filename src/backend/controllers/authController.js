@@ -1,7 +1,8 @@
-const Auth = require('../models/Auth');
+const getAuthModel = require('../models/Auth');
+const getUserModel = require('../models/User');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/User');
 
 const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 const validatePassword = (password) => password && password.length >= 6;
@@ -12,6 +13,9 @@ const validatePassword = (password) => password && password.length >= 6;
 // };
 
 exports.register = async (req, res) => {
+  const Auth = getAuthModel();
+  const User = getUserModel();
+
   try {
     const { email, password, name } = req.body || {};
     const normalizedName = String(name || '').trim();
@@ -80,6 +84,8 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+  const Auth = getAuthModel();
+
   try {
     const { email, password } = req.body || {};
 

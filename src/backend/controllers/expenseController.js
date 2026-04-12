@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Expense = require('../models/Expense');
-const Group = require('../models/Group');
-const User = require('../models/User');
+const getGroupModel = require('../models/Group');
+const getUserModel = require('../models/User');
 const Activity = require('../models/Activity');
 const splitService = require('../services/splitService');
 const balanceService = require('../services/balanceService');
@@ -13,10 +13,12 @@ const isGroupMember = (group, userId) => {
 };
 
 const getActiveGroupOrNull = async (groupId) => {
+  const Group = getGroupModel();
   return Group.findOne({ _id: groupId, isActive: true });
 };
 
 exports.createExpense = async (req, res) => {
+  const User = getUserModel();
   const { groupId, description, amount, currency, paidBy, createdBy, splitType, splitsData } =
     req.body;
 
@@ -143,6 +145,7 @@ exports.getGroupExpenses = async (req, res) => {
 };
 
 exports.settleExpenseShare = async (req, res) => {
+  const User = getUserModel();
   const { expenseId } = req.params;
   const { userId, paidBy } = req.body || {};
 

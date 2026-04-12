@@ -39,7 +39,9 @@ userSchema.statics.findByAuthId = function (authId) {
 };
 // Esse método pode ir para o Controller
 
-const userConnection = getConnections('user');
-const User = userConnection.models.User || userConnection.model('User', userSchema);
+const getUserModel = () => {
+  const userConnection = getConnections('user');
+  return userConnection.models.User || userConnection.model('User', userSchema);
+};
 
-module.exports = User;
+module.exports = getUserModel;

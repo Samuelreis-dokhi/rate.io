@@ -1,4 +1,5 @@
-const User = require('../models/User');
+const getUserModel = require('../models/User');
+const User = getUserModel();
 
 // const buildDefaultName = (email) => {
 //   const localPart = String(email || '').split('@')[0] || '';
