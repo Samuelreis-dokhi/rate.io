@@ -100,7 +100,7 @@ Resultado consolidado atual:
 |---|---|---|---|---|---|
 | INT-EXP-001 | POST /api/expenses | Criacao de despesa valida | groupId, description, amount, paidBy, createdBy, splitType, splitsData | HTTP 201 e retorno com expense contendo splits calculados corretamente | Aprovado |
 | INT-EXP-002 | GET /api/expenses/group/:groupId | Consulta de despesas por grupo | groupId válido + userId query | HTTP 200 e retorno com array expenses do grupo, ordenado por createdAt decrescente | Aprovado |
-| INT-EXP-003 | POST /api/expenses/:expenseId/settle | Quitacao de parcela | expenseId, body com userId e paidBy | HTTP 200 e parcela marcada como quitada | Planejado |
+| INT-EXP-003 | POST /api/expenses/:expenseId/settle | Quitacao de parcela | expenseId, body com userId e paidBy | HTTP 200 e parcela marcada como quitada | Aprovado |
 | INT-EXP-004 | GET /api/expenses/group/:groupId/balances | Consulta de saldo por grupo | groupId válido + userId query | HTTP 200 com balance contendo totalPaid, totalOwed, netBalance e summary | Aprovado |
 
 Resultado consolidado atual:
