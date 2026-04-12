@@ -25,7 +25,9 @@ authSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-const authConnection = getConnections('auth');
-const Auth = authConnection.models.Auth || authConnection.model('Auth', authSchema);
+const getAuthModel = () => {
+  const authConnection = getConnections('auth');
+  return authConnection.models.Auth || authConnection.model('Auth', authSchema);
+};
 
-module.exports = Auth;
+module.exports = getAuthModel;

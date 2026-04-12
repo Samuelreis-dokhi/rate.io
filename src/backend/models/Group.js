@@ -60,7 +60,10 @@ const groupSchema = new mongoose.Schema(
 groupSchema.index({ 'members.userId': 1 }); // Índice para otimizar consultas por membro
 
 /* Aqui nós definimos a conexão e o modelo do grupo */
-const groupConnection = getConnections('group');
-const Group = groupConnection.model.Group || groupConnection.model('Group', groupSchema, 'groups');
+const getGroupModel = () => {
+  const groupConnection = getConnections('group');
 
-module.exports = Group;
+  return groupConnection.models.Group || groupConnection.model('Group', groupSchema, 'groups');
+};
+
+module.exports = getGroupModel;
