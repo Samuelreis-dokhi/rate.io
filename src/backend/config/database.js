@@ -7,9 +7,9 @@ const getMongoUris = () => {
   const singleUri = process.env.MONGO_URI;
   return {
     auth: process.env.MONGO_URI_AUTH || singleUri,
-    user: process.env.MONGO_URI_USER || singleUri,
-    expense: process.env.MONGO_URI_EXPENSES,
-    group: process.env.MONGO_URI_GROUPS,
+    user: process.env.MONGO_URI_USERS || singleUri,
+    expense: process.env.MONGO_URI_EXPENSES || singleUri,
+    group: process.env.MONGO_URI_GROUPS || singleUri,
   };
 };
 
