@@ -100,6 +100,68 @@ npm install
 npm run dev
 ```
 
+## Contrato de API Real (fonte da verdade)
+
+Antes de qualquer linha de código, o time precisa ter este mapa internalizado. Tudo no frontend deriva daqui.
+
+### Autenticação — /api/auth (público)
+
+| Método | Rota | Body | Resposta de sucesso |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | `{ name, email, password }` | `201 { message, authId, id, name, email }` |
+| POST | `/api/auth/login` | `{ email, password }` | `200 { message, token, userId }` |
+
+Atenção crítica no login: a resposta usa `userId` (não `authId`). O `AuthContext` do frontend de referência já lida com ambos via `authData.authId || authData.userId`. O token JWT expira em 1 hora.
+
+### Usuário — /api/users (requer Bearer token)
+
+| Método | Rota | Corpo | Resposta |
+| --- | --- | --- | --- |
+| GET | `/api/users/profile` | — | `200 { _id, name, email, authId, avatarUrl, isActive }` |
+| PUT | `/api/users/profile` | `{ name?, avatarUrl? }` | `200 { message, id, name, avatarUrl }` |
+| GET | `/api/users/:userId` | — | NÃO EXISTE — precisa ser criado |
+
+Gap crítico: `GET /api/users/:userId` (perfil público de outro usuário) não existe no backend. O frontend precisa buscar o perfil de cada membro do grupo pelo `userId`. Sem essa rota, todos os nomes aparecem como "Membro". A criação desta rota é a primeira tarefa do backend na Sprint 1.
+
+### Grupos — /api/groups (requer Bearer token)
+
+| Método | Rota | Corpo / Query | Resposta |
+| --- | --- | --- | --- |
+| POST | `/api/groups` | `{ name, description?, createdBy, membersIds? }` | `201 grupo completo` |
+| GET | `/api/groups/user/:userId` | — | `200 array de grupos` |
+| POST | `/api/groups/:groupId/invite` | `{ email, addedBy }` | `200 grupo atualizado` |
+| DELETE | `/api/groups/:groupId` | `{ userId }` no body | `200 { message }` |
+| GET | `/api/groups/:groupId/activities?userId=&limit=200` | — | `array de atividades` |
+
+Regras de negócio: Só o criador pode deletar o grupo. Não é possível deletar com splits pendentes em aberto. Atividades suportam `limit` entre 1 e 200, default 50.
+
+### Despesas — /api/expenses (requer Bearer token)
+
+| Método | Rota | Corpo / Query | Resposta |
+| --- | --- | --- | --- |
+| POST | `/api/expenses` | ver abaixo | `201 { message, expense }` |
+| GET | `/api/expenses/group/:groupId?userId=` | — | `200 { expenses: [...] }` — envelope |
+| POST | `/api/expenses/:expenseId/settle` | `{ userId, paidBy }` | `200 { message }` |
+| GET | `/api/expenses/group/:groupId/balances?userId=` | — | `200 { balance: { totalPaid, totalOwed, netBalance, summary } }` — envelope |
+
+## Scripts úteis
+
+| Script | Descrição |
+| --- | --- |
+| `npm run start` | Executa o projeto em produção |
+| `npm run dev` | Executa em modo de desenvolvimento |
+| `npm run lint` | Roda ESLint |
+| `npm run lint:fix` | Roda ESLint e corrige erros possíveis |
+| `npm run format` | Roda o formatador de código |
+| `npm run test` | Executa todos os testes |
+| `npm run test:unit` | Executa testes unitários |
+| `npm run test:integration` | Executa testes de integração |
+| `npm run test:system` | Executa testes de sistema |
+| `npm run test:auth` | Executa testes de autenticação |
+| `npm run test:expense` | Executa testes de despesas |
+| `npm run test:group` | Executa testes de grupo |
+| `npm run test:coverage` | Gera relatório de cobertura |
+
 ## Passo a Passo Rápido de Uso
 
 1. Suba a API (Docker ou Node local).
