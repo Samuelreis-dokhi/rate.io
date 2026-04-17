@@ -1,32 +1,51 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import './App.css'
-import HomePage from './pages/HomePage.jsx'
-import LoginPage from './pages/LoginPage.jsx'
-import RegisterPage from './pages/RegisterPage.jsx'
-import NotFoundPage from './pages/NotFoundPage.jsx'
+import LandingPage from './pages/LandingPage.jsx'
+import AuthPage from './pages/AuthPage.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import { useAuth } from './context/useAuth.jsx'
 
 function App() {
-  return (
-    <BrowserRouter>
-      <header className="app-header">
-        <h1>RATE.IO</h1>
-        <nav className="app-nav">
-          <Link to="/">Home</Link><br />
-          <Link to="/login">Login</Link><br />
-          <Link to="/register">Register</Link>
-        </nav>
-      </header>
+  const { isAuthenticated } = useAuth()
 
-      <main className="app-main">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
-    </BrowserRouter>
+  // Configurar sistema de rotas com proteção de acesso, redirecionando de forma inteligente e bloqueando acesso não autenticado a rotas privadas. Exemplo:
+  // - Rota pública: /landing-page → LandingPage.jsx
+  // - Rota pública: /auth → AuthPage.jsx
+  // - Rota privada: /dashboard → DashboardPage.jsx (redireciona para /auth se não autenticado)
+  // - Rota de fallback: /not-found → NotFoundPage.jsx (para rotas des  conhecidas)
+  return (
+    <Routes>
+      {/* Pública - Sempre acessível */}
+      <Route path='/' element={<LandingPage />} />
+
+      {/* Pública - Redireciona para /dashboard se já autenticado */}
+      <Route
+        path='/auth'
+        element={isAuthenticated ? <Navigate to='/dashboard' /> : <AuthPage />}
+      />
+
+      {/* Privada - Redireciona para /auth se não autenticado */}
+      <Route
+        path='/dashboard'
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fallback para rotas desconhecidas */}
+      <Route path='*' element={<Navigate to='/' replace />} />
+    </Routes>
   )
 }
 
 export default App
+
+/**
+ * Mapa de redirecionamento e proteção de rotas:
+ * - Não logado acessa /dashboard → redireciona para /auth
+ * - Logado acessa /auth → redireciona para /dashboard
+ * - Qualquer rota desconhecida → redireciona para /
+ */
