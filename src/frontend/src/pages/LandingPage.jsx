@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/useAuth.jsx'
+import MenuNav from "../components/MenuNav.jsx";
+
 import '../pages/styles/LandingPage.css'
+
 import divisao from '../public/images/divisoes.png';
 import saldo from '../public/images/saldo.png';
 import historico from '../public/images/historico.png';
@@ -48,8 +51,11 @@ const LandingPage = () => {
       <div className='bg-shape bg-shape-top' aria-hidden='true' />
       <div className='bg-shape bg-shape-bottom' aria-hidden='true' />
 
-      {/* TOP MENU - VALIDAR SUA IMPLEMENTAÇÃO COM O GRUPO */}
-      <header className='topbar'>
+      {/* 
+      ******************************************************
+      TOP MENU - VALIDAR SUA IMPLEMENTAÇÃO COM O GRUPO 
+      ******************************************************      */}
+{/*       <header className='topbar'>
         <div className='brand'>RATE.IO</div>
         <nav>
           <a href='#como-funciona'>Como funciona</a>
@@ -57,8 +63,8 @@ const LandingPage = () => {
             {actionLabel}
           </Link>
         </nav>
-      </header>
-
+      </header> */}
+      <MenuNav />
       <main>
         {/* HERO SECTION */}
         <section className='hero content-wrap'>

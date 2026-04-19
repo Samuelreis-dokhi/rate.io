@@ -10,53 +10,6 @@ ESTILO DA PÁGINA COMO UM TODO
   color: var(--text);
 }
 
-.content-wrap {
-  width: min(1440px, 100%);
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-.bg-shape {
-  position: absolute;
-  inset: auto 0 0 auto;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.bg-shape-top {
-  width: 360px;
-  height: 360px;
-  top: -130px;
-  left: -100px;
-  background: rgba(129, 71, 255, 0.18);
-}
-
-.bg-shape-bottom {
-  width: 440px;
-  height: 440px;
-  bottom: -180px;
-  right: -120px;
-  background: rgba(56, 108, 255, 0.14);
-}
-
-/******************************************
-MENU DE NAVEGACAO
-******************************************/
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 24px clamp(16px, 4vw, 60px);
-  background: var(--canvas);
-  backdrop-filter: blur(18px);
-}
-
 /******************************************
 HERO-SECTION
 ******************************************/
@@ -72,13 +25,6 @@ HERO-SECTION
   display: flex;
   flex-direction: column;
   gap: 28px;
-}
-.kicker {
-  font-size: 0.92rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--accent-deep);
-  margin: 0;
 }
 .hero h1 {
   font-family: var(--font-display);
@@ -395,11 +341,11 @@ CALL TO ACTION
     padding: 0 18px;
   }
 
-  .topbar {
+/*   .topbar {
     flex-direction: column;
     align-items: flex-start;
     padding: 18px 18px;
-  }
+  } */
 
   .hero {
     padding-top: 50px;
