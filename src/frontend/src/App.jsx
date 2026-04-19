@@ -3,8 +3,11 @@ import './App.css'
 import LandingPage from './pages/LandingPage.jsx'
 import AuthPage from './pages/AuthPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
+import GroupPage from './pages/GroupPage.jsx'
+/* import ExpensePage from './pages/ExpensePage.jsx' */
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import { useAuth } from './context/useAuth.jsx'
+import ExpensePage from './pages/ExpensePage.jsx'
 
 function App() {
   const { isAuthenticated } = useAuth()
@@ -31,6 +34,26 @@ function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Privada - Caminho para Grupos */}
+      <Route
+        path='/groups'
+        element={
+          <ProtectedRoute>
+            <GroupPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Privada - Caminho para Despesas */}
+      <Route
+        path='/expenses'
+        element={
+          <ProtectedRoute>
+            <ExpensePage />
           </ProtectedRoute>
         }
       />

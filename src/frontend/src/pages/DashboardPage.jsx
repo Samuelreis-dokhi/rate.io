@@ -1,8 +1,22 @@
-const DashboardPage = () => (
-  <div className='dashboard-page'>
-    <h1>Dashboard</h1>
-    <p>Este é o painel protegido. Conteúdo de usuário autenticado aparece aqui.</p>
-  </div>
-)
+import { useAuth } from "../context/useAuth";
+import MenuNav from "../components/MenuNav.jsx";
 
-export default DashboardPage
+const DashboardPage = () => {
+
+  const { user } = useAuth();
+
+  return (
+
+    <div className="page dashboard-page content-wrap">
+      <MenuNav />
+
+
+      <h1>Bem-vindo, {user.name}!</h1>
+      <p>Este é o seu painel de controle. Aqui você pode criar grupos, adicionar despesas e acompanhar seus saldos em tempo real.</p>
+      <p>Use o menu lateral para navegar entre as seções do seu dashboard.</p>
+    </div>
+  );
+
+}
+
+export default DashboardPage;
