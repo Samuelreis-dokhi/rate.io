@@ -1,5 +1,5 @@
 // API_BASE_URL é a URL base para as chamadas à API, configurada via variável de ambiente
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
 // função que lê o token do localStorage
 const getAuthHeaders = () => {
@@ -55,37 +55,44 @@ export const api = {
     }),
 
   // ── Groups ──────────────────────────────────────────────
+    /* GET PARA OBTER OS GRUPOS DE UM USUÁRIO -> TELA DE GRUPOS */
     getUserGroups: (userId) => request(`/api/groups/user/${userId}`),
     
+    /* HANDLE DE CRIAÇÃO DE GRUPOS */
     createGroup: (payload) => request('/api/groups', {
         method: 'POST',
         body: JSON.stringify(payload),
     }),
 
+    /* HANDLE DE CONVITE PARA GRUPOS */
     inviteToGroup: (groupId, payload) => request(`/api/groups/${groupId}/invite`, {
         method: 'POST',
         body: JSON.stringify(payload),
     }),
 
+    /* HANDLE DE EXCLUSÃO DE GRUPOS */
     deleteGroup: (groupId, payload) => request(`/api/groups/${groupId}`, {
         method: 'DELETE',
         body: JSON.stringify(payload),
     }),
 
+    /* GET PARA OBTER AS ATIVIDADES DE UM GRUPO */
     getGroupActivities: (groupId, userId) => request(`/api/groups/${groupId}/activities?userId=${userId}`),
 
   // ── Expenses ──────────────────────────────────────────────
-    // Retorna expenses:[...] do grupo, já filtrados para o userId (com campo "paidByUser" true/false)
+    /* RETORNA DESPESAS DE UM GRUPO ESPECÍFICO */
     getGroupExpenses: (groupId, userId) => request(`/api/expenses/group/${groupId}?userId=${userId}`),
 
-    // Retorna balance: { totalPaid, totalOwed, netBalance, summary } 
+    /* BALANÇO DE GRUPO */
     getGroupBalance: (groupId, userId) => request(`/api/expenses/group/${groupId}/balances?userId=${userId}`),
 
+    /* HANDLE DE CRIAÇÃO DE DESPESAS */
     createExpense: (payload) => request('/api/expenses', {
         method: 'POST',
         body: JSON.stringify(payload),
     }),
 
+    /* HANDLE DE LIQUIDAÇÃO DE COMPARTILHAMENTO DE DESPESA */
     settleExpenseShare: (expenseId, payload) => request(`/api/expenses/${expenseId}/settle`, {
         method: 'POST',
         body: JSON.stringify({
