@@ -1,5 +1,5 @@
 // API_BASE_URL é a URL base para as chamadas à API, configurada via variável de ambiente
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // função que lê o token do localStorage
 const getAuthHeaders = () => {
@@ -23,7 +23,7 @@ const request = async (endpoint, options = {}) => {
     const data = await response.json().catch(() => ({})); // Em caso de resposta sem JSON, retorna um objeto vazio
 
     if (!response.ok) {
-        throw new Error(data.message || 'Erro na requisição');
+        throw new Error(data.message || data.error || 'Erro na requisição');
     }
 
     return data;
@@ -79,7 +79,7 @@ export const api = {
     getGroupExpenses: (groupId, userId) => request(`/api/expenses/group/${groupId}?userId=${userId}`),
 
     // Retorna balance: { totalPaid, totalOwed, netBalance, summary } 
-    getGroupBalance: (groupId, userId) => request(`/api/expenses/group/${groupId}/balance?userId=${userId}`),
+    getGroupBalance: (groupId, userId) => request(`/api/expenses/group/${groupId}/balances?userId=${userId}`),
 
     createExpense: (payload) => request('/api/expenses', {
         method: 'POST',
