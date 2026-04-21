@@ -3,24 +3,18 @@ import './App.css'
 
 import LandingPage from './pages/LandingPage.jsx'
 import AuthPage from './pages/AuthPage.jsx'
+import { useAuth } from './context/useAuth.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import GroupPage from './pages/GroupPage.jsx'
 import GroupDetailPage from './pages/GroupDetailPage.jsx'
 import ActivityPage from './pages/ActivityPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 /* import ExpensePage from './pages/ExpensePage.jsx' */
-
 import ProtectedRoute from './components/ProtectedRoute.jsx'
-import { useAuth } from './context/useAuth.jsx'
 
 function App() {
   const { isAuthenticated } = useAuth()
 
-  // Configurar sistema de rotas com proteção de acesso, redirecionando de forma inteligente e bloqueando acesso não autenticado a rotas privadas. Exemplo:
-  // - Rota pública: /landing-page → LandingPage.jsx
-  // - Rota pública: /auth → AuthPage.jsx
-  // - Rota privada: /dashboard → DashboardPage.jsx (redireciona para /auth se não autenticado)
-  // - Rota de fallback: /not-found → NotFoundPage.jsx (para rotas des  conhecidas)
   return (
     <Routes>
       {/*****************************************************************************************
@@ -88,19 +82,6 @@ function App() {
         }
       />
 
-      {/* DESPESAS */}
-      {/* 
-      <Route
-        path='/expenses'
-        element={
-          <ProtectedRoute>
-            <ExpensePage />
-          </ProtectedRoute>
-        }
-      />
-      */}
-
-
       {/* Fallback para rotas desconhecidas */}
       <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
@@ -108,10 +89,3 @@ function App() {
 }
 
 export default App
-
-/**
- * Mapa de redirecionamento e proteção de rotas:
- * - Não logado acessa /dashboard → redireciona para /auth
- * - Logado acessa /auth → redireciona para /dashboard
- * - Qualquer rota desconhecida → redireciona para /
- */

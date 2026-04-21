@@ -93,12 +93,26 @@ export const api = {
     }),
 
     /* HANDLE DE LIQUIDAÇÃO DE COMPARTILHAMENTO DE DESPESA */
-    settleExpenseShare: (expenseId, payload) => request(`/api/expenses/${expenseId}/settle`, {
-        method: 'POST',
-        body: JSON.stringify({
-            userId: payload.userId,
-            paidBy: payload.paid,
-        }),
-    }),
+    settleExpenseShare: async (expenseId, payload) => {
+        /* RECUPERA O TOKEN DE ONDE FOI SALVO NO LOGIN */
+        const token = localStorage.getItem('token');
+
+        /* FAZ A CHAMADA NATIVA COM FETCH */
+        const response = await fetch(`http://localhost:3000/api/expenses/${expenseId}/settle`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if(!response.ok){
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erro ao processar o pagamento');
+        }
+
+        return await response.json();
+    },
 
 }
