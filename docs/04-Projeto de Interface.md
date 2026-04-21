@@ -1,4 +1,4 @@
-# Projeto de Interface
+ Projeto de Interface
 
 <span style="color:red">Pré-requisitos: <a href="2-Especificação do Projeto.md"> Documentação de Especificação</a></span>
 
@@ -8,17 +8,61 @@ Apresente as principais interfaces da plataforma. Discuta como ela foi elaborada
 
 ## Diagrama de Fluxo
 
-O diagrama apresenta o estudo do fluxo de interação do usuário com o sistema interativo e muitas vezes sem a necessidade do desenho do design das telas da interface. Isso permite que o design das interações seja bem planejado e gere impacto na qualidade no design do wireframe interativo que será desenvolvido logo em seguida.
+![Diagrama de Fluxo do RATE.IO](img/diagrama-fluxo.png)
 
-O diagrama de fluxo pode ser desenvolvido com “boxes” que possuem internamente a indicação dos principais elementos de interface - tais como menus e acessos - e funcionalidades, tais como editar, pesquisar, filtrar, configurar - e a conexão entre esses boxes a partir do processo de interação. Você pode ver mais explicações e exemplos https://www.lucidchart.com/blog/how-to-make-a-user-flow-diagram.
+### Diagrama criado com código flowchart
+```
+flowchart TD
+    %% Estilos customizados
+    classDef startEnd fill:#1A1A3A,stroke:#4F33C7,stroke-width:2px,color:#fff;
+    classDef page fill:#2C2C54,stroke:#4F33C7,stroke-width:1px,color:#fff;
+    classDef action fill:#4F33C7,stroke:#fff,stroke-width:1px,color:#fff;
+    classDef decision fill:#0C7C4F,stroke:#fff,stroke-width:1px,color:#fff;
 
-![Exemplo de Diagrama de Fluxo](img/diagramafluxo2.jpg)
+    %% Início do Fluxo
+    A([Início / Acesso ao Rate.io]):::startEnd --> B{Autenticado?}:::decision
+    
+    %% Autenticação
+    B -- Não --> C[Landing Page]:::page
+    C --> C1[AuthPage: Login / Register]:::page
+    C1 --> C2(Autenticação via API):::action
+    C2 --> D[Dashboard]:::page
+    B -- Sim --> D
 
-As referências abaixo irão auxiliá-lo na geração do artefato “Diagramas de Fluxo”.
+    %% Dashboard / Navegação Principal
+    D --> E{Ação do Usuário}:::decision
+    E -- Quitar Pendência --> F[Dashboard: Lista de Pendências]:::page
+    E -- Acessar Grupos --> G[GroupPage: Meus Grupos]:::page
+    
+    %% Fluxo de Grupos (GroupDetailPage)
+    G --> G1(Criar Novo Grupo):::action
+    G --> G2[GroupDetailPage: Visão do Grupo]:::page
+    
+    G2 --> G3(Convidar/Adicionar Membros):::action
+    G2 --> G4(Criar Nova Despesa):::action
+    G2 --> G5(Visualizar Balanço/Resumo):::action
+    
+    %% Criação de Despesa (Sprint 2)
+    G4 --> G4a("Selecionar Tipo: Igual, % ou Exato"):::action
+    G4a --> G4b(Salvar no MongoDB):::action
+    G4b --> G2
 
-> **Links Úteis**:
->
-> - [Fluxograma online: seis sites para fazer gráfico sem instalar nada | Produtividade | TechTudo](https://www.techtudo.com.br/listas/2019/03/fluxograma-online-seis-sites-para-fazer-grafico-sem-instalar-nada.ghtml)
+    %% Fluxo de Pagamento (Settle)
+    F --> H[Modal de Pagamento]:::page
+    G2 --> |Botão Registrar Pagamento| H
+    
+    H --> H1(Preencher Valor Parcial/Total):::action
+    H1 --> H2(Anexar Comprovante de PG):::action
+    H2 --> H3(Enviar POST /settle via FormData):::action
+    
+    H3 --> H4{API Retornou Sucesso?}:::decision
+    H4 -- Erro 400/500 --> H5(Exibir Toast de Erro):::action
+    H5 --> H
+    
+    H4 -- Sucesso 200 --> H6(Exibir Toast de Sucesso):::action
+    H6 --> H7(Atualizar Saldos e Mapa de Despesas):::action
+    H7 --> D
+```
 
 ## Wireframes
 
