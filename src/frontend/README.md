@@ -1,16 +1,24 @@
-# React + Vite
+## Estrutura CSS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A estilização do frontend é dividida em 2 arquivos:
 
-Currently, two official plugins are available:
+- `src/index.css`: tema global, redefinição, importação de variáveis e tipografia base.
+- `src/App.css`: estilização específica de páginas e componentes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Imagens
+- Landing page e outras páginas podem utilizar imagens diponíveis em /public/images
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+### O que foi otimizado
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- removidos estilos não usados em `src/App.css` como `#center`, `#next-steps`, `#docs` e `.ticks`.
+- removida a borda fixa de `#root` e o background de página com gradiente pesado.
+- atualizado o layout para full width responsivo, com `content-wrap` centralizando o conteúdo e permitindo espaçamento amplo.
+
+### Melhores práticas aplicadas
+
+- conteúdo global em `src/index.css`
+- páginas e componentes em `src/App.css`
+- uso de classes semânticas para hero, painel e cards
+- responsividade garantida com media queries para tablets e celulares

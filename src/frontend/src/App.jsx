@@ -1,31 +1,37 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import './App.css'
-import HomePage from './pages/HomePage.jsx'
-import LoginPage from './pages/LoginPage.jsx'
-import RegisterPage from './pages/RegisterPage.jsx'
-import NotFoundPage from './pages/NotFoundPage.jsx'
+import LandingPage from './pages/LandingPage.jsx'
+import AuthPage from './pages/AuthPage.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
+import GroupPage from './pages/GroupPage.jsx'
+import GroupDetailPage from './pages/GroupDetailPage.jsx'
+import ActivityPage from './pages/ActivityPage.jsx'
+/* import ExpensePage from './pages/ExpensePage.jsx' */
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import { useAuth } from './context/useAuth.jsx'
 
 function App() {
-  return (
-    <BrowserRouter>
-      <header className="app-header">
-        <h1>RATE.IO</h1>
-        <nav className="app-nav">
-          <Link to="/">Home</Link><br />
-          <Link to="/login">Login</Link><br />
-          <Link to="/register">Register</Link>
-        </nav>
-      </header>
+  const { isAuthenticated } = useAuth()
 
-      <main className="app-main">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
-    </BrowserRouter>
+  return (
+    <Routes>
+      {/* Pública */}
+      <Route path='/' element={<LandingPage />} />
+      <Route
+        path='/auth'
+        element={isAuthenticated ? <Navigate to='/dashboard' /> : <AuthPage />}
+      />
+
+      {/* Privadas */}
+      <Route path='/dashboard' element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path='/groups' element={<ProtectedRoute><GroupPage /></ProtectedRoute>} />
+      <Route path='/groups/:groupId' element={<ProtectedRoute><GroupDetailPage /></ProtectedRoute>} />
+      <Route path='/activities' element={<ProtectedRoute><ActivityPage /></ProtectedRoute>} />
+{/*       <Route path='/expenses' element={<ProtectedRoute><ExpensePage /></ProtectedRoute>} /> */}
+
+      {/* Fallback */}
+      <Route path='*' element={<Navigate to='/' replace />} />
+    </Routes>
   )
 }
 

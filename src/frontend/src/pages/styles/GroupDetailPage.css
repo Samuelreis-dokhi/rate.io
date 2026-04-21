@@ -1,0 +1,196 @@
+/* GroupDetailPage.css */
+
+/* ── Botão de voltar ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+  padding: 0;
+  margin-bottom: 10px;
+  transition: opacity 0.15s;
+}
+
+.back-link:hover { opacity: 0.7; }
+
+/* ── Layout duas colunas ── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: start;
+}
+
+.detail-main { min-width: 0; }
+.detail-sidebar { position: sticky; top: 100px; }
+
+/* ── Lista de despesas ── */
+.expense-list {
+  display: grid;
+  gap: 12px;
+}
+
+.expense-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 8px rgba(32, 11, 136, 0.03);
+}
+
+.expense-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.expense-card__name {
+  font-weight: 700;
+  color: var(--text-h);
+  font-size: 0.97rem;
+  margin: 0 0 4px;
+}
+
+.expense-card__meta {
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.expense-card__total {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-h);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.expense-card__splits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.split-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.split-pill--paid {
+  background: rgba(12, 124, 79, 0.08);
+  color: #0c7c4f;
+  border-color: rgba(12, 124, 79, 0.2);
+}
+
+.split-pill--pending {
+  background: rgba(200, 31, 31, 0.06);
+  color: #c81f1f;
+  border-color: rgba(200, 31, 31, 0.15);
+}
+
+.expense-card__action {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Form de despesa dentro do modal ── */
+.split-tabs {
+  display: flex;
+  background: var(--canvas);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 3px;
+}
+
+.split-tab {
+  flex: 1;
+  border: none;
+  padding: 9px 8px;
+  background: transparent;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.15s;
+}
+
+.split-tab--active {
+  background: var(--bg);
+  color: var(--accent-deep);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.members-split {
+  display: grid;
+  gap: 7px;
+}
+
+.member-split-row {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--canvas);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.split-value-input {
+  width: 84px !important;
+  padding: 6px 10px !important;
+  font-size: 0.88rem !important;
+}
+
+.split-preview {
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.split-indicator {
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: right;
+  margin: -4px 0 0;
+}
+
+.split-indicator--ok { color: #0c7c4f; }
+.split-indicator--err { color: #c81f1f; }
+
+/* ── Responsividade ── */
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .expense-card__header { flex-direction: column; }
+  .page-header__actions { flex-wrap: wrap; }
+  .split-tabs { flex-direction: column; }
+}

@@ -1,11 +1,6 @@
+const mongoose = require('mongoose');
 const getUserModel = require('../models/User');
 const User = getUserModel();
-
-// const buildDefaultName = (email) => {
-//   const localPart = String(email || '').split('@')[0] || '';
-//   const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
-//   return cleaned.length >= 2 ? cleaned : 'Usuario';
-// };
 
 exports.getProfile = async (req, res) => {
   try {
@@ -92,6 +87,34 @@ exports.updateProfile = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: 'Erro ao atualizar perfil.',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+};
+
+/* ADICIONA BUSCA POR PERFIL PÚBLICO */
+exports.getPublicProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Id de usuário inválido' });
+    }
+
+    const user = await User.findById(userId).select('name email avatarUrl isActive');
+    if (!user || !user.isActive) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatarUrl || null,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: 'Erro ao buscar perfil público.',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }

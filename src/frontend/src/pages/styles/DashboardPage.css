@@ -1,0 +1,259 @@
+/* DashboardPage.css — Estilos do painel principal */
+
+/******************************************
+LAYOUT GERAL DO DASHBOARD
+******************************************/
+.dashboard-page {
+  min-height: 100svh;
+  background: var(--canvas);
+}
+
+.dashboard-content {
+  padding: 40px 0 60px;
+}
+
+/******************************************
+CABEÇALHO DE BOAS-VINDAS
+******************************************/
+.dashboard-header {
+  margin-bottom: 36px;
+}
+
+.dashboard-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: var(--text-h);
+  margin-bottom: 8px;
+}
+
+.dashboard-header p {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+/******************************************
+GRID DE ESTATÍSTICAS
+******************************************/
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(32, 11, 136, 0.05);
+}
+
+.stat-card .stat-label {
+  font-size: 0.82rem;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.stat-card .stat-value.positive {
+  color: #0c7c4f;
+}
+
+.stat-card .stat-value.negative {
+  color: #c81f1f;
+}
+
+/******************************************
+SEÇÃO DE PENDÊNCIAS
+******************************************/
+.dashboard-section {
+  margin-bottom: 36px;
+}
+
+.dashboard-section h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  font-size: 0.95rem;
+}
+
+/******************************************
+CARDS DE PENDÊNCIA
+******************************************/
+.pending-list {
+  display: grid;
+  gap: 12px;
+}
+
+.pending-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 12px rgba(32, 11, 136, 0.04);
+}
+
+.pending-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pending-card-title {
+  font-weight: 700;
+  color: var(--text-h);
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pending-card-meta {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.pending-card-amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.pending-card-amount.to-pay {
+  color: #c81f1f;
+}
+
+.pending-card-amount.to-receive {
+  color: #0c7c4f;
+}
+
+/******************************************
+ATALHOS RÁPIDOS
+******************************************/
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.shortcut-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 20px rgba(32, 11, 136, 0.04);
+}
+
+.shortcut-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(32, 11, 136, 0.1);
+  border-color: var(--accent-border);
+}
+
+.shortcut-icon {
+  font-size: 1.8rem;
+}
+
+.shortcut-card strong {
+  font-size: 1rem;
+  color: var(--text-h);
+}
+
+.shortcut-card p {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/******************************************
+STATUS / TOAST
+******************************************/
+.status-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  white-space: nowrap;
+}
+
+.status-toast.success {
+  border-color: rgba(12, 124, 79, 0.3);
+  color: #0c7c4f;
+}
+
+.status-toast.error {
+  border-color: rgba(200, 31, 31, 0.3);
+  color: #c81f1f;
+}
+
+/******************************************
+RESPONSIVIDADE
+******************************************/
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shortcuts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
