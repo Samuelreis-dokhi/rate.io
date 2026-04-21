@@ -1,13 +1,17 @@
 import { Navigate, Routes, Route } from 'react-router-dom'
 import './App.css'
+
 import LandingPage from './pages/LandingPage.jsx'
 import AuthPage from './pages/AuthPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import GroupPage from './pages/GroupPage.jsx'
+import GroupDetailPage from './pages/GroupDetailPage.jsx'
+import ActivityPage from './pages/ActivityPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 /* import ExpensePage from './pages/ExpensePage.jsx' */
+
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import { useAuth } from './context/useAuth.jsx'
-import ExpensePage from './pages/ExpensePage.jsx'
 
 function App() {
   const { isAuthenticated } = useAuth()
@@ -19,16 +23,22 @@ function App() {
   // - Rota de fallback: /not-found → NotFoundPage.jsx (para rotas des  conhecidas)
   return (
     <Routes>
-      {/* Pública - Sempre acessível */}
+      {/*****************************************************************************************
+      REDES PÚBLICAS - Acessíveis a todos, mas redirecionam para /dashboard se já autenticado
+      ******************************************************************************************/}
+      {/* LANDING PAGE */}
       <Route path='/' element={<LandingPage />} />
 
-      {/* Pública - Redireciona para /dashboard se já autenticado */}
+      {/* PÁGINA DE AUTENTICAÇÃO */}
       <Route
         path='/auth'
         element={isAuthenticated ? <Navigate to='/dashboard' /> : <AuthPage />}
       />
 
-      {/* Privada - Redireciona para /auth se não autenticado */}
+      {/*****************************************************************************************
+      REDES PRIVADAS - Acessíveis apenas se autenticado, caso contrário redirecionam para /auth 
+      ******************************************************************************************/}
+      {/* DASHBOARD */}
       <Route
         path='/dashboard'
         element={
@@ -38,7 +48,7 @@ function App() {
         }
       />
 
-      {/* Privada - Caminho para Grupos */}
+      {/* GRUPOS */}
       <Route
         path='/groups'
         element={
@@ -48,7 +58,38 @@ function App() {
         }
       />
 
-      {/* Privada - Caminho para Despesas */}
+      {/* DETALHES DE GRUPO POR ID */}
+      <Route
+        path='/groups/:groupId'
+        element={
+          <ProtectedRoute>
+            <GroupDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ATIVIDADES */}
+      <Route
+        path='/activities'
+        element={
+          <ProtectedRoute>
+            <ActivityPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* PERFIL DO USUÁRIO */}
+      <Route
+        path='/profile'
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* DESPESAS */}
+      {/* 
       <Route
         path='/expenses'
         element={
@@ -57,6 +98,8 @@ function App() {
           </ProtectedRoute>
         }
       />
+      */}
+
 
       {/* Fallback para rotas desconhecidas */}
       <Route path='*' element={<Navigate to='/' replace />} />

@@ -7,8 +7,9 @@ const GroupPage = () => {
             <MenuNav />
 
             <h1>Grupos de Despesas</h1>
-            <p>Aqui você pode criar e gerenciar seus grupos de despesas. Organize suas finanças agrupando despesas relacionadas, facilitando o acompanhamento e controle dos seus gastos.</p>
-            <p>Use o menu lateral para navegar entre as seções do seu dashboard.</p>
+            <p>Deve exibir uma lista dos grupos de despesas criados pelo usuário, com opções para criar um novo grupo, editar ou excluir grupos existentes. 
+            <p>Cada grupo deve mostrar o nome, a descrição e o saldo atual (total de despesas - total de pagamentos).</p>
+            <p>A página deve ser acessível a partir do menu do dashboard e deve seguir o mesmo estilo visual das outras páginas protegidas.</p>Esta página é fundamental para a organização das finanças do usuário, permitindo que ele categorize suas despesas de forma eficiente.</p>
         </div>
     );
 }

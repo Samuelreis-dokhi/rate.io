@@ -31,7 +31,7 @@ const MenuNav = () => {
                     <>
                         <li><Link to='/dashboard'>Dashboard</Link></li>
                         <li><Link to='/groups'>Grupos</Link></li>
-                        <li><Link to='/expenses'>Despesas</Link></li>
+{/*                         <li><Link to='/expenses'>Despesas</Link></li> */}
                         <li><button onClick={logout} className='btn btn-small btn-outline'>Logout</button></li>
                     </>
                 ) : (
