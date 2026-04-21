@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth.jsx'
-import { useState } from 'react'
+import { useState, useEffect } from 'react' // 1. Adicione o useEffect aqui
 import '../pages/styles/AuthPage.css'
 
 const initialLogin = { email: '', password: '' }
@@ -15,6 +15,15 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [feedback, setFeedback] = useState('')
+
+  // Limpa os dados sempre que a página carregar
+  useEffect(() => {
+    setLoginForm(initialLogin)
+    setRegisterForm(initialRegister)
+    setMode('login')
+    setError('')
+    setFeedback('')
+  }, [])
 
   const clearMessages = () => { setFeedback(''); setError('') }
 
@@ -54,7 +63,6 @@ const AuthPage = () => {
   }
 
   return (
-    
     <div className="page auth-page">
       <div className="auth-layout content-wrap">
         <aside className="auth-panel reveal reveal-1">
