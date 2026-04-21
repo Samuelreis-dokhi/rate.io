@@ -93,12 +93,27 @@ export const api = {
     }),
 
     /* HANDLE DE LIQUIDAÇÃO DE COMPARTILHAMENTO DE DESPESA */
-    settleExpenseShare: (expenseId, payload) => request(`/api/expenses/${expenseId}/settle`, {
-        method: 'POST',
-        body: JSON.stringify({
-            userId: payload.userId,
-            paidBy: payload.paid,
-        }),
-    }),
+    settleExpenseShare: async (expenseId, payload) => {
+        // 1. Pega o token de onde você salvou no login (ex: localStorage)
+        const token = localStorage.getItem('token'); // Ajuste se o nome da sua chave for diferente
 
+        // 2. Faz a chamada nativa com fetch
+        const response = await fetch(`http://localhost:3000/api/expenses/${expenseId}/settle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Sem isso, o backend dá erro 401
+        },
+        body: JSON.stringify(payload) // O fetch exige que a gente transforme o JSON em string
+        });
+
+        // 3. O fetch não cai no "catch" automaticamente se der erro 400 ou 500. Temos que forçar.
+        if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao processar o pagamento');
+        }
+
+        // 4. Retorna os dados convertendo de volta para objeto
+        return await response.json();
+    },
 }
