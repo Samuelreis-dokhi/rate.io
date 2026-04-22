@@ -99,7 +99,7 @@ export const api = {
         const baseUrl = import.meta.env.VITE_API_BASE;
 
         /* FAZ A CHAMADA NATIVA COM FETCH */
-        const response = await fetch(`${baseUrl}/expenses/${expenseId}/settle`, {
+        const response = await fetch(`${baseUrl}/api/expenses/${expenseId}/settle`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
