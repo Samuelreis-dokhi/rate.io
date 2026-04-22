@@ -51,24 +51,6 @@ Dependências de desenvolvimento:
 - `services/`: regras de dominio (rateio/saldo)
 - `tests/`: testes unitarios, integracao e sistema
 
-## Scripts Uteis
-
-```bash
-npm run start
-npm run dev
-npm run lint
-npm run lint:fix
-npm run format
-npm run test
-npm run test:unit
-npm run test:integration
-npm run test:system
-npm run test:auth
-npm run test:expense
-npm run test:group
-npm run test:coverage
-```
-
 ## Configurar ambiente do backend
 
 ```bash
@@ -121,20 +103,6 @@ curl http://localhost:3000/health
 ```
 
 ![docker compose up](../docs/img/serverRunning.png)
-
-## Scripts úteis
-
-```bash
-npm run start
-npm run dev
-npm run lint
-npm run lint:fix
-npm run format
-npm run test
-npm run test:unit
-npm run test:integration
-npm run test:system
-```
 
 ## Guia Reutilizável de Testes no Postman
 

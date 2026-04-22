@@ -1,0 +1,204 @@
+/* authPage.css */
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 0;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* Painel lateral (Esquerda) */
+.auth-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.auth-panel h1 {
+  margin: 12px 0;
+  line-height: 1.1;
+}
+
+.auth-panel p {
+  font-size: 1.1rem;
+  color: var(--text);
+  max-width: 440px;
+}
+
+.auth-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+.auth-panel li {
+  margin-bottom: 12px;
+  padding-left: 28px;
+  position: relative;
+  font-weight: 500;
+}
+
+/* Check icon customizado usando pseudo-elemento */
+.auth-panel li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.auth-panel .btn-ghost {
+  align-self: flex-start;
+  margin-top: 10px;
+}
+
+/* Card de Formulário (Direita) */
+.auth-card {
+  background: var(--bg);
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 460px;
+}
+
+/* Tabs / Switch de modo */
+.auth-switch {
+  display: flex;
+  background: var(--canvas);
+  padding: 6px;
+  border-radius: 14px;
+  margin-bottom: 32px;
+}
+
+.switch {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.switch.active {
+  background: var(--bg);
+  color: var(--accent-deep);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Formulário e Inputs */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-h);
+  margin-bottom: -8px;
+}
+
+.auth-form input {
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fafbff;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-bg);
+  background-color: var(--bg);
+}
+
+.auth-form .btn-primary {
+  margin-top: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.auth-form .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Feedbacks de erro e sucesso */
+.feedback {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.feedback.error {
+  background: #fff0f0;
+  color: #d63031;
+  border: 1px solid #ff000020;
+}
+
+.feedback.success {
+  background: #f0fff4;
+  color: #27ae60;
+  border: 1px solid #27ae6020;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 20px;
+  }
+
+  .auth-panel {
+    text-align: center;
+    align-items: center;
+  }
+
+  .auth-panel h1 {
+    font-size: 38px;
+  }
+
+  .auth-card {
+    margin: 0 auto;
+  }
+}
+
+/* Animações simples */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s forwards ease-out;
+}
+
+.reveal-2 {
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
