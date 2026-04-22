@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/useAuth.jsx'
 import { useState, useEffect } from 'react' // 1. Adicione o useEffect aqui
 import '../pages/styles/AuthPage.css'
@@ -7,7 +7,7 @@ const initialLogin = { email: '', password: '' }
 const initialRegister = { name: '', email: '', password: '' }
 
 const AuthPage = () => {
-  const navigate = useNavigate()
+
   const { login, register } = useAuth()
   const [mode, setMode] = useState('login')
   const [loginForm, setLoginForm] = useState(initialLogin)
@@ -39,7 +39,6 @@ const AuthPage = () => {
     clearMessages()
     try {
       await login(loginForm)
-      navigate('/dashboard')
     } catch (err) {
       setError(err.message)
     } finally {

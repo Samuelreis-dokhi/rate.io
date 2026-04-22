@@ -11,7 +11,7 @@ import './styles/DashboardPage.css'
 
 const DashboardPage = () => {
   const { user } = useAuth()
-  const userId = String(user?._id || user?.id || '')
+  const userId = String(user?._id || user?.id || user?.user?._id || user?.user?.id || user?.data?._id || '')
 
   const [groups, setGroups] = useState([])
   const [profilesById, setProfilesById] = useState({})
@@ -28,6 +28,7 @@ const DashboardPage = () => {
       setLoading(false)
       return
     }
+
     setLoading(true)
     setError('')
     try {
