@@ -96,9 +96,10 @@ export const api = {
     settleExpenseShare: async (expenseId, payload) => {
         /* RECUPERA O TOKEN DE ONDE FOI SALVO NO LOGIN */
         const token = localStorage.getItem('token');
+        const baseUrl = import.meta.env.VITE_API_BASE;
 
         /* FAZ A CHAMADA NATIVA COM FETCH */
-        const response = await fetch(`http://localhost:3000/api/expenses/${expenseId}/settle`, {
+        const response = await fetch(`${baseUrl}/expenses/${expenseId}/settle`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
