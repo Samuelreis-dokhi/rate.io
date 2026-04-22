@@ -11,7 +11,7 @@ import './styles/DashboardPage.css'
 
 const DashboardPage = () => {
   const { user } = useAuth()
-  const userId = String(user?._id || '')
+  const userId = String(user?._id || user?.id || '')
 
   const [groups, setGroups] = useState([])
   const [profilesById, setProfilesById] = useState({})
@@ -23,7 +23,11 @@ const DashboardPage = () => {
   const showToast = (message, kind = 'success') => setToast({ message, kind })
 
   const load = useCallback(async () => {
-    if (!userId) return
+    if (!userId) {
+      console.warn('Usuário logado, mas ID não encontrado no objeto:', user)
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError('')
     try {
@@ -57,7 +61,7 @@ const DashboardPage = () => {
     } finally {
       setLoading(false)
     }
-  }, [userId])
+  }, [userId, user])
 
   useEffect(() => { load() }, [load])
 
