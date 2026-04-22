@@ -24,7 +24,7 @@ beforeAll(async () => {
   // Sobrescreve as conexões para apontar ao banco em memória
   process.env.MONGO_URI = uri;
   process.env.MONGO_URI_AUTH = uri;
-  process.env.MONGO_URI_USER = uri;
+  process.env.MONGO_URI_USERS = uri;
   process.env.MONGO_URI_EXPENSES = uri;
   process.env.MONGO_URI_GROUPS = uri;
   process.env.JWT_SECRET = 'test-secret-key-for-jest';
