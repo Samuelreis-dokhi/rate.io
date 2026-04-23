@@ -1,9 +1,3 @@
-/* * ProtectedRoute.jsx
- * Componente de rota protegida que verifica se o usuário está autenticado.
- * Se estiver, renderiza os filhos; caso contrário, redireciona para a página de login.
- * Durante o bootstrapping (verificação inicial do token), pode exibir um indicador de carregamento.
- */
-
 // Importa o componente de navegação do React Router para redirecionamento
 import { Navigate } from 'react-router-dom';
 // importa o hook de autenticação para acessar o estado de autenticação e bootstrapping
