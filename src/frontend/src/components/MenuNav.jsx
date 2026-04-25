@@ -1,16 +1,25 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth.jsx'
+import { useState } from 'react'
 
 const MenuNav = () => {
   const { isAuthenticated, logout } = useAuth()
   const location = useLocation()
 
-  const navLinks = [
+  /* Estado para controlar a abertura do menu no mobile */
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navLinks = isAuthenticated ? [
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/groups', label: 'Grupos' },
     { to: '/activities', label: 'Atividades' },
-  ]
+    { to: '/profile', label: 'Perfil' },
+  ] : [
+    { to: '/auth', label: 'Começar agora' },
+  ];
 
+  const closeMenu = () => setIsMenuOpen(false);
+  
   return (
     <nav className='topbar'>
       <div className='bg-shape bg-shape-top' aria-hidden='true' />
@@ -18,36 +27,33 @@ const MenuNav = () => {
       <Link to={isAuthenticated ? '/dashboard' : '/'} className='brand'>
         RATE.IO
       </Link>
-      <ul className='menu-links'>
-        {isAuthenticated ? (
-          <>
-            {navLinks.map(({ to, label }) => (
-              <li key={to}>
-                <Link
-                  to={to}
-                  className={location.pathname === to || location.pathname.startsWith(to + '/') ? 'nav-link nav-link--active' : 'nav-link'}
-                >
-                  {label}
+
+      <div className='menu-container'>
+        
+        {/* Botão Hamburguer visível apeanas no mobile */}
+        <button className='hamburguer-btn' onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? 'x':'☰'}
+        </button>
+        
+        {/* A classe is-open é adicionada dinamicamente com base no estado */}
+        <nav className={`menu-nav ${isMenuOpen ? 'is-open' : ''}`}>
+          <ul className='menu-links'>
+            {navLinks.map((link,i) => (
+              <li key={i}>
+                <Link to={link.to} className={location.pathname === link.to ? 'active' : ''} onClick={closeMenu}>
+                  {link.label}
                 </Link>
               </li>
             ))}
-            <li>
-              <button onClick={logout} className='btn btn-small btn-outline'>
-                Sair
-              </button>
-            </li>
-          </>
-        ) : (
-          <>
-            <li><a href='#como-funciona' className='nav-link'>Como funciona</a></li>
-            <li>
-              <Link to='/auth' className='btn btn-small btn-outline'>
-                Começar agora
-              </Link>
-            </li>
-          </>
-        )}
-      </ul>
+          </ul>
+          {isAuthenticated && (
+            <button onClick={() => { logout(); closeMenu(); }} className='btn btn-small btn-outline'>
+              Sair
+            </button>
+          )}
+        </nav>
+      </div>
+
     </nav>
   )
 }
