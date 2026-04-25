@@ -17,7 +17,7 @@ MENU DE NAVEGACAO
   z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+/*   justify-content: space-between; */
   gap: 18px;
   padding: 24px clamp(16px, 4vw, 0px);
   background: var(--canvas);
@@ -42,12 +42,61 @@ nav a,
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
+.menu-links li a {
+  text-decoration: none;
+  color: #333; /* Ajuste para a cor do seu design */
+  font-weight: 500;
+}
+
 nav a:hover,
 .btn:hover,
 .menu-links li:hover {
   transform: translateY(-1px);
 }
 
+.menu-container {
+  display: flex;
+  align-items: center;
+}
+
+.menu-nav {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 0; /* Alterado: se o z-index do botão está alto, o menu pode começar do topo da tela */
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 80px 20px 20px 20px; /* Padding-top alto para não cobrir o botão 'X' */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 50; 
+  align-items: flex-end; /* Alinha o bloco todo à direita */
+}
+
+.menu-nav.is-open{
+  display: flex;
+}
+
+.menu-nav ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Alinha os links individualmente à direita */
+  gap: 16px;
+  width: 100%;
+  list-style: none; /* Remove marcadores padrão se houver */
+  padding: 0;
+}
+
+.hamburguer-btn {
+  display:none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 8px;
+  position: relative; /* Essencial para o z-index funcionar */
+  z-index: 51; /* Deve ser estritamente MAIOR que o z-index do menu-nav */
+}
 
 /******************************************
 BOTÕES
@@ -96,25 +145,67 @@ BACKGROUND SHAPES
   background: rgba(56, 108, 255, 0.14);
 }
 
-/******************************************
-RESPONSIVIDADE
-******************************************/
+/* ========================================= */
+/* RESPONSIVIDADE MOBILE                     */
+/* ========================================= */
 @media (max-width: 640px) {
   .bg-shape-top {
     width: 240px;
     height: 240px;
     top: -100px;
-    left: -80px;
+    right: -100px;
   }
+
   .bg-shape-bottom {
     width: 300px;
     height: 300px;
     bottom: -120px;
-    right: -80px;
+    left: -100px;
   }
-    .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 18px 18px;
+
+  .topbar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px 10px;
+  }
+
+  .hamburguer-btn {
+    display: flex;
+  }
+} /* <-- ESTA É A CHAVE QUE FALTAVA PARA FECHAR O MOBILE */
+
+/* ========================================= */
+/* RESPONSIVIDADE DESKTOP                    */
+/* ========================================= */
+@media (min-width: 768px) {  /* <-- ESTA É A DECLARAÇÃO QUE FALTAVA NA SUA CÓPIA */
+
+
+  /* 2. Empurra todo o bloco do menu para a direita */
+  .menu-container {
+    margin-left: auto; 
+    display: flex;
+    align-items: center;
+  }
+
+  /* 3. Restaura o layout em linha dos links */
+  .menu-nav {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    z-index: auto;
+    width: auto; 
+    gap: 32px; 
+  }
+
+  .menu-nav ul {
+    flex-direction: row;
+    align-items: center; 
+    width: auto; 
+    gap: 24px; 
+    margin: 0;
   }
 }
