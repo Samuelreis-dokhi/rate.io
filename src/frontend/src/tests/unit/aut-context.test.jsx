@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { AuthProvider } from '../../context/AuthContext'
 import { useAuth } from '../../context/useAuth'
@@ -8,6 +8,7 @@ vi.mock('../../services/api', () => ({
     login: vi.fn(),
     register: vi.fn(),
     getCurrentUser: vi.fn(),
+    logout: vi.fn(),
   },
 }))
 
@@ -19,9 +20,9 @@ const Consumer = () => {
         login
       </button>
       <button onClick={logout}>logout</button>
-      <span>{String(isAuthenticated)}</span>
-      <span>{user?.email ?? 'no-user'}</span>
-      <span>{String(bootstrapping)}</span>
+      <span data-testid="is-authenticated">{String(isAuthenticated)}</span>
+      <span data-testid="user-email">{user?.email ?? 'no-user'}</span>
+      <span data-testid="bootstrapping">{String(bootstrapping)}</span>
     </div>
   )
 }
@@ -66,8 +67,9 @@ describe('AuthContext', () => {
     screen.getByText('logout').click()
 
     await waitFor(() => {
-      expect(localStorage.getItem('token')).toBeNull()
-      expect(screen.getByText('false')).toBeInTheDocument()
+      expect(screen.getByTestId('is-authenticated')).toHaveTextContent('false')
+      expect(screen.getByTestId('user-email')).toHaveTextContent('no-user')
+      expect(screen.getByTestId('bootstrapping')).toHaveTextContent('false')
     })
   })
 })

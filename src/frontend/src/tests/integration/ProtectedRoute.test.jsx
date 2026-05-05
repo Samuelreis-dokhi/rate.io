@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import ProtectedRoute from '../../components/ProtectedRoute'
+import { MemoryRouter } from 'react-router-dom'
 
 vi.mock('../../context/useAuth', () => ({
   useAuth: vi.fn(),
@@ -13,9 +14,11 @@ describe('ProtectedRoute', async () => {
     useAuth.mockReturnValue({ isAuthenticated: false, bootstrapping: false })
 
     render(
-      <ProtectedRoute>
-        <div>Dashboard</div>
-      </ProtectedRoute>,
+      <MemoryRouter>
+        <ProtectedRoute>
+          <div>Dashboard</div>
+        </ProtectedRoute>,
+      </MemoryRouter>
     )
 
     expect(screen.queryByText('Dashboard')).not.toBeInTheDocument()
