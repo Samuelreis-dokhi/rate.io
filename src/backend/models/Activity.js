@@ -24,6 +24,8 @@ const activitySchema = new mongoose.Schema(
         'MEMBER_ADDED',
         'EXPENSE_CREATED',
         'PAYMENT_SETTLED',
+        'EXPENSE_UPDATED',
+        'EXPENSE_DELETED',
         'GROUP_DELETED',
       ],
       required: true,

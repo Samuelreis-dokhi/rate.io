@@ -116,4 +116,15 @@ export const api = {
         return await response.json();
     },
 
+    /* ATUALIZAR UMA DESPESA */
+    updateExpense: (expenseId, payload) => request(`/api/expenses/${expenseId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+    }),
+
+    /* DELETAR UMA DESPESA */
+    deleteExpense: (expenseId, payload) => request(`/api/expenses/${expenseId}`, {
+        method: 'DELETE',
+        body: JSON.stringify(payload),
+    }),
 }
