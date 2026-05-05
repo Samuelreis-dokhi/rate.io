@@ -10,9 +10,7 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const isGroupMember = (group, userId) => {
   if (!userId) return false;
-  return group.members.some(
-    (member) => member.userId.toString() === userId.toString()
-  );
+  return group.members.some((member) => member.userId.toString() === userId.toString());
 };
 
 const getActiveGroupOrNull = async (groupId) => {
@@ -244,15 +242,7 @@ exports.getGroupBalances = async (req, res) => {
 exports.updateExpense = async (req, res) => {
   const User = getUserModel();
   const { expenseId } = req.params;
-  const {
-    description,
-    amount,
-    currency,
-    paidBy,
-    splitType,
-    splitsData,
-    updatedBy,
-  } = req.body;
+  const { description, amount, currency, paidBy, splitType, splitsData, updatedBy } = req.body;
 
   try {
     if (!isValidObjectId(expenseId)) {
@@ -290,22 +280,17 @@ exports.updateExpense = async (req, res) => {
 
     if (splitType && !splitService.isSupportedSplitType(splitType)) {
       return res.status(400).json({
-        message:
-          'Tipo de divisão não suportado. Use "igual", "porcentagem" ou "exato".',
+        message: 'Tipo de divisão não suportado. Use "igual", "porcentagem" ou "exato".',
       });
     }
 
-    const isAmountChanged =
-      amount !== undefined && Number(amount) !== expense.amount;
-    const isSplitTypeChanged =
-      splitType && splitType !== expense.splitType;
-    const shouldRecalculateSplits =
-      Array.isArray(splitsData) && splitsData.length > 0;
+    const isAmountChanged = amount !== undefined && Number(amount) !== expense.amount;
+    const isSplitTypeChanged = splitType && splitType !== expense.splitType;
+    const shouldRecalculateSplits = Array.isArray(splitsData) && splitsData.length > 0;
 
     if ((isAmountChanged || isSplitTypeChanged) && !shouldRecalculateSplits) {
       return res.status(400).json({
-        message:
-          'Para alterar valor ou tipo de divisão, envie splitsData.',
+        message: 'Para alterar valor ou tipo de divisão, envie splitsData.',
       });
     }
 
@@ -344,26 +329,14 @@ exports.updateExpense = async (req, res) => {
       expense.splits = calculatedSplits.map((split) => ({
         userId: split.userId,
         amount: Number(split.amount),
-        status:
-          split.userId.toString() === expense.paidBy.toString()
-            ? 'pago'
-            : 'pendente',
-        paidAt:
-          split.userId.toString() === expense.paidBy.toString()
-            ? new Date()
-            : null,
+        status: split.userId.toString() === expense.paidBy.toString() ? 'pago' : 'pendente',
+        paidAt: split.userId.toString() === expense.paidBy.toString() ? new Date() : null,
       }));
     } else if (paidBy) {
       expense.splits = expense.splits.map((split) => ({
         ...split,
-        status:
-          split.userId.toString() === paidBy.toString()
-            ? 'pago'
-            : 'pendente',
-        paidAt:
-          split.userId.toString() === paidBy.toString()
-            ? new Date()
-            : null,
+        status: split.userId.toString() === paidBy.toString() ? 'pago' : 'pendente',
+        paidAt: split.userId.toString() === paidBy.toString() ? new Date() : null,
       }));
     }
 
