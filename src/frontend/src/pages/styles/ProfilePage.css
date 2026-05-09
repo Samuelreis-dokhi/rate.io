@@ -312,6 +312,52 @@
 }
 
 /* ─────────────────────────────────────────────
+   PASSWORD ACTIONS
+───────────────────────────────────────────── */
+.profile-password-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: left;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-password-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-password-content {
+  flex: 2;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.profile-password-button {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-password-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.profile-password-link:hover {
+  opacity: 0.8;
+}
+/* ─────────────────────────────────────────────
    RESPONSIVE
 ───────────────────────────────────────────── */
 @media (max-width: 768px) {
@@ -341,6 +387,19 @@
   .form-group input {
     padding: 14px 12px;
     font-size: 16px; /* Previne zoom no iOS */
+  }
+
+  .profile-password-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-password-button {
+    width: 100%;
+  }
+
+  .profile-password-button .btn {
+    max-width: 100%;
   }
 }
 

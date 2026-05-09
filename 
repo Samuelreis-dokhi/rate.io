@@ -1,0 +1,173 @@
+[33m24e60f6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/profile-page[m[33m)[m feat: implementa carregamento dinâmico de dados para placeholder do perfil do usuário
+[33mefe0b3e[m[33m ([m[1;31morigin/feature/profile-page[m[33m)[m WIP: implementando ProfilePage - encontrando erros no auth ao rodar a aplicação
+[33mba66dad[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m fix(test): corrige testes unitarios, integracao e contexto (#209)
+[33m63545f0[m fix(eslint):corrigindo formatacao
+[33mf5c061c[m Merge branch 'develop' of https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2026-1-e4-infra-t1-segunda-20h into develop
+[33m72d07cf[m Merge branch 'tests/vitest' of https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2026-1-e4-infra-t1-segunda-20h into develop Commit com todos os testes, unitarios dee integracao e suas configuracoes
+[33mc1b5077[m criacao da pagina de detalhes do grupo e gerenciamento das despesas (#205)
+[33m36e4b62[m[33m ([m[1;31morigin/tests/vitest[m[33m)[m tests: testes unitarios e integração
+[33mc585964[m feat: adiciona página de atividades (#204)
+[33mafffbc9[m Ci/GitHub actions (#203)
+[33m3d6d505[m Reapply "add grouppage"
+[33m533075e[m Revert "add grouppage"
+[33m1e301b3[m add grouppage
+[33m51103b6[m fix(menunav):ajusta responsividade dos botoes da landing page e transforma menuNav em hamburguer no mobile (#202)
+[33m388ccdf[m doc(wireframe): adiciona wireframe de media fidelidade a documentacao
+[33m3067caa[m arquivo template padrao da aplicação (#201)
+[33mb1eac96[m fix(deploy):add /api na rota de settle
+[33m4fc5f8e[m fix(deploy):remove localhost do settle
+[33m01acda6[m Merge branch 'main' into develop
+[33m158eda0[m :Merge branch 'develop' of https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2026-1-e4-infra-t1-segunda-20h into develop
+[33mdb1c510[m fix(deploy):apaga Map('/dashboard') que trava o login
+[33m99249ac[m Develop (#196)
+[33m368a8b9[m Merge branch 'main' into develop
+[33m28d0efc[m fix(deploy):corrigindo funcao de load para destravar carregamento do painel
+[33me5516bb[m sync deploy (#195)
+[33m2b692a2[m fix(deploy):aplicando endereco render direto no cors server
+[33mb4cc047[m sync deploy render (#194)
+[33mcfe2e25[m fix(backend):erro de variaveis de ambiente no singular
+[33m728957c[m docs(diagramafluxo):adiciona diagrama de fluxo (#193)
+[33m78ab205[m feat(dashboard):criando a dashboard do RATEIO (#192)
+[33ma7c6877[m fix(auth):useEffect para limpar inputs ao deslogar
+[33m1ce8c23[m refactor(menu+landing): estilização padronizada pelo shared.css (#189)
+[33m467ba5e[m feat(components):cria compontentes principais de estilos globais (#187)
+[33me063047[m fix(api):refatorando registro de pagamentos (#186)
+[33m8927784[m listing pages on dash
+[33made94c6[m ajuste no esqueleto das paginas e nas suas rotas
+[33ma841b51[m fix(api-service):fixing url .env
+[33med84c78[m feature(userController):Cria rota para busca de usuário sem que todos os nomes de membros apareçam como 'membro' no dashboard (#176)
+[33mdc880f6[m fix(services/api):conserta o contrato de api, API_URL errada e chamada para balanços com erro de digitação (#175)
+[33m339354e[m feat(authPage):adiciona pagina de login e registro (#174)
+[33ma0a35bf[m feat(landing-page):cria mvp da landing page (#173)
+[33m322c3d6[m feat(rotas):desenvolve rotas protejidas e validação de autenticacao (#172)
+[33m20e496c[m chore(frontend/docs): desenvolve auth context e documenta contrato de API (#171)
+[33me1de618[m Feat/central http (#170)
+[33m6c4b4ce[m feat(api):configuracao do servico de api (#169)
+[33mbd0659c[m feat(infra): adiciona roteamento no front com react-router (#168)
+[33mfcaf1ed[m chore: update gitignore for Vite cache and local plan file
+[33m01fa07f[m Frontend/initial config (#136)
+[33m64b33fa[m feat(frontend):configuracao do vite (#135)
+[33m760014d[m fix(bug):database env config
+[33m7fc305c[m Merge pull request #134 from ICEI-PUC-Minas-PMV-ADS/sync-main
+[33m866ec17[m[33m ([m[1;31morigin/sync-main[m[33m)[m Test/user journey (#133)
+[33mebeb560[m Update test status from 'Planejado' to 'Aprovado'
+[33m8e69e95[m ci: adiciona pipeline de testes automatizados com GitHub Actions (#132)
+[33mb94532b[m docs(documentacao):consertando imagens de backend/README.md
+[33mf0fcf14[m docs(documentacao):relatorio de testes de integracao
+[33mf3433bd[m fix(bug):correcao de bugs de falhas e documentacao
+[33mb5f2927[m fix(bug): entidade nao declarada
+[33mcbeb48e[m fix(bug): erro ao iniciar compose up por codigo duplicado em groupController linha 40 normalizedName
+[33m148708e[m test(balanceService): Implementados os testes unitários do serviço de balanço de grupo, cobrindo getGroupBalances, getUserGroupBalance e getGroupPaymentGraph #108 (#128)
+[33m0d3b1b6[m Adicionando registro de testes de integração de expense na documentação de registro (#129)
+[33m1bb52f8[m Criacao do tests/integraion/expense (#127)
+[33mc1affbe[m test(splitService): Implantado os testes de serviço de divisão de despesas, corrigindo erros encontrados e documentando a execução do teste no relatório de incidentes de testes unitários (#126)
+[33mba723b4[m doc(readme-api): documentando a API do sistema, as instruções e o detalhamento do backend da aplicação (#125)
+[33m495bd55[m docs/ajustes na documentacao (#121)
+[33m17d5caa[m doc(readme):toques finais no readme ajustando como uma intro ao projeto com instrucoes basicas e breve apresentacao da ideia e da equipe (#120)
+[33m7cef3c2[m Correçao no grouController para receber validacao explicita de nome
+[33me2d8cee[m Test/group test (#118)
+[33m2f2df62[m teste(tests): implementacao de casos de teste obrigatórios descritos na issue #107 (#117)
+[33m77d8b50[m testes(tests): teste de auth e registro de testes de integracao (#116)
+[33m51000c2[m testes(tests):.env de exemplo para configuracao local dos colaboradores
+[33m270171d[m testes(helpers):Estrutura de pastas, package.json e helpers principais (#115)
+[33m3f9b476[m documentacao(arquitetura): garantindo compatibilidade com estado atual do projeto (#114)
+[33m88f04f6[m docs: update README and other pending changes (#100)
+[33m28a6e8d[m corrigindo API de marcar despesa como paga
+[33m85a689d[m configurações do docker e atualização do passo a passo de testes com o Postman (#99)
+[33mb8977d6[m ajuste de rota api
+[33m956533d[m[33m ([m[1;32mfeature/get-user/groups[m[33m)[m ajustes nas rotas para teste POSTMAN
+[33m67657e4[m refatorando servidor e banco de dados (#97)
+[33m2dff46f[m fix(expense):erro de sintaxe na chamada da funcao
+[33mbd7ea49[m review(expense):add status e moeda em despesa, criando servicos de balanco e divisao e refatorando controller (#96)
+[33m8cd34cd[m fix(groups):review de groups (#95)
+[33m00991ba[m refactor (#93)
+[33mf6d41da[m feat: implementação da group model, controller e routes, alem do metodo de criacao do grupo com autenticacao (#94)
+[33m1e7d980[m Merge pull request #92 from ICEI-PUC-Minas-PMV-ADS/feature/ExpenseService
+[33md529f1c[m[33m ([m[1;31morigin/feature/ExpenseService[m[33m)[m expenseServices finalizados e rotas adicionadas
+[33m1dcf9d6[m Merge pull request #84 from ICEI-PUC-Minas-PMV-ADS/doc/documentacao-readme
+[33m85bb8ef[m[33m ([m[1;31morigin/doc/documentacao-readme[m[33m)[m Merge branch 'develop' into doc/documentacao-readme
+[33m1db2d09[m completando o readme
+[33md3e07b1[m Merge pull request #83 from ICEI-PUC-Minas-PMV-ADS/doc/metodologia
+[33mdb6f2c9[m[33m ([m[1;31morigin/doc/metodologia[m[33m)[m teste comandos
+[33m397c1ad[m Conteinerizando o Projeto com Docker
+[33mb137f8b[m configurar servidor e .env
+[33meab616c[m Formatação do código no padrão ESLint + ajuste no User pra receber Nome de forma obrigatória
+[33m8da227e[m Merge pull request #82 from ICEI-PUC-Minas-PMV-ADS/feature/ExpenseService
+[33m66bec87[m Criando Controller/Expense
+[33m606da23[m Merge pull request #80 from ICEI-PUC-Minas-PMV-ADS/doc/documentacao-api
+[33m34b05d7[m[33m ([m[1;31morigin/doc/documentacao-api[m[33m)[m Documentacao e Arquitetura baseada em API
+[33m5f769b7[m Merge pull request #79 from ICEI-PUC-Minas-PMV-ADS/doc/11-registro-de-contribuicao
+[33mbce359d[m[33m ([m[1;31morigin/doc/11-registro-de-contribuicao[m[33m)[m Registro de contribuicao
+[33m2a6a5b7[m Merge pull request #78 from ICEI-PUC-Minas-PMV-ADS/Samuelreis-dokhi-patch-3
+[33m405040e[m[33m ([m[1;31morigin/Samuelreis-dokhi-patch-3[m[33m)[m Revise methodology and tools used in project
+[33m98ebee4[m tipo: Adicionando model/expense
+[33m53aa2fd[m Merge pull request #75 from ICEI-PUC-Minas-PMV-ADS/doc/registro-postman
+[33mb97fa4e[m[33m ([m[1;31morigin/doc/registro-postman[m[33m)[m testes e documentacao da api
+[33mdd15f40[m Rename : Atualizar arquitetura com padrão multi-banco" to Atualizar arquitetura com padrão multi-banco"
+[33m1fe950b[m Merge branch 'fix/registro-automatico-user' into develop
+[33m472c6fd[m[33m ([m[1;31morigin/fix/registro-automatico-user[m[33m)[m docs: Atualizar arquitetura com padrão multi-banco
+[33m216188a[m Merge pull request #74 from ICEI-PUC-Minas-PMV-ADS/fix/registro-automatico-user
+[33m0948171[m feat: Implementar arquitetura multi-banco e fluxo de autenticação com perfil automático
+[33m70c2619[m[33m ([m[1;31morigin/setup/middleware[m[33m)[m Merge branch 'setup/middleware' of https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2026-1-e4-infra-t1-segunda-20h into setup/middleware
+[33me2b34d4[m authMiddleware.js feito
+[33m14255d7[m feat: add user model, controller, routes and auth middleware (#66)
+[33mde29cc9[m authMiddleware.js feito
+[33mded1d90[m Merge branch 'feature/auth-config' into develop
+[33m84c9d25[m[33m ([m[1;31morigin/feature/auth-config[m[33m)[m setupconfig file
+[33m4cc5bc2[m Merge pull request #65 from ICEI-PUC-Minas-PMV-ADS/feature/auth-config
+[33m5ef570c[m implementacao da autenticação e documentos de suporte a equipe
+[33m1f3c912[m Merge pull request #64 from ICEI-PUC-Minas-PMV-ADS/doc/env-ignore
+[33m5c36d1d[m[33m ([m[1;31morigin/doc/env-ignore[m[33m)[m Exemplos de arquivos .env e .gitignore para configuração por parte de cada componente do grupo
+[33mc76a1f1[m Merge pull request #63 from ICEI-PUC-Minas-PMV-ADS/feature/mongodb_config
+[33mc760808[m[33m ([m[1;31morigin/feature/mongodb_config[m[33m)[m configuração e conexao inicial do mongodb
+[33mb9542a0[m Merge pull request #59 from ICEI-PUC-Minas-PMV-ADS/feature/setup-backend
+[33m8b3a6c4[m[33m ([m[1;31morigin/feature/setup-backend[m[33m)[m Setup inicial do backend do projeto
+[33m623a4ba[m Merge pull request #58 from ICEI-PUC-Minas-PMV-ADS/doc/arquitetura-solucao
+[33m4ad3c28[m[33m ([m[1;31morigin/doc/arquitetura-solucao[m[33m)[m Arquitetura da solucao atualizada para validação do professor sobre as correções
+[33m9ec88cc[m Merge pull request #57 from ICEI-PUC-Minas-PMV-ADS/doc/ajuste-restricao
+[33m7bf3ab1[m[33m ([m[1;31morigin/doc/ajuste-restricao[m[33m)[m ajuste nas restrições, definindo a arquitetura como DESCENTRALIZADA
+[33mf34a361[m Merge pull request #55 from ICEI-PUC-Minas-PMV-ADS/doc/arquitetura-da-solucao
+[33m55efff3[m[33m ([m[1;31morigin/doc/arquitetura-da-solucao[m[33m)[m Arquitetura-solucao
+[33mc5d93be[m Novo diagrama da arquitetura e sua descrição
+[33ma087b12[m[33m ([m[1;31morigin/no[m[33m)[m Merge pull request #42 from ICEI-PUC-Minas-PMV-ADS/develop
+[33mf64e2e1[m Merge pull request #41 from ICEI-PUC-Minas-PMV-ADS/doc/video-etapa1
+[33m4e6c1ab[m[33m ([m[1;31morigin/doc/video-etapa1[m[33m)[m subindo o vídeo da etapa
+[33m130f052[m Merge pull request #40 from ICEI-PUC-Minas-PMV-ADS/vinicius-nog-patch-1
+[33m5d89a3c[m[33m ([m[1;31morigin/vinicius-nog-patch-1[m[33m)[m doc/vinicius-nog-patch.md
+[33m4b72463[m Merge pull request #39 from ICEI-PUC-Minas-PMV-ADS/develop
+[33m9ac7ed5[m Merge pull request #38 from ICEI-PUC-Minas-PMV-ADS/doc/correcao-arquitetura
+[33m0944c8f[m[33m ([m[1;31morigin/doc/correcao-arquitetura[m[33m)[m Correcao da docuemntaçao da arquitetura
+[33m9ffa52c[m Merge pull request #37 from ICEI-PUC-Minas-PMV-ADS/develop
+[33m5ca76a7[m Merge pull request #36 from ICEI-PUC-Minas-PMV-ADS/doc/diagrama-arquitetura
+[33m49a589c[m[33m ([m[1;31morigin/doc/diagrama-arquitetura[m[33m)[m Adicionando um novo Diagrama de Arquitetura ao arquivo 05.
+[33mb218d77[m Add Matriz de Rastreabilidade e Diagrama de Caso de Uso
+[33m69b92f5[m Merge pull request #34 from ICEI-PUC-Minas-PMV-ADS/doc/revisao-arquitetura
+[33ma95865b[m Revisão da Arquitetura da Solução para compatibilidade com a Stack definida pelo grupo
+[33m7cace2e[m Merge pull request #32 from ICEI-PUC-Minas-PMV-ADS/Samuelreis-dokhi-patch-1
+[33mbb84654[m[33m ([m[1;31morigin/Samuelreis-dokhi-patch-1[m[33m)[m Merge branch 'develop' into Samuelreis-dokhi-patch-1
+[33m49a1b0a[m commit para atualizar a main com as ultimas alterações da develop
+[33m46d3099[m Enhance project specification with user stories and personas
+[33m0672984[m Update personas section with new entries
+[33mcedb732[m Revise personas and user stories in project specification
+[33md801f6b[m Add user personas and characteristics to project spec
+[33m0e4c8f0[m Merge pull request #31 from ICEI-PUC-Minas-PMV-ADS/doc/documentacao-arquitetura-distribuida
+[33mf2b6250[m Documentação da arquitetura distribuída
+[33m618b86f[m Merge pull request #30 from ICEI-PUC-Minas-PMV-ADS/doc/gerenciamento-de-projeto
+[33m6346375[m Realizado o Gerenciamento de Projeto, contendo a gestao de tempo com gráfico Gantt, gerenciamento de equipe com o Projects, planejamento de custos e de pessoal com a justificativa de recursos.
+[33mdfd7756[m Merge pull request #29 from ICEI-PUC-Minas-PMV-ADS/doc/formatar-documentacao-contexto
+[33m0d4307a[m[33m ([m[1;32mdoc/formatar-documentacao-contexto[m[33m)[m Formatacao de todos os topicos do item 1 (documentacao de contexto)
+[33m01fa62c[m Merge pull request #27 from ICEI-PUC-Minas-PMV-ADS/doc/publico-alvo
+[33m653e925[m[33m ([m[1;31morigin/doc/publico-alvo[m[33m, [m[1;32mdoc/publico-alvo[m[33m)[m Adiciona seção de público-alvo na documentação
+[33mf0b522b[m Merge pull request #25 from ICEI-PUC-Minas-PMV-ADS/doc/requirements
+[33me08cd74[m[33m ([m[1;31morigin/doc/requirements[m[33m)[m Revisar as especificações do projeto, incluindo requisitos e restrições.
+[33mab60407[m Merge pull request #24 from ICEI-PUC-Minas-PMV-ADS/doc/formatacao-md-personas
+[33mc8aa90b[m Formatação do campo Personas
+[33m252c03e[m[33m ([m[1;32mmain[m[33m)[m Update README.md
+[33m902ee54[m Update 01-Documentação de Contexto.md
+[33mbfa1ab8[m Revise project specification with new details
+[33m4a21da1[m Merge pull request #8 from ICEI-PUC-Minas-PMV-ADS/doc/objetivos-readme
+[33m5e54f5a[m[33m ([m[1;31morigin/doc/objetivos-readme[m[33m)[m Merge branch 'main' into doc/objetivos-readme
+[33ma29de00[m Alteração na documentação, objetivos específicos e README. Pendente colocar nome completo de todos os integrantes..
+[33mfce2177[m Merge pull request #7 from ICEI-PUC-Minas-PMV-ADS/doc/introducao-problema
+[33ma1edaaf[m[33m ([m[1;31morigin/doc/introducao-problema[m[33m)[m docs: Introdução e Problema - Documentação de Contexto
+[33m3070e7d[m Initial commit

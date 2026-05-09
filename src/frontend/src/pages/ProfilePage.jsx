@@ -63,15 +63,50 @@ useEffect(() => {
     }));
   };
 
-  const handleSave = () => {
-    if (!formData.name.trim()) {
-      setError("Nome é obrigatório");
-      return;
-    }
+  const handleSave = async () => {
+    try {
+      if (!formData.name.trim()) {
+        setError("Nome é obrigatório");
+        return;
+      }
+
     setError("");
-    console.log("Perfil atualizado:", formData);
-    // Aqui você faria a requisição para salvar os dados na API
-  };
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token não encontrado. Tente fazer login novamente.");
+    }
+
+    const response = await fetch("http://localhost:3000/api/users/profile", {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        avatarUrl:avatar,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Erro ao atualizar perfil");
+    }
+
+    const updatedUser = await response.json();
+
+    console.log("Perfil atualizado com sucesso:", updatedUser);
+
+    window.location.reload();
+    
+    alert("Perfil atualizado com sucesso!");
+
+  } catch (err) {
+    console.error("Erro ao salvar perfil:", err);
+    setError("Erro ao salvar perfil");
+  }
+};
 
   const handleCancel = () => {
     // Recarregar dados originais do usuário
@@ -186,6 +221,29 @@ useEffect(() => {
                 placeholder="email@example.com"
               />
               <span className="form-group-hint">Email não pode ser alterado.</span>
+            </div>
+          </div>
+
+          {/* Password Change Section */}
+          <div className="profile-password-actions">
+            <h2 className="profile-section-title">Senha</h2>
+
+            <div className="profile-password-row">
+              <div className="profile-password-content">
+                <span className="form-group-hint">
+                Por questões de segurança, recomendamos que a senha seja alterada periodicamente.
+                </span>
+              </div>
+
+              <div className="profile-password-button">
+                <button
+                  type="button"
+                  className="profile-password-link"
+                  onClick={() => window.location.href = "/reset-password"}
+                >
+                  Redefinir senha →
+                </button>
+              </div>
             </div>
           </div>
 
