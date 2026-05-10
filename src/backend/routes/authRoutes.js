@@ -7,3 +7,6 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 module.exports = router;
+
+// Trocar senha (protegido)
+router.put('/change-password', authenticateToken, authController.changePassword);
