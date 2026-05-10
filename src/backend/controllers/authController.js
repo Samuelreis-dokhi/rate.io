@@ -1,10 +1,9 @@
 const getAuthModel = require('../models/Auth');
 const getUserModel = require('../models/User');
 
-
-
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const changePasswordService = require('../services/changePasswordService');
 
 const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 const validatePassword = (password) => password && password.length >= 6;
@@ -127,69 +126,30 @@ exports.login = async (req, res) => {
   }
 };
 
-
 /**
  * Trocar senha do usuário autenticado
  * Valida senha atual antes de trocar
  */
-changePassword: async (req, res) => {
+exports.changePassword = async (req, res) => {
   try {
-    const { currentPassword, newPassword, confirmPassword } = req.body;
-    const authId = req.user.id;
+    const Auth = getAuthModel();
+    const { currentPassword, newPassword, confirmPassword } = req.body || {};
 
-    // Validação de entrada
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      return res.status(400).json({ 
-        message: 'Todos os campos são obrigatórios' 
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({ 
-        message: 'Nova senha deve ter no mínimo 6 caracteres' 
-      });
-    }
-
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ 
-        message: 'Senhas não conferem' 
-      });
-    }
-
-    if (currentPassword === newPassword) {
-      return res.status(400).json({ 
-        message: 'Nova senha não pode ser igual à anterior' 
-      });
-    }
-
-    // Buscar Auth do usuário
-    const auth = await Auth.findById(authId);
-    if (!auth) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
-    }
-
-    // Validar senha atual
-    const isPasswordValid = await bcrypt.compare(currentPassword, auth.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ 
-        message: 'Senha atual incorreta' 
-      });
-    }
-
-    // Hash da nova senha
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    auth.password = hashedPassword;
-    await auth.save();
-
-    res.status(200).json({ 
-      message: 'Senha alterada com sucesso' 
+    await changePasswordService.changePassword({
+      Auth,
+      authId: req.user.id,
+      currentPassword,
+      newPassword,
+      confirmPassword,
     });
 
+    res.status(200).json({
+      message: 'Senha alterada com sucesso',
+    });
   } catch (error) {
-    console.error('Erro ao trocar senha:', error);
-    res.status(500).json({ 
-      message: 'Erro ao trocar senha', 
-      error: error.message 
+    res.status(error.statusCode || 500).json({
+      message: 'Erro ao trocar senha',
+      error: error.message,
     });
   }
-}
+};

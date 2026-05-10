@@ -39,6 +39,10 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(payload),
     }),
+    changePassword: (payload) => request('/api/auth/change-password', {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+    }),
     logout: () => Promise.resolve(),
     
   // ── User ──────────────────────────────────────────────
