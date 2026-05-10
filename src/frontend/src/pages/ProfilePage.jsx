@@ -141,7 +141,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className='inner-page content-wrap'>
+    <div className='inner-page'>
       <MenuNav />
 
       <div className='inner-page-body content-wrap'>
