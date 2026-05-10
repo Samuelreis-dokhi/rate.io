@@ -9,6 +9,7 @@ import GroupPage from './pages/GroupPage.jsx'
 import GroupDetailPage from './pages/GroupDetailPage.jsx'
 import ActivityPage from './pages/ActivityPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 /* import ExpensePage from './pages/ExpensePage.jsx' */
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 
@@ -78,6 +79,16 @@ function App() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* REDEFINIÇÃO DE SENHA */}
+      <Route
+        path='/reset-password'
+        element={
+          <ProtectedRoute>
+            <ResetPasswordPage />
           </ProtectedRoute>
         }
       />
