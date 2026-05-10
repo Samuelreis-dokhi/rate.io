@@ -1,273 +1,326 @@
-import { useState, useEffect } from "react";
-import MenuNav from "../components/MenuNav.jsx";
-import "./styles/ProfilePage.css";
+import { useEffect, useState } from 'react'
+import MenuNav from '../components/MenuNav.jsx'
+import { Modal } from '../components/ui/index.jsx'
+import { api } from '../services/api.js'
+import './styles/shared.css'
+import './styles/ProfilePage.css'
+
+const initialPasswordData = {
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+}
 
 const ProfilePage = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-  });
-  const [avatar, setAvatar] = useState(null);
-  const [error, setError] = useState("");
-  const [showModal, setShowModal] = useState(false);
+    name: '',
+    email: '',
+  })
+  const [initialProfileData, setInitialProfileData] = useState({
+    name: '',
+    email: '',
+    avatarUrl: null,
+  })
+  const [avatar, setAvatar] = useState(null)
+  const [error, setError] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false)
+  const [passwordData, setPasswordData] = useState(initialPasswordData)
+  const [passwordLoading, setPasswordLoading] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordFeedback, setPasswordFeedback] = useState('')
 
-  // Carregar dados do usuário ao montar o componente
-// Carregar dados do usuário ao montar o componente
-useEffect(() => {
-  const loadUserData = async () => {
-    try {
-      const token = localStorage.getItem("token"); // ou onde você armazena o token
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await api.getCurrentUser()
 
-      if (!token) {
-        throw new Error("Token não encontrado. Tente fazer login novamente.");
+        setFormData({
+          name: userData.name || '',
+          email: userData.email || '',
+        })
+        setInitialProfileData({
+          name: userData.name || '',
+          email: userData.email || '',
+          avatarUrl: userData.avatarUrl || null,
+        })
+
+        setAvatar(userData.avatarUrl || null)
+      } catch (err) {
+        console.error('Erro ao carregar perfil:', err)
+        setError('Erro ao carregar dados do perfil')
       }
-
-      const response = await fetch("http://localhost:3000/api/users/profile", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao carregar dados do perfil.");
-      }
-
-      const userData = await response.json();
-
-      setFormData({
-        name: userData.name || "",
-        email: userData.email || "",
-      });
-
-      // Caso exista avatar salvo, o que não será o caso de nenhum usuário no momento.
-      if (userData.avatarUrl) {
-        setAvatar(userData.avatarUrl);
-      }
-
-    } catch (err) {
-      console.error("Erro ao carregar perfil:", err);
-      setError("Erro ao carregar dados do perfil");
     }
-  };
 
-  loadUserData();
-}, []);
+    loadUserData()
+  }, [])
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
+    }))
+  }
+
+  const handlePasswordInputChange = (event) => {
+    const { name, value } = event.target
+    setPasswordData((current) => ({ ...current, [name]: value }))
+    setPasswordError('')
+    setPasswordFeedback('')
+  }
 
   const handleSave = async () => {
     try {
       if (!formData.name.trim()) {
-        setError("Nome é obrigatório");
-        return;
+        setError('Nome é obrigatório')
+        return
       }
 
-    setError("");
+      setError('')
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      throw new Error("Token não encontrado. Tente fazer login novamente.");
-    }
-
-    const response = await fetch("http://localhost:3000/api/users/profile", {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+      await api.updateUserProfile(null, {
         name: formData.name,
-        avatarUrl:avatar,
-      }),
-    });
+        avatarUrl: avatar,
+      })
 
-    if (!response.ok) {
-      throw new Error("Erro ao atualizar perfil");
+      setInitialProfileData({
+        name: formData.name,
+        email: formData.email,
+        avatarUrl: avatar,
+      })
+
+      alert('Perfil atualizado com sucesso!')
+    } catch (err) {
+      console.error('Erro ao salvar perfil:', err)
+      setError('Erro ao salvar perfil')
+    }
+  }
+
+  const handlePasswordSubmit = async (event) => {
+    event.preventDefault()
+    setPasswordError('')
+    setPasswordFeedback('')
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('Senhas não batem')
+      return
     }
 
-    const updatedUser = await response.json();
+    setPasswordLoading(true)
 
-    console.log("Perfil atualizado com sucesso:", updatedUser);
-
-    window.location.reload();
-    
-    alert("Perfil atualizado com sucesso!");
-
-  } catch (err) {
-    console.error("Erro ao salvar perfil:", err);
-    setError("Erro ao salvar perfil");
+    try {
+      await api.changePassword(passwordData)
+      setPasswordData(initialPasswordData)
+      setPasswordFeedback('Senha alterada com sucesso.')
+    } catch (err) {
+      const message = err.message || 'Não foi possível alterar a senha.'
+      setPasswordError(message === 'Senha atual incorreta' ? 'Senha incorreta' : message)
+    } finally {
+      setPasswordLoading(false)
+    }
   }
-};
 
   const handleCancel = () => {
-    // Recarregar dados originais do usuário
-    const userData = {
-      name: "João Silva",
-      email: "joao@example.com",
-    };
-    setFormData(userData);
-    setAvatar(null);
-    setError("");
-  };
+    setFormData({
+      name: initialProfileData.name,
+      email: initialProfileData.email,
+    })
+    setAvatar(initialProfileData.avatarUrl)
+    setError('')
+  }
+
+  const togglePasswordAccordion = () => {
+    setIsPasswordOpen((current) => !current)
+    setPasswordError('')
+    setPasswordFeedback('')
+  }
 
   const getInitial = () => {
-    return formData.name.charAt(0).toUpperCase();
-  };
+    return (formData.name || formData.email || 'U').charAt(0).toUpperCase()
+  }
 
   return (
-    <div className="page dashboard-page content-wrap">
+    <div className='inner-page content-wrap'>
       <MenuNav />
 
-      <div className="profile-container">
-        {/* Header */}
-        <div className="profile-header">
-          <button className="profile-back-btn" onClick={() => window.history.back()}>
-            ← Voltar
-          </button>
-          <h1>Perfil de usuário</h1>
-          <p className="profile-subtitle">Gerenciar suas informações pessoais e configurações de conta</p>
-        </div>
-
-        {/* Avatar Section */}
-        <div className="profile-avatar-section">
-          <div className="profile-avatar-wrapper">
-            {avatar ? (
-              <img src={avatar} alt="Avatar do usuário" className="profile-avatar-image" />
-            ) : (
-              <span className="profile-avatar-initial">{getInitial()}</span>
-            )}
+      <div className='inner-page-body content-wrap'>
+        <div className='page-header profile-page-header'>
+          <div className='page-header__text'>
+            <button className='back-link' onClick={() => window.history.back()} type='button'>
+              ← Voltar
+            </button>
+            <h1>Perfil de usuário</h1>
+            <p>Gerencie suas informações pessoais e configurações de conta.</p>
           </div>
-          <button
-            type="button"
-            className="btn profile-avatar-btn"
-            onClick={() => setShowModal(true)}
-          >
-            Alterar foto de perfil
-          </button>
         </div>
 
-        {/* Modal de Alteração de Foto */}
-        {showModal && (
-          <div className="profile-modal-overlay" onClick={() => setShowModal(false)}>
-            <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="profile-modal-header">
-                <button
-                  className="profile-modal-back-btn"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Voltar"
-                >
-                  ←
+        {error && <div className='profile-error profile-page-alert'>{error}</div>}
+
+        <div className='profile-layout'>
+          <section className='profile-summary-card' aria-label='Foto do perfil'>
+            <div className='profile-avatar-wrapper'>
+              {avatar ? (
+                <img src={avatar} alt='Avatar do usuário' className='profile-avatar-image' />
+              ) : (
+                <span className='profile-avatar-initial'>{getInitial()}</span>
+              )}
+            </div>
+
+            <button
+              type='button'
+              className='btn btn-outline profile-avatar-btn'
+              onClick={() => setShowModal(true)}
+            >
+              Alterar foto
+            </button>
+          </section>
+
+          <main className='profile-content'>
+            <form className='profile-panel profile-form'>
+              <div className='profile-section-header'>
+                <h2 className='profile-section-title'>Dados cadastrais</h2>
+                <p>Esses dados aparecem na sua conta e nos grupos dos quais você participa.</p>
+              </div>
+
+              <div className='profile-form-grid'>
+                <div className='form-group'>
+                  <label htmlFor='name'>Nome</label>
+                  <input
+                    id='name'
+                    type='text'
+                    name='name'
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder='Digite seu nome'
+                  />
+                </div>
+
+                <div className='form-group form-group--readonly'>
+                  <label htmlFor='email'>Email</label>
+                  <input
+                    id='email'
+                    type='email'
+                    name='email'
+                    value={formData.email}
+                    disabled
+                    placeholder='email@example.com'
+                  />
+                  <span className='form-group-hint'>Email não pode ser alterado.</span>
+                </div>
+              </div>
+
+              <div className='profile-actions'>
+                <button type='button' className='btn btn-primary' onClick={handleSave}>
+                  Salvar alterações
                 </button>
-              </div>
-              <div className="profile-modal-content">
-                <p>Funcionalidade em desenvolvimento</p>
-              </div>
-              <div className="profile-modal-actions">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type='button' className='btn btn-ghost' onClick={handleCancel}>
                   Cancelar
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setShowModal(false)}
-                >
-                  OK
-                </button>
               </div>
-            </div>
-          </div>
-        )}
+            </form>
 
-        {/* Error Message */}
-        {error && <div className="profile-error">{error}</div>}
-
-        {/* Form */}
-        <form className="profile-form">
-          {/* Personal Information Section */}
-          <div className="profile-section">
-            <h2 className="profile-section-title">Dados Cadastrais</h2>
-
-            <div className="form-group">
-              <label htmlFor="name">Nome</label>
-              <input
-                id="name"
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Digite seu nome"
-              />
-            </div>
-
-            <div className="form-group form-group--readonly">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                value={formData.email}
-                disabled
-                placeholder="email@example.com"
-              />
-              <span className="form-group-hint">Email não pode ser alterado.</span>
-            </div>
-          </div>
-
-          {/* Password Change Section */}
-          <div className="profile-password-actions">
-            <h2 className="profile-section-title">Senha</h2>
-
-            <div className="profile-password-row">
-              <div className="profile-password-content">
-                <span className="form-group-hint">
-                Por questões de segurança, recomendamos que a senha seja alterada periodicamente.
+            <section className={`profile-panel profile-password-actions ${isPasswordOpen ? 'is-open' : ''}`}>
+              <button
+                type='button'
+                className='profile-password-toggle'
+                onClick={togglePasswordAccordion}
+                aria-expanded={isPasswordOpen}
+                aria-controls='change-password-panel'
+              >
+                <span className='profile-password-heading'>
+                  <span className='profile-section-title'>Senha</span>
+                  <span className='form-group-hint'>
+                    Por questões de segurança, recomendamos que a senha seja alterada periodicamente.
+                  </span>
                 </span>
-              </div>
+                <span className='profile-password-chevron' aria-hidden='true'>
+                  {isPasswordOpen ? '−' : '+'}
+                </span>
+              </button>
 
-              <div className="profile-password-button">
-                <button
-                  type="button"
-                  className="profile-password-link"
-                  onClick={() => window.location.href = "/reset-password"}
+              {isPasswordOpen ? (
+                <form
+                  id='change-password-panel'
+                  className='profile-password-form'
+                  onSubmit={handlePasswordSubmit}
                 >
-                  Redefinir senha →
-                </button>
-              </div>
+                  <div className='profile-form-grid'>
+                    <div className='form-group'>
+                      <label htmlFor='currentPassword'>Senha atual</label>
+                      <input
+                        id='currentPassword'
+                        name='currentPassword'
+                        type='password'
+                        value={passwordData.currentPassword}
+                        onChange={handlePasswordInputChange}
+                        autoComplete='current-password'
+                        required
+                      />
+                    </div>
+
+                    <div className='form-group'>
+                      <label htmlFor='newPassword'>Nova senha</label>
+                      <input
+                        id='newPassword'
+                        name='newPassword'
+                        type='password'
+                        value={passwordData.newPassword}
+                        onChange={handlePasswordInputChange}
+                        autoComplete='new-password'
+                        minLength={6}
+                        required
+                      />
+                    </div>
+
+                    <div className='form-group'>
+                      <label htmlFor='confirmPassword'>Confirmar nova senha</label>
+                      <input
+                        id='confirmPassword'
+                        name='confirmPassword'
+                        type='password'
+                        value={passwordData.confirmPassword}
+                        onChange={handlePasswordInputChange}
+                        autoComplete='new-password'
+                        minLength={6}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {passwordError && <div className='profile-error'>{passwordError}</div>}
+                  {passwordFeedback && <div className='profile-success'>{passwordFeedback}</div>}
+
+                  <button type='submit' className='btn btn-primary profile-password-submit' disabled={passwordLoading}>
+                    {passwordLoading ? 'Alterando...' : 'Alterar senha'}
+                  </button>
+                </form>
+              ) : null}
+            </section>
+          </main>
+        </div>
+
+        <Modal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          title='Alterar foto de perfil'
+          size='sm'
+        >
+          <div className='profile-modal-content'>
+            <p>Funcionalidade em desenvolvimento</p>
+            <div className='modal-actions'>
+              <button className='btn btn-ghost' onClick={() => setShowModal(false)} type='button'>
+                Cancelar
+              </button>
+              <button className='btn btn-primary' onClick={() => setShowModal(false)} type='button'>
+                OK
+              </button>
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="profile-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleSave}
-            >
-              Salvar
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={handleCancel}
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+        </Modal>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage

@@ -125,6 +125,90 @@ describe('POST /api/auth/login', () => {
   });
 });
 
+describe('PUT /api/auth/change-password', () => {
+  const userPayload = {
+    name: 'Troca Senha',
+    email: 'troca.senha@teste.com',
+    password: 'senha123',
+  };
+
+  const registerAndLogin = async () => {
+    await request(app).post('/api/auth/register').send(userPayload);
+    return request(app)
+      .post('/api/auth/login')
+      .send({ email: userPayload.email, password: userPayload.password });
+  };
+
+  test('401: rejeita troca de senha sem token', async () => {
+    const res = await request(app).put('/api/auth/change-password').send({
+      currentPassword: 'senha123',
+      newPassword: 'nova123',
+      confirmPassword: 'nova123',
+    });
+
+    expect(res.status).toBe(401);
+  });
+
+  test('200: altera senha e permite login apenas com a nova senha', async () => {
+    const loginRes = await registerAndLogin();
+
+    const changeRes = await request(app)
+      .put('/api/auth/change-password')
+      .set('Authorization', `Bearer ${loginRes.body.token}`)
+      .send({
+        currentPassword: 'senha123',
+        newPassword: 'nova123',
+        confirmPassword: 'nova123',
+      });
+
+    expect(changeRes.status).toBe(200);
+    expect(changeRes.body.message).toBe('Senha alterada com sucesso');
+
+    const oldPasswordLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email: userPayload.email, password: 'senha123' });
+    expect(oldPasswordLogin.status).toBe(401);
+
+    const newPasswordLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email: userPayload.email, password: 'nova123' });
+    expect(newPasswordLogin.status).toBe(200);
+    expect(newPasswordLogin.body).toHaveProperty('token');
+  });
+
+  test('400: rejeita confirmação divergente', async () => {
+    const loginRes = await registerAndLogin();
+
+    const res = await request(app)
+      .put('/api/auth/change-password')
+      .set('Authorization', `Bearer ${loginRes.body.token}`)
+      .send({
+        currentPassword: 'senha123',
+        newPassword: 'nova123',
+        confirmPassword: 'outra123',
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Senhas não conferem');
+  });
+
+  test('400: rejeita nova senha igual à senha anterior', async () => {
+    const loginRes = await registerAndLogin();
+
+    const res = await request(app)
+      .put('/api/auth/change-password')
+      .set('Authorization', `Bearer ${loginRes.body.token}`)
+      .send({
+        currentPassword: 'senha123',
+        newPassword: 'senha123',
+        confirmPassword: 'senha123',
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('a senha nao pode ser a mesma utilizada anteriormente');
+  });
+});
+
 describe('Middleware authenticateToken', () => {
   test('401: rota protegida sem header Authorization', async () => {
     const res = await request(app).get('/api/users/profile');
