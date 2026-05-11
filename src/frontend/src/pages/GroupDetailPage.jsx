@@ -26,7 +26,6 @@ const GroupDetailPage = () => {
   const [group, setGroup] = useState(null)
   const [expenses, setExpenses] = useState([])
   const [activities, setActivities] = useState([])
-  const [balance, setBalance] = useState(null)
   const [profilesById, setProfilesById] = useState({})
 
   // ── Estado de UI ──────────────────────────────
@@ -67,15 +66,13 @@ const GroupDetailPage = () => {
       setProfilesById(Object.fromEntries(profileEntries))
 
       // Carrega dados paralelos
-      const [expRes, actRes, balRes] = await Promise.all([
+      const [expRes, actRes] = await Promise.all([
         api.getGroupExpenses(groupId, userId),
         api.getGroupActivities(groupId, userId),
-        api.getGroupBalance(groupId, userId),
       ])
 
       setExpenses(expRes.expenses || expRes)
       setActivities(actRes)
-      setBalance(balRes.balance || balRes)
     } catch (err) {
       showToast(err.message, 'error')
     } finally {
@@ -146,6 +143,24 @@ const GroupDetailPage = () => {
     return list
   }, [expenses, userId, profilesById])
 
+  const groupStats = useMemo(() => {
+    const totalToPay = myPendingPayments.reduce(
+      (sum, item) => sum + Number(item.amount || 0),
+      0
+    )
+    const totalToReceive = myPendingReceivements.reduce(
+      (sum, item) => sum + Number(item.amount || 0),
+      0
+    )
+
+    return {
+      totalToPay,
+      totalToReceive,
+      net: totalToReceive - totalToPay,
+      members: group?.members?.length || 0,
+    }
+  }, [group?.members?.length, myPendingPayments, myPendingReceivements])
+
   // ── Handlers ─────────────────────────────────
   const handleSettle = async (expenseId, paidBy) => {
     try {
@@ -188,18 +203,14 @@ const GroupDetailPage = () => {
   }
 
   const handleCreateExpense = async (expenseData) => {
-    try {
-      await api.createExpense({
-        groupId,
-        ...expenseData,
-        createdBy: userId,
-      })
-      showToast('Despesa registrada com sucesso!')
-      setShowExpenseModal(false)
-      await load()
-    } catch (err) {
-      throw err
-    }
+    await api.createExpense({
+      groupId,
+      ...expenseData,
+      createdBy: userId,
+    })
+    showToast('Despesa registrada com sucesso!')
+    setShowExpenseModal(false)
+    await load()
   }
 
   const handleViewDetails = (expense) => {
@@ -262,8 +273,7 @@ const GroupDetailPage = () => {
 
   if (!group) return null
 
-  const netBalance = Number(balance?.netBalance || 0)
-  const netTone = netBalance > 0.01 ? 'positive' : netBalance < -0.01 ? 'negative' : 'neutral'
+  const netTone = groupStats.net > 0.01 ? 'positive' : groupStats.net < -0.01 ? 'negative' : 'neutral'
 
   return (
     <div className='inner-page'>
@@ -313,10 +323,22 @@ const GroupDetailPage = () => {
 
         {/* Stats */}
         <div className='stats-grid'>
-          <StatCard label='Pago' value={formatMoney(balance?.totalPaid || 0)} />
-          <StatCard label='A receber' value={formatMoney(balance?.totalOwed || 0)} tone={balance?.totalOwed > 0 ? 'negative' : 'neutral'} />
-          <StatCard label='Saldo líquido' value={formatMoney(netBalance)} tone={netTone} />
-          <StatCard label='Membros' value={group.members.length} />
+          <StatCard
+            label='A pagar'
+            value={formatMoney(groupStats.totalToPay)}
+            tone={groupStats.totalToPay > 0 ? 'negative' : 'neutral'}
+          />
+          <StatCard
+            label='A receber'
+            value={formatMoney(groupStats.totalToReceive)}
+            tone={groupStats.totalToReceive > 0 ? 'positive' : 'neutral'}
+          />
+          <StatCard
+            label='Saldo líquido'
+            value={formatMoney(groupStats.net)}
+            tone={netTone}
+          />
+          <StatCard label='Membros' value={groupStats.members} />
         </div>
 
         {/* Layout principal */}
