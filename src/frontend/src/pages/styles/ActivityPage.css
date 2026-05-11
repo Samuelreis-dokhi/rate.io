@@ -1,0 +1,67 @@
+/* ActivityPage.css */
+
+/* ── Filtros ── */
+.activity-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.activity-filter-select {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+  min-width: 180px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.activity-filter-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.activity-count {
+  font-size: 0.82rem;
+  color: var(--text);
+  padding: 7px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ── Paginação ── */
+.activity-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.activity-pagination__info {
+  font-size: 0.88rem;
+  color: var(--text);
+  min-width: 120px;
+  text-align: center;
+}
+
+/* ── Responsividade ── */
+@media (max-width: 640px) {
+  .activity-filters { flex-direction: column; align-items: stretch; }
+  .activity-filter-select { min-width: auto; }
+  .activity-count { margin-left: 0; text-align: center; }
+  .activity-pagination { flex-direction: column; gap: 10px; }
+  .activity-pagination .btn { width: 100%; }
+}

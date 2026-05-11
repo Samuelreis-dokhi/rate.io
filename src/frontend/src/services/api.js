@@ -39,6 +39,10 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(payload),
     }),
+    changePassword: (payload) => request('/api/auth/change-password', {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+    }),
     logout: () => Promise.resolve(),
     
   // ── User ──────────────────────────────────────────────
@@ -116,4 +120,15 @@ export const api = {
         return await response.json();
     },
 
+    /* ATUALIZAR UMA DESPESA */
+    updateExpense: (expenseId, payload) => request(`/api/expenses/${expenseId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+    }),
+
+    /* DELETAR UMA DESPESA */
+    deleteExpense: (expenseId, payload) => request(`/api/expenses/${expenseId}`, {
+        method: 'DELETE',
+        body: JSON.stringify(payload),
+    }),
 }

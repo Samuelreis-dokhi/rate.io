@@ -3,6 +3,7 @@ const getUserModel = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const changePasswordService = require('../services/changePasswordService');
 
 const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 const validatePassword = (password) => password && password.length >= 6;
@@ -13,8 +14,8 @@ const validatePassword = (password) => password && password.length >= 6;
 // };
 
 exports.register = async (req, res) => {
-  const Auth = getAuthModel();
-  const User = getUserModel();
+  const Auth = getAuthModel('../models/Auth');
+  const User = getUserModel('../models/User');
 
   try {
     const { email, password, name } = req.body || {};
@@ -121,6 +122,34 @@ exports.login = async (req, res) => {
     return res.status(500).json({
       error: 'Erro ao fazer login. Tente novamente.',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+};
+
+/**
+ * Trocar senha do usuário autenticado
+ * Valida senha atual antes de trocar
+ */
+exports.changePassword = async (req, res) => {
+  try {
+    const Auth = getAuthModel();
+    const { currentPassword, newPassword, confirmPassword } = req.body || {};
+
+    await changePasswordService.changePassword({
+      Auth,
+      authId: req.user.id,
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
+
+    res.status(200).json({
+      message: 'Senha alterada com sucesso',
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: 'Erro ao trocar senha',
+      error: error.message,
     });
   }
 };

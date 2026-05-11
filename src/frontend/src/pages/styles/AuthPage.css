@@ -172,8 +172,8 @@
   }
 
   .auth-panel {
-    text-align: center;
-    align-items: center;
+    text-align: left;
+    align-items: left;
   }
 
   .auth-panel h1 {

@@ -9,6 +9,7 @@ const balanceService = require('../services/balanceService');
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const isGroupMember = (group, userId) => {
+  if (!userId) return false;
   return group.members.some((member) => member.userId.toString() === userId.toString());
 };
 
@@ -233,6 +234,177 @@ exports.getGroupBalances = async (req, res) => {
 
     const balance = await balanceService.getUserGroupBalance(userId, groupId);
     return res.status(200).json({ balance });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateExpense = async (req, res) => {
+  const User = getUserModel();
+  const { expenseId } = req.params;
+  const { description, amount, currency, paidBy, splitType, splitsData, updatedBy } = req.body;
+
+  try {
+    if (!isValidObjectId(expenseId)) {
+      return res.status(400).json({ message: 'ID de despesa inválido' });
+    }
+
+    if (!updatedBy || !isValidObjectId(updatedBy)) {
+      return res.status(400).json({
+        message: 'updatedBy é obrigatório e deve ser um ID válido',
+      });
+    }
+
+    const user = await User.findById(updatedBy);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    const expense = await Expense.findById(expenseId);
+    if (!expense) {
+      return res.status(404).json({ message: 'Despesa não encontrada' });
+    }
+
+    const group = await getActiveGroupOrNull(expense.groupId);
+    if (!group || !isGroupMember(group, updatedBy)) {
+      return res.status(403).json({
+        message: 'Não autorizado para atualizar esta despesa',
+      });
+    }
+
+    if (paidBy && !isGroupMember(group, paidBy)) {
+      return res.status(403).json({
+        message: 'Novo pagador não é membro do grupo',
+      });
+    }
+
+    if (splitType && !splitService.isSupportedSplitType(splitType)) {
+      return res.status(400).json({
+        message: 'Tipo de divisão não suportado. Use "igual", "porcentagem" ou "exato".',
+      });
+    }
+
+    const isAmountChanged = amount !== undefined && Number(amount) !== expense.amount;
+    const isSplitTypeChanged = splitType && splitType !== expense.splitType;
+    const shouldRecalculateSplits = Array.isArray(splitsData) && splitsData.length > 0;
+
+    if ((isAmountChanged || isSplitTypeChanged) && !shouldRecalculateSplits) {
+      return res.status(400).json({
+        message: 'Para alterar valor ou tipo de divisão, envie splitsData.',
+      });
+    }
+
+    if (description) expense.description = description;
+    if (amount !== undefined) expense.amount = Number(amount);
+    if (currency) expense.currency = currency;
+    if (paidBy) expense.paidBy = paidBy;
+    if (splitType) expense.splitType = splitType;
+
+    if (shouldRecalculateSplits) {
+      const idsToCheck = splitsData.map((split) => split.userId);
+      const invalidId = idsToCheck.find((id) => !isValidObjectId(id));
+      if (invalidId) {
+        return res.status(400).json({ message: `ID inválido: ${invalidId}` });
+      }
+
+      for (const split of splitsData) {
+        if (!split.userId) {
+          return res.status(400).json({
+            message: 'Cada divisão deve conter um userId',
+          });
+        }
+        if (!isGroupMember(group, split.userId)) {
+          return res.status(403).json({
+            message: `Usuário ${split.userId} na divisão não é membro do grupo`,
+          });
+        }
+      }
+
+      const calculatedSplits = splitService.calculateSplit(
+        expense.splitType,
+        expense.amount,
+        splitsData
+      );
+
+      expense.splits = calculatedSplits.map((split) => ({
+        userId: split.userId,
+        amount: Number(split.amount),
+        status: split.userId.toString() === expense.paidBy.toString() ? 'pago' : 'pendente',
+        paidAt: split.userId.toString() === expense.paidBy.toString() ? new Date() : null,
+      }));
+    } else if (paidBy) {
+      expense.splits = expense.splits.map((split) => ({
+        ...split,
+        status: split.userId.toString() === paidBy.toString() ? 'pago' : 'pendente',
+        paidAt: split.userId.toString() === paidBy.toString() ? new Date() : null,
+      }));
+    }
+
+    await expense.save();
+
+    await Activity.create({
+      groupId: expense.groupId,
+      actorUserId: updatedBy,
+      type: 'EXPENSE_UPDATED',
+      message: `${user.name} atualizou a despesa: ${description || expense.description}`,
+      metadata: {
+        expenseId: expense._id,
+        amount: expense.amount,
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Despesa atualizada com sucesso',
+      expense,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deleteExpense = async (req, res) => {
+  const User = getUserModel();
+  const { expenseId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    if (!isValidObjectId(expenseId)) {
+      return res.status(400).json({ message: 'ID de despesa inválido' });
+    }
+
+    if (!userId || !isValidObjectId(userId)) {
+      return res.status(400).json({ message: 'userId é obrigatório e deve ser um ID válido' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    const expense = await Expense.findById(expenseId);
+    if (!expense) {
+      return res.status(404).json({ message: 'Despesa não encontrada' });
+    }
+
+    const group = await getActiveGroupOrNull(expense.groupId);
+    if (!group || !isGroupMember(group, userId)) {
+      return res.status(403).json({ message: 'Não autorizado para deletar esta despesa' });
+    }
+
+    await Expense.findByIdAndDelete(expenseId);
+
+    await Activity.create({
+      groupId: expense.groupId,
+      actorUserId: userId,
+      type: 'EXPENSE_DELETED',
+      message: `${user.name} deletou a despesa: ${expense.description}`,
+      metadata: {
+        expenseId: expense._id,
+        amount: expense.amount,
+      },
+    });
+
+    return res.status(200).json({ message: 'Despesa deletada com sucesso' });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
