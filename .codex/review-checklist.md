@@ -21,8 +21,21 @@
 - [ ] ID usado nas operacoes e o `_id` do perfil `User`, nao o ID de `Auth`.
 - [ ] Variavel de ambiente usada e `VITE_API_BASE`.
 
+## Mobile
+
+- [ ] Chamadas HTTP passam por `src/mobile/src/services/apiClient.*`.
+- [ ] Nao ha URL fixa de backend em telas ou componentes.
+- [ ] Base da API vem de variavel publica do Expo.
+- [ ] Token JWT e lido/escrito por camada dedicada de storage.
+- [ ] ID usado nas operacoes e o `_id` do perfil `User`, nao o ID de `Auth`.
+- [ ] Envelopes `{ expenses }`, `{ balance }` e `{ message, expense }` foram preservados.
+- [ ] Telas tratam loading, erro, vazio e sessao expirada.
+- [ ] Regras financeiras criticas continuam no backend.
+- [ ] Testes relevantes de services/hooks foram adicionados ou ajustados.
+
 ## Documentacao
 
 - [ ] README/docs refletem comandos e variaveis reais.
 - [ ] Mudancas de contrato REST foram documentadas.
 - [ ] Novas decisoes arquiteturais foram registradas quando relevantes.
+- [ ] Mudancas mobile relevantes foram refletidas em `src/mobile/playbook.md`.
