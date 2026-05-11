@@ -29,6 +29,15 @@ npm run test
 npm run build
 ```
 
+Mobile:
+
+```bash
+cd src/mobile
+npm run lint
+npm run test
+npm run start
+```
+
 Ambiente completo:
 
 ```bash
@@ -39,9 +48,11 @@ docker compose up --build
 
 - Backend usa CommonJS (`require`, `module.exports`).
 - Frontend usa ES modules.
+- Mobile usa Expo/React Native e deve centralizar HTTP em `src/mobile/src/services/apiClient.*`.
 - Services devem conter regra de negocio reutilizavel.
 - Controllers devem validar entrada, chamar models/services e montar response HTTP.
 - Nao duplicar chamadas `fetch`; preferir `src/frontend/src/services/api.js`.
+- No mobile, nao duplicar chamadas `fetch`; preferir o cliente central de API mobile.
 - Nao inserir segredo em codigo, README ou testes.
 - Evitar refatoracoes amplas sem necessidade funcional clara.
 
@@ -51,3 +62,4 @@ docker compose up --build
 - Endpoints REST e validacoes de contrato: testes de integracao.
 - Jornada registro/login/grupo/despesa/quitacao: testes de sistema.
 - Componentes/rotas protegidas/frontend: Vitest com Testing Library.
+- Cliente API, storage de sessao e hooks mobile: Jest/Testing Library para React Native.

@@ -30,5 +30,7 @@ relatorio.md
 
 untitled:plan-frontendSprintPlan.prompt.md
 nomeclatura.md
-.agents
-.codex
+.agents/*
+!.agents/*.md
+.codex/*
+!.codex/*.md
