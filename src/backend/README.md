@@ -63,7 +63,7 @@ Preencha `src/backend/.env`:
 PORT=3000
 JWT_SECRET=<sua-chave-jwt>
 MONGO_URI_AUTH=<uri-do-mongo-auth>
-MONGO_URI_USER=<uri-do-mongo-user>
+MONGO_URI_USERS=<uri-do-mongo-user>
 MONGO_URI_EXPENSES=<uri-do-mongo-expenses>
 MONGO_URI_GROUPS=<uri-do-mongo-groups>
 ```
