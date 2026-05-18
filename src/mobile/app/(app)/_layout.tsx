@@ -25,41 +25,31 @@ export default function AppLayout() {
       <Tabs.Screen
         name='index'
         options={{
-          title: 'Início',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='house.fill' size={26} color={color} />
-          ),
+          title: 'Dash',
+          tabBarIcon: ({ color }) => <IconSymbol name='house.fill' size={26} color={color} />,
         }}
       />
       <Tabs.Screen
         name='groups/index'
         options={{
           title: 'Grupos',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='person.3.fill' size={26} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <IconSymbol name='person.3.fill' size={26} color={color} />,
         }}
       />
       <Tabs.Screen
         name='activities'
         options={{
           title: 'Atividades',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='list.bullet' size={26} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <IconSymbol name='list.bullet' size={26} color={color} />,
         }}
       />
       <Tabs.Screen
-        name='profile'
+        name='logout'
         options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='person.fill' size={26} color={color} />
-          ),
+          title: 'Logout',
+          tabBarIcon: ({ color }) => <IconSymbol name='rectangle.portrait.and.arrow.right' size={26} color={color} />,
         }}
       />
-      {/* Esconde a rota de detalhe do grupo das tabs */}
-      <Tabs.Screen name='groups/[groupId]' options={{ href: null }} />
     </Tabs>
   )
 }

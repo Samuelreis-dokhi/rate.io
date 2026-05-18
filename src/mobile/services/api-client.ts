@@ -1,4 +1,6 @@
 // src/mobile/src/services/api-client.ts
+import Constants from 'expo-constants'
+import { Platform } from 'react-native'
 import { clearSession, getToken } from './storage'
 
 export class ApiError extends Error {
@@ -13,16 +15,43 @@ export class ApiError extends Error {
   }
 }
 
+function getConfiguredApiBaseUrl(): string | undefined {
+  const extra = Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined
+  return extra?.apiBaseUrl || process.env.EXPO_PUBLIC_API_BASE_URL || undefined
+}
+
+function getDevelopmentApiBaseUrl(): string | undefined {
+  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.hostname}:3000`
+  }
+
+  const hostUri = Constants.expoConfig?.hostUri
+  const host = hostUri?.split(':')[0]
+
+  if (host) {
+    return `http://${host}:3000`
+  }
+
+  return undefined
+}
+
+function getApiBaseUrl(): string {
+  const configuredApiBaseUrl = getConfiguredApiBaseUrl()
+  if (configuredApiBaseUrl) return configuredApiBaseUrl
+
+  if (__DEV__) {
+    const developmentApiBaseUrl = getDevelopmentApiBaseUrl()
+    if (developmentApiBaseUrl) return developmentApiBaseUrl
+  }
+
+  throw new ApiError('EXPO_PUBLIC_API_BASE_URL não configurada', 0)
+}
+
 export async function request<T = unknown>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
-
-  if (!apiBaseUrl) {
-    throw new ApiError('EXPO_PUBLIC_API_BASE_URL não configurada', 0)
-  }
-
+  const apiBaseUrl = getApiBaseUrl()
   const token = await getToken()
 
   const response = await fetch(`${apiBaseUrl}${endpoint}`, {
@@ -37,7 +66,6 @@ export async function request<T = unknown>(
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    // 401 = sessão expirada — limpa local e força re-login
     if (response.status === 401) {
       await clearSession()
     }

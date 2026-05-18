@@ -1,65 +1,11 @@
-// src/mobile/app/(app)/_layout.tsx
-import { Tabs } from 'expo-router'
-import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors } from '@/constants/theme'
-import { HapticTab } from '@/components/haptic-tab'
-import { IconSymbol } from '@/components/ui/icon-symbol'
+// src/mobile/app/(auth)/_layout.tsx
+import { Stack } from 'expo-router'
 
-export default function AppLayout() {
-  const scheme = useColorScheme()
-  const c = Colors[scheme ?? 'light']
-
+export default function AuthLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: c.tint,
-        tabBarInactiveTintColor: c.tabIconDefault,
-        tabBarStyle: {
-          backgroundColor: c.surface,
-          borderTopColor: c.border,
-        },
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}
-    >
-      <Tabs.Screen
-        name='index'
-        options={{
-          title: 'Início',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='house.fill' size={26} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='groups/index'
-        options={{
-          title: 'Grupos',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='person.3.fill' size={26} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='activities'
-        options={{
-          title: 'Atividades',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='list.bullet' size={26} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='profile'
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name='person.fill' size={26} color={color} />
-          ),
-        }}
-      />
-      {/* Esconde a rota de detalhe do grupo das tabs */}
-      <Tabs.Screen name='groups/[groupId]' options={{ href: null }} />
-    </Tabs>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name='login' />
+      <Stack.Screen name='register' />
+    </Stack>
   )
 }
