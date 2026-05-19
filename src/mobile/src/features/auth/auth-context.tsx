@@ -30,19 +30,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [ user, setUser ] = useState<UserProfile | null>(null);
     const [ bootstrapping, setBootstrapping ] = useState(true);
 
-    // ao montar, verifica sessao salva e carrega o perfil
     useEffect(() => {
         async function bootstrap() {
             try {
-                
+                if (__DEV__) {
+                    await clearSession();
+                    setUser(null);
+                    return;
+                }
+
                 const token = await getToken();
                 if(!token) return;
 
-                // tenta ur perfil em cache primeiro (ux mais rapido)
                 const cached = await getProfile<UserProfile>();
                 if (cached) setUser(cached);
 
-                // valida token com api e atualiza perfil
                 const fresh = await getCurrentUser();
                 await saveProfile(fresh);
                 setUser(fresh)
@@ -55,15 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         bootstrap();
     }, []);
 
-    const login = useCallback(async (payload: { 
-        email: string; 
-        password: string 
+    const login = useCallback(async (payload: {
+        email: string;
+        password: string
     }) => {
-        // login recebe token (userId aqui é Auth._id, nao usar depois)
         const authData = await authService.login(payload);
         await saveToken(authData.token);
 
-        // busca o perfil funcional (User._id é o que usamos no app)
         const profile = await getCurrentUser();
         await saveProfile(profile);
         setUser(profile);

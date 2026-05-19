@@ -17,14 +17,13 @@ function AuthGate() {
     if (bootstrapping) return
 
     const inAuthGroup = (segments[0] as any) === '(auth)'
-    const inAppGroup = (segments[0] as any) === '(app)'
 
     if (!isAuthenticated && !inAuthGroup) {
       router.replace('/(auth)/login' as any)
     } else if (isAuthenticated && inAuthGroup) {
       router.replace('/(app)' as any)
     }
-  }, [isAuthenticated, bootstrapping, segments])
+  }, [isAuthenticated, bootstrapping, segments, router])
 
   return <Slot />
 }
