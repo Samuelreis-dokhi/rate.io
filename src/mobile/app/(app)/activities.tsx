@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // src/mobile/app/(app)/activities.tsx
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -95,36 +94,12 @@ export default function ActivitiesScreen() {
         }
         renderItem={({ item }) => <ActivityItem activity={item} groupName={item.groupName} />}
       />
-=======
-import { StyleSheet, Text, View } from 'react-native'
-import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Spacing, Typography } from '@/constants/theme'
-
-export default function ActivitiesScreen() {
-  const scheme = useColorScheme()
-  const c = Colors[scheme ?? 'light']
-
-  return (
-    <View style={[styles.root, { backgroundColor: c.canvas }]}> 
-      <Text style={[Typography.h1, { color: c.textPrimary }]}>Atividades</Text>
-      <Text style={[Typography.body, { color: c.textSecondary }]}>Tela de atividades em construção.</Text>
->>>>>>> origin/feature/mobile-auth-screens
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-<<<<<<< HEAD
   root: { flex: 1 },
   filters: { flexDirection: 'row', gap: Spacing.sm, paddingHorizontal: Spacing.lg, flexWrap: 'wrap', marginBottom: Spacing.sm },
   chip: { borderRadius: 999, borderWidth: 1, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs },
 })
-=======
-  root: {
-    flex: 1,
-    gap: Spacing.sm,
-    padding: Spacing.lg,
-    justifyContent: 'center',
-  },
-})
->>>>>>> origin/feature/mobile-auth-screens
