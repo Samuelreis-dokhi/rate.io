@@ -16,6 +16,7 @@ type IconSymbolName = keyof typeof MAPPING;
 const MAPPING = {
   'house.fill': 'home',
   'person.3.fill': 'groups',
+  'person.crop.circle.fill': 'account-circle',
   'list.bullet': 'list',
   'rectangle.portrait.and.arrow.right': 'logout',
   'paperplane.fill': 'send',

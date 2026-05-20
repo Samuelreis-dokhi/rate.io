@@ -20,6 +20,15 @@ function getConfiguredApiBaseUrl(): string | undefined {
   return extra?.apiBaseUrl || process.env.EXPO_PUBLIC_API_BASE_URL || undefined
 }
 
+function isLoopbackUrl(value: string): boolean {
+  try {
+    const { hostname } = new URL(value)
+    return ['localhost', '127.0.0.1', '0.0.0.0', '[::1]', '::1'].includes(hostname)
+  } catch {
+    return false
+  }
+}
+
 function getDevelopmentApiBaseUrl(): string | undefined {
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
     return `${window.location.protocol}//${window.location.hostname}:3000`
@@ -37,12 +46,20 @@ function getDevelopmentApiBaseUrl(): string | undefined {
 
 function getApiBaseUrl(): string {
   const configuredApiBaseUrl = getConfiguredApiBaseUrl()
-  if (configuredApiBaseUrl) return configuredApiBaseUrl
+  const shouldInferDevUrl =
+    __DEV__ &&
+    Platform.OS !== 'web' &&
+    configuredApiBaseUrl &&
+    isLoopbackUrl(configuredApiBaseUrl)
+
+  if (configuredApiBaseUrl && !shouldInferDevUrl) return configuredApiBaseUrl
 
   if (__DEV__) {
     const developmentApiBaseUrl = getDevelopmentApiBaseUrl()
     if (developmentApiBaseUrl) return developmentApiBaseUrl
   }
+
+  if (configuredApiBaseUrl) return configuredApiBaseUrl
 
   throw new ApiError('EXPO_PUBLIC_API_BASE_URL não configurada', 0)
 }
