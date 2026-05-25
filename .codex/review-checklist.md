@@ -21,6 +21,7 @@
 - [ ] ID usado nas operacoes e o `_id` do perfil `User`, nao o ID de `Auth`.
 - [ ] Variavel de ambiente usada e `VITE_API_BASE`.
 
+<<<<<<< HEAD
 ## Mobile
 
 - [ ] Chamadas HTTP passam por `src/mobile/src/services/apiClient.*`.
@@ -33,9 +34,14 @@
 - [ ] Regras financeiras criticas continuam no backend.
 - [ ] Testes relevantes de services/hooks foram adicionados ou ajustados.
 
+=======
+>>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
 ## Documentacao
 
 - [ ] README/docs refletem comandos e variaveis reais.
 - [ ] Mudancas de contrato REST foram documentadas.
 - [ ] Novas decisoes arquiteturais foram registradas quando relevantes.
+<<<<<<< HEAD
 - [ ] Mudancas mobile relevantes foram refletidas em `src/mobile/playbook.md`.
+=======
+>>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
