@@ -42,6 +42,7 @@ export function register(payload: RegisterPayload): Promise<RegisterResponse> {
 export function changePassword(payload: {
     currentPassword: string;
     newPassword: string;
+    confirmPassword?: string;
 }): Promise<{ message: string }> {
     return request('/api/auth/change-password', {
         method: 'POST',
