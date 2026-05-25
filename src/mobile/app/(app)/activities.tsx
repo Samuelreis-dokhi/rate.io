@@ -5,8 +5,8 @@ import { useColorScheme } from '@/hooks/use-color-scheme'
 import { Colors, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { getGroupActivities, getUserGroups, type Activity, type Group } from '@/src/features/groups/group-service'
-import { ActivityItem } from '@/src/components/ui/activity-item'
-import { EmptyState } from '@/src/components/ui/empty-state'
+import { ActivityItem } from '@/components/ui/activity-item'
+import { EmptyState } from '@/components/ui/empty-state'
 import { resolveUserId } from '@/src/utils/resolve-user-id'
 
 const TYPES = [
