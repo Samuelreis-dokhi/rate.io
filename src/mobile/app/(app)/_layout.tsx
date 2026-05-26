@@ -46,8 +46,14 @@ export default function AppLayout() {
       <Tabs.Screen
         name='logout'
         options={{
-          title: 'Logout',
-          tabBarIcon: ({ color }) => <IconSymbol name='rectangle.portrait.and.arrow.right' size={26} color={color} />,
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <IconSymbol name='person.crop.circle.fill' size={26} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name='logout'
+        options={{
+          href: null,
         }}
       />
     </Tabs>
