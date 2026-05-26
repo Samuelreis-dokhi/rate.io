@@ -6,6 +6,8 @@ import { useColorScheme } from '@/hooks/use-color-scheme'
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { getPublicProfile } from '@/src/features/auth/user-service'
+import { getUserGroups } from '@/src/features/groups/group-service'
+import { getGroupExpenses } from '@/src/features/expenses/expense-service'
 import { StatCard } from '../../components/ui/stat-card'
 import { EmptyState } from '../../components/ui/empty-state'
 import { IconSymbol } from '../../components/ui/icon-symbol'
@@ -15,6 +17,7 @@ import { formatMoney } from '@/src/utils/format'
 type DashboardGroup = {
   _id: string
   name: string
+  isActive?: boolean
   members: { userId: string }[]
 }
 
@@ -34,11 +37,23 @@ type DashboardData = {
   expensesMap: Record<string, DashboardExpense[]>
 }
 
-async function loadDashboardData(_userId: string): Promise<DashboardData> {
-  // TODO: trocar este mock pelos services de grupos/despesas quando os contratos estiverem prontos.
+async function loadDashboardData(userId: string): Promise<DashboardData> {
+  const groups = await getUserGroups(userId)
+  const activeGroups = groups.filter((group) => group.isActive !== false)
+
+  const entries = await Promise.all(
+    activeGroups.map(async (group) => {
+      try {
+        return [group._id, await getGroupExpenses(group._id, userId)] as const
+      } catch {
+        return [group._id, [] as DashboardExpense[]] as const
+      }
+    })
+  )
+
   return {
-    groups: [],
-    expensesMap: {},
+    groups,
+    expensesMap: Object.fromEntries(entries),
   }
 }
 
@@ -66,7 +81,10 @@ export default function DashboardScreen() {
       setGroups(gs)
       setExpensesMap(nextExpensesMap)
 
-      const ids = [...new Set(gs.flatMap((g) => g.members.map((m) => m.userId)))]
+      const ids = [...new Set([
+        ...gs.flatMap((g) => g.members.map((m) => m.userId)),
+        ...Object.values(nextExpensesMap).flatMap((exps) => exps.flatMap((exp) => [exp.paidBy, ...exp.splits.map((s) => s.userId)])),
+      ])]
       const entries = await Promise.all(
         ids.map(async (id) => {
           try {
@@ -96,7 +114,7 @@ export default function DashboardScreen() {
     for (const list of Object.values(expensesMap)) {
       for (const exp of list) {
         const mine = exp.splits.find((s) => s.userId === userId)
-        if (mine?.status === 'pendente') { totalOwed += mine.amount; unsettled++ }
+        if (mine?.status === 'pendente' && exp.paidBy !== userId) { totalOwed += mine.amount; unsettled++ }
         if (exp.paidBy === userId) {
           for (const s of exp.splits) {
             if (s.userId !== userId && s.status === 'pendente') totalToReceive += s.amount
@@ -104,8 +122,8 @@ export default function DashboardScreen() {
         }
       }
     }
-    return { totalOwed, totalToReceive, net: totalToReceive - totalOwed, groups: groups.length, unsettled }
-  }, [expensesMap, userId, groups.length])
+    return { totalOwed, totalToReceive, net: totalToReceive - totalOwed, groups: groups.filter((group) => group.isActive !== false).length, unsettled }
+  }, [expensesMap, userId, groups])
 
   const pendingPayments = useMemo(() => {
     const list: { expId: string; gId: string; gName: string; desc: string; amount: number; toName: string }[] = []
@@ -113,8 +131,33 @@ export default function DashboardScreen() {
       const gName = groups.find((g) => g._id === gId)?.name ?? 'Grupo'
       for (const exp of exps) {
         const mine = exp.splits.find((s) => s.userId === userId)
-        if (mine?.status === 'pendente') {
+        if (mine?.status === 'pendente' && exp.paidBy !== userId) {
           list.push({ expId: exp._id, gId, gName, desc: exp.description, amount: mine.amount, toName: profilesById[exp.paidBy]?.name ?? 'Membro' })
+        }
+      }
+    }
+    return list.sort((a, b) => b.amount - a.amount)
+  }, [expensesMap, groups, profilesById, userId])
+
+  const pendingReceivables = useMemo(() => {
+    const list: { expId: string; userId: string; gId: string; gName: string; desc: string; amount: number; fromName: string }[] = []
+    for (const [gId, exps] of Object.entries(expensesMap)) {
+      const gName = groups.find((g) => g._id === gId)?.name ?? 'Grupo'
+      for (const exp of exps) {
+        if (exp.paidBy !== userId) continue
+
+        for (const split of exp.splits) {
+          if (split.userId !== userId && split.status === 'pendente') {
+            list.push({
+              expId: exp._id,
+              userId: split.userId,
+              gId,
+              gName,
+              desc: exp.description,
+              amount: split.amount,
+              fromName: profilesById[split.userId]?.name ?? 'Membro',
+            })
+          }
         }
       }
     }
@@ -205,6 +248,28 @@ export default function DashboardScreen() {
                 </Text>
               </View>
               <Text style={[Typography.h3, { color: c.negative }]}>{formatMoney(item.amount)}</Text>
+            </View>
+          ))
+        )}
+      </View>
+
+      {/* O que preciso receber */}
+      <View style={styles.section}>
+        <Text style={[Typography.h2, { color: c.textPrimary, marginBottom: Spacing.md }]}>
+          O que você precisa receber
+        </Text>
+        {pendingReceivables.length === 0 ? (
+          <EmptyState icon='OK' message='Nenhum recebimento pendente.' />
+        ) : (
+          pendingReceivables.map((item) => (
+            <View key={item.expId + '-' + item.userId} style={[styles.pendingCard, { backgroundColor: c.surface, borderColor: c.border }]}>
+              <View style={{ flex: 1 }}>
+                <Text style={[Typography.h3, { color: c.textPrimary }]}>{item.desc}</Text>
+                <Text style={[Typography.caption, { color: c.textSecondary }]}>
+                  {item.gName} · De {item.fromName}
+                </Text>
+              </View>
+              <Text style={[Typography.h3, { color: c.positive }]}>{formatMoney(item.amount)}</Text>
             </View>
           ))
         )}
