@@ -26,14 +26,7 @@ const GroupDetailPage = () => {
   const [group, setGroup] = useState(null)
   const [expenses, setExpenses] = useState([])
   const [activities, setActivities] = useState([])
-<<<<<<< HEAD
   const [balance, setBalance] = useState(null)
-=======
-<<<<<<< HEAD
-=======
-  const [balance, setBalance] = useState(null)
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
->>>>>>> feature/mobile-group
   const [profilesById, setProfilesById] = useState({})
 
   // ── Estado de UI ──────────────────────────────
@@ -74,35 +67,15 @@ const GroupDetailPage = () => {
       setProfilesById(Object.fromEntries(profileEntries))
 
       // Carrega dados paralelos
-<<<<<<< HEAD
       const [expRes, actRes, balRes] = await Promise.all([
         api.getGroupExpenses(groupId, userId),
         api.getGroupActivities(groupId, userId),
         api.getGroupBalance(groupId, userId),
-=======
-<<<<<<< HEAD
-      const [expRes, actRes] = await Promise.all([
-        api.getGroupExpenses(groupId, userId),
-        api.getGroupActivities(groupId, userId),
-=======
-      const [expRes, actRes, balRes] = await Promise.all([
-        api.getGroupExpenses(groupId, userId),
-        api.getGroupActivities(groupId, userId),
-        api.getGroupBalance(groupId, userId),
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
->>>>>>> feature/mobile-group
       ])
 
       setExpenses(expRes.expenses || expRes)
       setActivities(actRes)
-<<<<<<< HEAD
       setBalance(balRes.balance || balRes)
-=======
-<<<<<<< HEAD
-=======
-      setBalance(balRes.balance || balRes)
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
->>>>>>> feature/mobile-group
     } catch (err) {
       showToast(err.message, 'error')
     } finally {
@@ -173,30 +146,7 @@ const GroupDetailPage = () => {
     return list
   }, [expenses, userId, profilesById])
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  const groupStats = useMemo(() => {
-    const totalToPay = myPendingPayments.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    )
-    const totalToReceive = myPendingReceivements.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    )
 
-    return {
-      totalToPay,
-      totalToReceive,
-      net: totalToReceive - totalToPay,
-      members: group?.members?.length || 0,
-    }
-  }, [group?.members?.length, myPendingPayments, myPendingReceivements])
-
-=======
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
->>>>>>> feature/mobile-group
   // ── Handlers ─────────────────────────────────
   const handleSettle = async (expenseId, paidBy) => {
     try {
@@ -239,7 +189,6 @@ const GroupDetailPage = () => {
   }
 
   const handleCreateExpense = async (expenseData) => {
-<<<<<<< HEAD
     await api.createExpense({
       groupId,
       ...expenseData,
@@ -248,20 +197,6 @@ const GroupDetailPage = () => {
     showToast('Despesa registrada com sucesso!')
     setShowExpenseModal(false)
     await load()
-=======
-    try {
-      await api.createExpense({
-        groupId,
-        ...expenseData,
-        createdBy: userId,
-      })
-      showToast('Despesa registrada com sucesso!')
-      setShowExpenseModal(false)
-      await load()
-    } catch (err) {
-      throw err
-    }
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
   }
 
   const handleViewDetails = (expense) => {
@@ -324,17 +259,8 @@ const GroupDetailPage = () => {
 
   if (!group) return null
 
-<<<<<<< HEAD
-  const netBalance = balance?.netBalance || 0
-  const netTone = netBalance > 0.01 ? 'positive' : netBalance < -0.01 ? 'negative' : 'neutral'
-=======
-<<<<<<< HEAD
-  const netTone = groupStats.net > 0.01 ? 'positive' : groupStats.net < -0.01 ? 'negative' : 'neutral'
-=======
   const netBalance = Number(balance?.netBalance || 0)
   const netTone = netBalance > 0.01 ? 'positive' : netBalance < -0.01 ? 'negative' : 'neutral'
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
->>>>>>> feature/mobile-group
 
   return (
     <div className='inner-page'>
@@ -384,36 +310,10 @@ const GroupDetailPage = () => {
 
         {/* Stats */}
         <div className='stats-grid'>
-<<<<<<< HEAD
           <StatCard label='A receber' value={formatMoney(balance?.totalPaid || 0)} tone={balance?.totalPaid > 0 ? 'positive' : 'neutral'} />
           <StatCard label='A pagar' value={formatMoney(balance?.totalOwed || 0)} tone={balance?.totalOwed > 0 ? 'negative' : 'neutral'} />
           <StatCard label='Saldo líquido' value={formatMoney(netBalance)} tone={netTone} />
           <StatCard label='Membros' value={group.members.length} />
-=======
-<<<<<<< HEAD
-          <StatCard
-            label='A pagar'
-            value={formatMoney(groupStats.totalToPay)}
-            tone={groupStats.totalToPay > 0 ? 'negative' : 'neutral'}
-          />
-          <StatCard
-            label='A receber'
-            value={formatMoney(groupStats.totalToReceive)}
-            tone={groupStats.totalToReceive > 0 ? 'positive' : 'neutral'}
-          />
-          <StatCard
-            label='Saldo líquido'
-            value={formatMoney(groupStats.net)}
-            tone={netTone}
-          />
-          <StatCard label='Membros' value={groupStats.members} />
-=======
-          <StatCard label='Pago' value={formatMoney(balance?.totalPaid || 0)} />
-          <StatCard label='A receber' value={formatMoney(balance?.totalOwed || 0)} tone={balance?.totalOwed > 0 ? 'negative' : 'neutral'} />
-          <StatCard label='Saldo líquido' value={formatMoney(netBalance)} tone={netTone} />
-          <StatCard label='Membros' value={group.members.length} />
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
->>>>>>> feature/mobile-group
         </div>
 
         {/* Layout principal */}
@@ -622,8 +522,4 @@ const GroupDetailPage = () => {
   )
 }
 
-<<<<<<< HEAD
 export default GroupDetailPage
-=======
-export default GroupDetailPage
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
