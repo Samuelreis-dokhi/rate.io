@@ -1,7 +1,7 @@
 // src/mobile/app/(app)/index.tsx
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
@@ -105,7 +105,7 @@ export default function DashboardScreen() {
     }
   }, [userId])
 
-  useEffect(() => { load() }, [load])
+  useFocusEffect(useCallback(() => { load() }, [load]))
 
   const onRefresh = useCallback(() => { setRefreshing(true); load() }, [load])
 

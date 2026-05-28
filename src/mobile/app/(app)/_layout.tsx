@@ -56,6 +56,12 @@ export default function AppLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name='groups/[groupId]'
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   )
 }
