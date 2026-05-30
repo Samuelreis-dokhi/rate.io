@@ -197,6 +197,20 @@ Execução validada em 2026-05-30:
 | Frontend | `cd src/frontend && npm test` | 4 suítes, 13 testes aprovados |
 | Mobile | `cd src/mobile && npm test` | 5 suítes, 15 testes aprovados |
 
+## Automação com GitHub Actions
+
+O workflow `.github/workflows/ci.yml` executa a cada `push` em `develop`, `task/**`, `test/**` e `feature/**`, além de `pull_request` para `develop`. A automação usa Node.js 22 e `npm ci` com cache separado por aplicação.
+
+Jobs configurados:
+
+| Job | Diretório | Comandos |
+| --- | --- | --- |
+| `backend-tests` | `src/backend` | `npm test` |
+| `frontend-tests` | `src/frontend` | `npm run test:unit`, `npm run test:integration`, `npm run test:e2e` |
+| `mobile-tests` | `src/mobile` | `npm run test:unit`, `npm run test:integration`, `npm run test:e2e` |
+
+A separação por job deixa falhas localizadas por camada e mantém a automação alinhada à pirâmide de testes do projeto.
+
 ## Passo a Passo Rápido de Uso
 
 1. Suba a API (Docker ou Node local).

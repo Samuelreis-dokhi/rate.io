@@ -168,6 +168,13 @@ Execução consolidada validada em 2026-05-30:
 | Frontend Web | `cd src/frontend && npm test` | 4 suítes, 13 testes aprovados |
 | Mobile | `cd src/mobile && npm test` | 5 suítes, 15 testes aprovados |
 
+Automação em CI:
+
+- Workflow: `.github/workflows/ci.yml`.
+- Eventos: `push` para `develop`, `task/**`, `test/**`, `feature/**` e `pull_request` para `develop`.
+- Jobs independentes: `backend-tests`, `frontend-tests` e `mobile-tests`.
+- Instalação reprodutível com `npm ci` e cache por `package-lock.json` de cada aplicação.
+
 ### Modelagem implementada
 
 #### Modelo `Auth` (`auth_credentials`)
