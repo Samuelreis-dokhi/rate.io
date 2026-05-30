@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
-import { fireEvent, render } from '@testing-library/react-native'
+import { fireEvent, render, waitFor } from '@testing-library/react-native'
 import { AuthProvider, useAuth } from '../../src/features/auth/auth-context'
 import LoginScreen from '../../app/(auth)/login'
 import DashboardScreen from '../../app/(app)/index'
@@ -121,16 +121,18 @@ describe('E2E mobile: fluxo autenticado', () => {
     fireEvent.changeText(screen.getByTestId('login-password-input'), 'senha123')
     fireEvent.press(screen.getByText('Entrar'))
 
-    await screen.findByText('Olá, Ana Mobile!')
+    await screen.findByText('Olá, Ana Mobile!', {}, { timeout: 5000 })
+    await screen.findByText('Hospedagem Mobile')
+    await screen.findByText('Viagem Mobile · Para Bruno Mobile')
 
-    expect(authService.login).toHaveBeenCalledWith({
-      email: 'ana@teste.com',
-      password: 'senha123',
+    await waitFor(() => {
+      expect(authService.login).toHaveBeenCalledWith({
+        email: 'ana@teste.com',
+        password: 'senha123',
+      })
+      expect(storage.saveToken).toHaveBeenCalledWith('token-mobile')
+      expect(groupService.getUserGroups).toHaveBeenCalledWith('user-1')
+      expect(expenseService.getGroupExpenses).toHaveBeenCalledWith('group-1', 'user-1')
     })
-    expect(storage.saveToken).toHaveBeenCalledWith('token-mobile')
-    expect(groupService.getUserGroups).toHaveBeenCalledWith('user-1')
-    expect(expenseService.getGroupExpenses).toHaveBeenCalledWith('group-1', 'user-1')
-    expect(screen.getByText('Hospedagem Mobile')).toBeTruthy()
-    expect(screen.getByText('Viagem Mobile · Para Bruno Mobile')).toBeTruthy()
   })
 })
