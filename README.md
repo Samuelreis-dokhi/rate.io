@@ -199,7 +199,7 @@ Execução validada em 2026-05-30:
 
 ## Automação com GitHub Actions
 
-O workflow `.github/workflows/ci.yml` executa a cada `push` em `develop`, `task/**`, `test/**` e `feature/**`, além de `pull_request` para `develop`. A automação usa Node.js 22 e `npm ci` com cache separado por aplicação.
+O workflow `.github/workflows/ci.yml` executa a cada `push` em `develop`, `task/**`, `test/**` e `feature/**`, além de `pull_request` para `develop`. A automação usa Node.js 20.19.0 e `npm ci` com cache separado por aplicação.
 
 Jobs configurados:
 

@@ -173,7 +173,7 @@ Automação em CI:
 - Workflow: `.github/workflows/ci.yml`.
 - Eventos: `push` para `develop`, `task/**`, `test/**`, `feature/**` e `pull_request` para `develop`.
 - Jobs independentes: `backend-tests`, `frontend-tests` e `mobile-tests`.
-- Instalação reprodutível com `npm ci` e cache por `package-lock.json` de cada aplicação.
+- Instalação reprodutível com Node.js 20.19.0, `npm ci` e cache por `package-lock.json` de cada aplicação.
 
 ### Modelagem implementada
 
