@@ -1,5 +1,5 @@
 // API_BASE_URL é a URL base para as chamadas à API, configurada via variável de ambiente
-const API_BASE_URL = import.meta.env.VITE_API_BASE;
+const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
 
 // função que lê o token do localStorage
 const getAuthHeaders = () => {
