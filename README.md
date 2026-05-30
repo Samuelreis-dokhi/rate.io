@@ -104,14 +104,15 @@ npm run dev
 
 Antes de qualquer linha de código, o time precisa ter este mapa internalizado. Tudo no frontend deriva daqui.
 
-### Autenticação — /api/auth (público)
+### Autenticação — /api/auth
 
-| Método | Rota | Body | Resposta de sucesso |
-| --- | --- | --- | --- |
-| POST | `/api/auth/register` | `{ name, email, password }` | `201 { message, authId, id, name, email }` |
-| POST | `/api/auth/login` | `{ email, password }` | `200 { message, token, userId }` |
+| Método | Rota | Body | Proteção | Resposta de sucesso |
+| --- | --- | --- | --- | --- |
+| POST | `/api/auth/register` | `{ name, email, password }` | Pública | `201 { message, authId, id, name, email }` |
+| POST | `/api/auth/login` | `{ email, password }` | Pública | `200 { message, token, userId }` |
+| PUT | `/api/auth/change-password` | `{ currentPassword, newPassword, confirmPassword }` | Bearer token | `200 { message }` |
 
-Atenção crítica no login: a resposta usa `userId` (não `authId`). O `AuthContext` do frontend de referência já lida com ambos via `authData.authId || authData.userId`. O token JWT expira em 1 hora.
+Atenção no login: a resposta usa `userId`. Os clientes tratam compatibilidade com `authData.authId || authData.userId`. O token JWT expira em 1 hora.
 
 ### Usuário — /api/users (requer Bearer token)
 
@@ -119,9 +120,7 @@ Atenção crítica no login: a resposta usa `userId` (não `authId`). O `AuthCon
 | --- | --- | --- | --- |
 | GET | `/api/users/profile` | — | `200 { _id, name, email, authId, avatarUrl, isActive }` |
 | PUT | `/api/users/profile` | `{ name?, avatarUrl? }` | `200 { message, id, name, avatarUrl }` |
-| GET | `/api/users/:userId` | — | NÃO EXISTE — precisa ser criado |
-
-Gap crítico: `GET /api/users/:userId` (perfil público de outro usuário) não existe no backend. O frontend precisa buscar o perfil de cada membro do grupo pelo `userId`. Sem essa rota, todos os nomes aparecem como "Membro". A criação desta rota é a primeira tarefa do backend na Sprint 1.
+| GET | `/api/users/:userId` | — | `200 { _id, name, email, avatarUrl }` |
 
 ### Grupos — /api/groups (requer Bearer token)
 
@@ -129,6 +128,7 @@ Gap crítico: `GET /api/users/:userId` (perfil público de outro usuário) não 
 | --- | --- | --- | --- |
 | POST | `/api/groups` | `{ name, description?, createdBy, membersIds? }` | `201 grupo completo` |
 | GET | `/api/groups/user/:userId` | — | `200 array de grupos` |
+| POST | `/api/groups/:groupId/members` | `{ userId, addedBy }` | `200 grupo atualizado` |
 | POST | `/api/groups/:groupId/invite` | `{ email, addedBy }` | `200 grupo atualizado` |
 | DELETE | `/api/groups/:groupId` | `{ userId }` no body | `200 { message }` |
 | GET | `/api/groups/:groupId/activities?userId=&limit=200` | — | `array de atividades` |
@@ -143,24 +143,59 @@ Regras de negócio: Só o criador pode deletar o grupo. Não é possível deleta
 | GET | `/api/expenses/group/:groupId?userId=` | — | `200 { expenses: [...] }` — envelope |
 | POST | `/api/expenses/:expenseId/settle` | `{ userId, paidBy }` | `200 { message }` |
 | GET | `/api/expenses/group/:groupId/balances?userId=` | — | `200 { balance: { totalPaid, totalOwed, netBalance, summary } }` — envelope |
+| PUT | `/api/expenses/:expenseId` | `{ updatedBy, ...campos }` | `200 { message, expense }` |
+| DELETE | `/api/expenses/:expenseId` | `{ userId }` | `200 { message }` |
 
 ## Scripts úteis
 
+Os scripts são executados dentro de cada aplicação, pois backend, frontend web e mobile possuem dependências próprias.
+
+### Backend (`src/backend`)
+
 | Script | Descrição |
 | --- | --- |
-| `npm run start` | Executa o projeto em produção |
-| `npm run dev` | Executa em modo de desenvolvimento |
-| `npm run lint` | Roda ESLint |
-| `npm run lint:fix` | Roda ESLint e corrige erros possíveis |
-| `npm run format` | Roda o formatador de código |
-| `npm run test` | Executa todos os testes |
-| `npm run test:unit` | Executa testes unitários |
-| `npm run test:integration` | Executa testes de integração |
-| `npm run test:system` | Executa testes de sistema |
-| `npm run test:auth` | Executa testes de autenticação |
-| `npm run test:expense` | Executa testes de despesas |
-| `npm run test:group` | Executa testes de grupo |
-| `npm run test:coverage` | Gera relatório de cobertura |
+| `npm run dev` | Executa a API com Nodemon |
+| `npm start` | Executa a API com Node |
+| `npm test` | Executa unitários, integração e sistema |
+| `npm run test:unit` | Testes unitários de serviços |
+| `npm run test:integration` | Testes HTTP integrados com MongoDB em memória |
+| `npm run test:system` | Jornada E2E de API |
+| `npm run test:coverage` | Relatório de cobertura Jest |
+
+### Frontend (`src/frontend`)
+
+| Script | Descrição |
+| --- | --- |
+| `npm run dev` | Executa o Vite |
+| `npm test` | Executa unitários, integração e E2E web com Vitest |
+| `npm run test:unit` | Testes de serviços e contexto React |
+| `npm run test:integration` | Testes de componentes integrados |
+| `npm run test:e2e` | Fluxo web autenticado com mocks de API |
+| `npm run build` | Build de produção |
+
+### Mobile (`src/mobile`)
+
+| Script | Descrição |
+| --- | --- |
+| `npm start` | Executa Expo |
+| `npm run web` | Executa Expo Web |
+| `npm test` | Executa testes Jest/Jest Expo |
+| `npm run test:unit` | Executa testes unitários mobile |
+| `npm run test:integration` | Executa testes de integração mobile |
+| `npm run test:e2e` | Executa fluxo E2E mobile |
+| `npm run test:coverage` | Relatório de cobertura Jest |
+
+## Estratégia de Testes
+
+A suíte segue os critérios F.I.R.S.T.: testes rápidos, independentes, repetíveis, auto-verificáveis e escritos em tempo de desenvolvimento. O backend usa MongoDB em memória para integração e sistema, evitando dependência de Atlas. Web e mobile isolam chamadas HTTP por mocks para validar contratos de serviço, autenticação, rotas protegidas e fluxos críticos sem flutuação de rede.
+
+Execução validada em 2026-05-30:
+
+| Aplicação | Comando | Resultado |
+| --- | --- | --- |
+| Backend | `cd src/backend && npm test` | 7 suítes, 108 testes aprovados |
+| Frontend | `cd src/frontend && npm test` | 4 suítes, 13 testes aprovados |
+| Mobile | `cd src/mobile && npm test` | 5 suítes, 15 testes aprovados |
 
 ## Passo a Passo Rápido de Uso
 

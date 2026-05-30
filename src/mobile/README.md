@@ -130,6 +130,29 @@ O backend foi ajustado para aceitar origens locais durante o desenvolvimento, in
 
 ---
 
+
+## Testes automatizados
+
+A suíte mobile usa Jest Expo. Os testes unitários isolam a camada de serviços com mocks do `api-client`, validam montagem de endpoints, métodos HTTP, envelopes de resposta e limpeza de sessão em erro 401.
+
+| Nível | Pasta | Comando | Escopo |
+| --- | --- | --- | --- |
+| Unitário | `__tests__` | `npm run test:unit` | `api-client`, serviços de auth, grupos e despesas |
+| Integração | `__tests__/integration` | `npm run test:integration` | `AuthProvider` real integrado a serviços e storage mockados |
+| E2E | `__tests__/e2e` | `npm run test:e2e` | Fluxo da tela de login ao dashboard mobile com dados financeiros |
+| Cobertura | `__tests__` | `npm run test:coverage` | Relatório de cobertura Jest |
+
+Execução completa:
+
+```bash
+cd src/mobile
+npm test
+```
+
+Última validação: 5 suítes e 15 testes aprovados em 2026-05-30.
+
+Observação de contrato: a troca de senha usa `PUT /api/auth/change-password`, igual ao backend.
+
 ## Variáveis de ambiente
 
 O mobile suporta override explícito por variável de ambiente:

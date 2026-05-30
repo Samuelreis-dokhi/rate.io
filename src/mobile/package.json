@@ -9,10 +9,17 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest"
+    "test": "jest",
+    "test:unit": "jest __tests__ --testPathIgnorePatterns=/__tests__/integration/ --testPathIgnorePatterns=/__tests__/e2e/",
+    "test:integration": "jest __tests__/integration",
+    "test:e2e": "jest __tests__/e2e",
+    "test:coverage": "jest --coverage"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    }
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

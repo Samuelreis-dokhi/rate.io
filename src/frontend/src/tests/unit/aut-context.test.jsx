@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { AuthProvider } from '../../context/AuthContext'
 import { useAuth } from '../../context/useAuth'
 
@@ -28,14 +29,18 @@ const Consumer = () => {
 }
 
 describe('AuthContext', () => {
-  beforeEach(() => {
+  let api
+
+  beforeEach(async () => {
+    api = (await import('../../services/api')).api
+    vi.clearAllMocks()
     localStorage.clear()
   })
 
   it('faz login e salva token no localStorage', async () => {
-    const { api } = await import('../../services/api')
     api.login.mockResolvedValue({ token: 'token-123', authId: 'user-1' })
     api.getCurrentUser.mockResolvedValue({ email: 'test@teste.com' })
+    const user = userEvent.setup()
 
     render(
       <AuthProvider>
@@ -43,7 +48,7 @@ describe('AuthContext', () => {
       </AuthProvider>,
     )
 
-    screen.getByText('login').click()
+    await user.click(screen.getByText('login'))
 
     await waitFor(() => {
       expect(localStorage.getItem('token')).toBe('token-123')
@@ -54,6 +59,9 @@ describe('AuthContext', () => {
 
   it('faz logout e limpa localStorage', async () => {
     localStorage.setItem('token', 'token-123')
+    api.getCurrentUser.mockResolvedValue({ email: 'test@teste.com' })
+    const user = userEvent.setup()
+
     render(
       <AuthProvider>
         <Consumer />
@@ -61,15 +69,50 @@ describe('AuthContext', () => {
     )
 
     await waitFor(() => {
-      expect(screen.queryByText('false')).not.toBeNull()
+      expect(screen.getByTestId('is-authenticated')).toHaveTextContent('true')
     })
 
-    screen.getByText('logout').click()
+    await user.click(screen.getByText('logout'))
 
     await waitFor(() => {
       expect(screen.getByTestId('is-authenticated')).toHaveTextContent('false')
       expect(screen.getByTestId('user-email')).toHaveTextContent('no-user')
       expect(screen.getByTestId('bootstrapping')).toHaveTextContent('false')
+    })
+  })
+
+  it('restaura usuario quando token salvo ainda é valido', async () => {
+    localStorage.setItem('token', 'token-salvo')
+    api.getCurrentUser.mockResolvedValue({ email: 'salvo@teste.com' })
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    )
+
+    await waitFor(() => {
+      expect(api.getCurrentUser).toHaveBeenCalled()
+      expect(screen.getByTestId('is-authenticated')).toHaveTextContent('true')
+      expect(screen.getByTestId('user-email')).toHaveTextContent('salvo@teste.com')
+    })
+  })
+
+  it('remove token salvo quando bootstrap falha', async () => {
+    localStorage.setItem('token', 'token-expirado')
+    localStorage.setItem('authId', 'auth-1')
+    api.getCurrentUser.mockRejectedValue(new Error('Não autorizado'))
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    )
+
+    await waitFor(() => {
+      expect(localStorage.getItem('token')).toBeNull()
+      expect(localStorage.getItem('authId')).toBeNull()
+      expect(screen.getByTestId('is-authenticated')).toHaveTextContent('false')
     })
   })
 })

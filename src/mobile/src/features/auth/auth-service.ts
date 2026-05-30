@@ -45,7 +45,7 @@ export function changePassword(payload: {
     confirmPassword?: string;
 }): Promise<{ message: string }> {
     return request('/api/auth/change-password', {
-        method: 'POST',
+        method: 'PUT',
         body: JSON.stringify(payload),
     })
 }
