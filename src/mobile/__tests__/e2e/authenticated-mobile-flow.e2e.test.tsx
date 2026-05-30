@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Text } from 'react-native'
-import { fireEvent, render, waitFor } from '@testing-library/react-native'
+import { fireEvent, render } from '@testing-library/react-native'
 import { AuthProvider, useAuth } from '../../src/features/auth/auth-context'
 import LoginScreen from '../../app/(auth)/login'
 import DashboardScreen from '../../app/(app)/index'
@@ -101,6 +101,8 @@ describe('E2E mobile: fluxo autenticado', () => {
         splits: [{ userId: 'user-1', amount: 75, status: 'pendente' }],
       },
     ])
+    ;(storage.getToken as jest.Mock).mockResolvedValue(null)
+    ;(storage.getProfile as jest.Mock).mockResolvedValue(null)
     ;(storage.clearSession as jest.Mock).mockResolvedValue(undefined)
     ;(storage.saveToken as jest.Mock).mockResolvedValue(undefined)
     ;(storage.saveProfile as jest.Mock).mockResolvedValue(undefined)
@@ -113,13 +115,13 @@ describe('E2E mobile: fluxo autenticado', () => {
       </AuthProvider>,
     )
 
-    await waitFor(() => expect(screen.getByText('Bem-vindo de volta')).toBeTruthy())
+    await screen.findByText('Bem-vindo de volta')
 
     fireEvent.changeText(screen.getByPlaceholderText('voce@exemplo.com'), 'ANA@TESTE.COM')
     fireEvent.changeText(screen.getByPlaceholderText('••••••••'), 'senha123')
     fireEvent.press(screen.getByText('Entrar'))
 
-    await waitFor(() => expect(screen.getByText('Olá, Ana Mobile!')).toBeTruthy())
+    await screen.findByText('Olá, Ana Mobile!')
 
     expect(authService.login).toHaveBeenCalledWith({
       email: 'ana@teste.com',
