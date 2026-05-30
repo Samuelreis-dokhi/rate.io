@@ -115,10 +115,10 @@ describe('E2E mobile: fluxo autenticado', () => {
       </AuthProvider>,
     )
 
-    const emailInput = await screen.findByPlaceholderText('voce@exemplo.com')
+    const emailInput = await screen.findByTestId('login-email-input')
 
     fireEvent.changeText(emailInput, 'ANA@TESTE.COM')
-    fireEvent.changeText(screen.getByPlaceholderText('••••••••'), 'senha123')
+    fireEvent.changeText(screen.getByTestId('login-password-input'), 'senha123')
     fireEvent.press(screen.getByText('Entrar'))
 
     await screen.findByText('Olá, Ana Mobile!')
