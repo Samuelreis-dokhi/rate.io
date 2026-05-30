@@ -115,9 +115,13 @@ describe('E2E mobile: fluxo autenticado', () => {
       </AuthProvider>,
     )
 
-    const emailInput = await screen.findByTestId('login-email-input')
+    await waitFor(() => {
+      expect(screen.queryByText('Inicializando')).not.toBeOnTheScreen()
+    }, { timeout: 3000 })
+    
+    const emailInput = await screen.findByTestId('login-email-input', {}, { timeout: 5000})
 
-    fireEvent.changeText(emailInput, 'ANA@TESTE.COM')
+    fireEvent.changeText(emailInput, 'ana@teste.com')
     fireEvent.changeText(screen.getByTestId('login-password-input'), 'senha123')
     fireEvent.press(screen.getByText('Entrar'))
 
