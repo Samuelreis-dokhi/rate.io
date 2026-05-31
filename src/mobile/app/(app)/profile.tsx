@@ -1,5 +1,5 @@
 // src/mobile/app/(app)/profile.tsx
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
@@ -18,18 +18,27 @@ export default function ProfileScreen() {
 
   const [name, setName] = useState(user?.name ?? '')
   const [profileLoading, setProfileLoading] = useState(false)
+  const [profileSuccess, setProfileSuccess] = useState('')
+  const profileSuccessTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [pwLoading, setPwLoading] = useState(false)
 
+  useEffect(() => () => {
+    if (profileSuccessTimerRef.current) clearTimeout(profileSuccessTimerRef.current)
+  }, [])
+
   const handleUpdateProfile = async () => {
     if (!name.trim()) { Alert.alert('Erro', 'Nome obrigatório'); return }
+    setProfileSuccess('')
     setProfileLoading(true)
     try {
       await updateProfile({ name: name.trim() })
       await refreshUser()
-      Alert.alert('✅', 'Perfil atualizado!')
+      setProfileSuccess('Nome de usuário alterado com sucesso')
+      if (profileSuccessTimerRef.current) clearTimeout(profileSuccessTimerRef.current)
+      profileSuccessTimerRef.current = setTimeout(() => setProfileSuccess(''), 3500)
     } catch (err) {
       Alert.alert('Erro', (err as Error).message)
     } finally {
@@ -66,6 +75,16 @@ export default function ProfileScreen() {
       {/* Dados da conta */}
       <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
         <Text style={[Typography.h2, { color: c.textPrimary }]}>Dados da conta</Text>
+        {profileSuccess ? (
+          <View
+            accessibilityLiveRegion='polite'
+            style={[styles.successNotice, { backgroundColor: c.positive + '14', borderColor: c.positive + '55' }]}
+          >
+            <Text style={[Typography.body, styles.successNoticeText, { color: c.positive }]}>
+              {profileSuccess}
+            </Text>
+          </View>
+        ) : null}
         <Text style={[Typography.caption, { color: c.textSecondary }]}>E-mail: {user?.email}</Text>
         <Text style={[Typography.caption, { color: c.textSecondary }]}>ID: {userId}</Text>
         <AppInput label='Nome' value={name} onChangeText={setName} placeholder='Seu nome' />
@@ -90,4 +109,13 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   content: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: 80 },
   card: { borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg, gap: Spacing.md },
+  successNotice: {
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 12,
+  },
+  successNoticeText: {
+    fontWeight: '600',
+  },
 })
