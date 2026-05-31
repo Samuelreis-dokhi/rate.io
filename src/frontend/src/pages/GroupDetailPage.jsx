@@ -146,6 +146,7 @@ const GroupDetailPage = () => {
     return list
   }, [expenses, userId, profilesById])
 
+
   // ── Handlers ─────────────────────────────────
   const handleSettle = async (expenseId, paidBy) => {
     try {
@@ -188,18 +189,14 @@ const GroupDetailPage = () => {
   }
 
   const handleCreateExpense = async (expenseData) => {
-    try {
-      await api.createExpense({
-        groupId,
-        ...expenseData,
-        createdBy: userId,
-      })
-      showToast('Despesa registrada com sucesso!')
-      setShowExpenseModal(false)
-      await load()
-    } catch (err) {
-      throw err
-    }
+    await api.createExpense({
+      groupId,
+      ...expenseData,
+      createdBy: userId,
+    })
+    showToast('Despesa registrada com sucesso!')
+    setShowExpenseModal(false)
+    await load()
   }
 
   const handleViewDetails = (expense) => {
@@ -313,8 +310,8 @@ const GroupDetailPage = () => {
 
         {/* Stats */}
         <div className='stats-grid'>
-          <StatCard label='Pago' value={formatMoney(balance?.totalPaid || 0)} />
-          <StatCard label='A receber' value={formatMoney(balance?.totalOwed || 0)} tone={balance?.totalOwed > 0 ? 'negative' : 'neutral'} />
+          <StatCard label='A receber' value={formatMoney(balance?.totalPaid || 0)} tone={balance?.totalPaid > 0 ? 'positive' : 'neutral'} />
+          <StatCard label='A pagar' value={formatMoney(balance?.totalOwed || 0)} tone={balance?.totalOwed > 0 ? 'negative' : 'neutral'} />
           <StatCard label='Saldo líquido' value={formatMoney(netBalance)} tone={netTone} />
           <StatCard label='Membros' value={group.members.length} />
         </div>

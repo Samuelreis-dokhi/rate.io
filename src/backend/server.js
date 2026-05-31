@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const { URL } = require('node:url');
 const { connectDB } = require('./config/database');
 const { authenticateToken } = require('./middleware/authMiddleware');
 
@@ -8,11 +9,28 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = new Set(['https://rateio-app.onrender.com']);
+
+const isLocalDevelopmentOrigin = (origin) => {
+  try {
+    const { hostname } = new URL(origin);
+    return hostname === 'localhost' || hostname === '127.0.0.1';
+  } catch {
+    return false;
+  }
+};
 
 /* Middleware */
 app.use(
   cors({
-    origin: ['http://localhost:5174', 'https://rateio-app.onrender.com'],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.has(origin) || isLocalDevelopmentOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Origem não permitida pelo CORS'));
+    },
     credentials: true,
   })
 );

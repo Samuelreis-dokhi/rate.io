@@ -12,22 +12,87 @@ on:
       - develop
 
 jobs:
-  test:
+  backend-tests:
+    name: Backend tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.19.0'
+          cache: npm
+          cache-dependency-path: src/backend/package-lock.json
 
       - name: Instalar dependências
         working-directory: src/backend
-        run: npm install
+        run: npm ci
 
-      - name: Rodar testes
+      - name: Rodar testes do backend
         working-directory: src/backend
         run: npm test
+
+  frontend-tests:
+    name: Frontend tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+
+      - name: Instalar dependências
+        working-directory: src/frontend
+        run: npm ci
+
+      - name: Rodar testes unitários do frontend
+        working-directory: src/frontend
+        run: npm run test:unit
+
+      - name: Rodar testes de integração do frontend
+        working-directory: src/frontend
+        run: npm run test:integration
+
+      - name: Rodar testes E2E do frontend
+        working-directory: src/frontend
+        run: npm run test:e2e
+
+  mobile-tests:
+    name: Mobile tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: npm
+          cache-dependency-path: src/mobile/package-lock.json
+
+      - name: Instalar dependências
+        working-directory: src/mobile
+        run: npm ci
+
+      - name: Rodar testes unitários do mobile
+        working-directory: src/mobile
+        run: npm run test:unit
+
+      - name: Rodar testes de integração do mobile
+        working-directory: src/mobile
+        run: npm run test:integration
+
+      - name: Rodar testes E2E do mobile
+        working-directory: src/mobile
+        run: npm run test:e2e

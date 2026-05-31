@@ -6,9 +6,16 @@ Aplicacao de rateio financeiro colaborativo para grupos. Usuarios criam grupos, 
 
 ## Arquitetura
 
+<<<<<<< HEAD
+- Monorepo com backend, frontend web e frontend mobile separados em `src/backend`, `src/frontend` e `src/mobile`.
+- Backend: Express 5, CommonJS, Mongoose, JWT, bcryptjs.
+- Frontend: React 19, Vite, React Router, CSS por pagina.
+- Mobile: Expo e React Native, consumindo a mesma API REST do backend.
+=======
 - Monorepo com backend e frontend separados em `src/backend` e `src/frontend`.
 - Backend: Express 5, CommonJS, Mongoose, JWT, bcryptjs.
 - Frontend: React 19, Vite, React Router, CSS por pagina.
+>>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
 - Banco: MongoDB com conexoes separadas por dominio (`auth`, `user`, `group`, `expense`).
 - Execucao integrada via Docker Compose.
 
@@ -28,6 +35,10 @@ Aplicacao de rateio financeiro colaborativo para grupos. Usuarios criam grupos, 
 - Cliente API frontend: `src/frontend/src/services/api.js`
 - Auth React: `src/frontend/src/context/AuthContext.jsx`
 - Rotas React: `src/frontend/src/App.jsx`
+<<<<<<< HEAD
+- Playbook mobile: `src/mobile/playbook.md`
+=======
+>>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
 - Relatorio tecnico: `docs/14-Relatorio Tecnico de Desenvolvimento e Arquitetura.md`
 
 ## Contratos sensiveis
@@ -37,6 +48,11 @@ Aplicacao de rateio financeiro colaborativo para grupos. Usuarios criam grupos, 
 - Listagem de despesas retorna envelope `{ expenses: [...] }`.
 - Saldo de grupo retorna envelope `{ balance: {...} }`.
 - Rotas protegidas exigem `Authorization: Bearer <token>`.
+<<<<<<< HEAD
+- Mobile deve buscar `GET /api/users/profile` apos login e usar o `_id` de `User` em grupos/despesas.
+- Mobile deve preservar os mesmos envelopes REST usados pela web.
+=======
+>>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
 
 ## Pontos de atencao
 
@@ -45,3 +61,7 @@ Aplicacao de rateio financeiro colaborativo para grupos. Usuarios criam grupos, 
 - `groupRoutes.js` tem aliases duplicados para exclusao de grupo.
 - `rateLimitMiddleware.js` nao esta aplicado e depende de pacote ausente no backend.
 - Preservar compatibilidade de payloads enquanto houver testes ou telas usando contratos atuais.
+<<<<<<< HEAD
+- Em mobile, emuladores podem exigir base URL diferente de `localhost` (`10.0.2.2` no Android Emulator).
+=======
+>>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028

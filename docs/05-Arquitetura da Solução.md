@@ -142,6 +142,39 @@ Indicadores acompanhados na qualidade:
 - Tempo de execução dos testes de integração.
 - Incidentes de ambiente e correções registradas no repositório.
 
+### Estratégia de testes automatizados
+
+A arquitetura de testes segue uma pirâmide prática por aplicação:
+
+| Camada | Backend | Frontend Web | Mobile |
+| --- | --- | --- | --- |
+| Unitária | Serviços de domínio e senha com Jest | API client e AuthContext com Vitest | API client e serviços de domínio com Jest Expo |
+| Integração | Rotas Express + controllers + MongoDB em memória | Componentes com roteamento e contexto mockado | Contratos de serviço isolados do transporte real |
+| Sistema/E2E | Jornada completa de API com Supertest | Fluxo autenticado `/auth` -> dashboard com MemoryRouter | Validação de contratos críticos por mocks determinísticos |
+
+Critérios F.I.R.S.T. aplicados:
+
+- Testes rápidos para execução local frequente.
+- Independência por limpeza de banco em memória e reset de mocks.
+- Repetibilidade sem depender de Atlas ou rede externa.
+- Assertivas auto-verificáveis com Jest/Vitest.
+- Cobertura escrita junto das funcionalidades e correções de contrato.
+
+Execução consolidada validada em 2026-05-30:
+
+| Aplicação | Comando | Resultado |
+| --- | --- | --- |
+| Backend | `cd src/backend && npm test` | 7 suítes, 108 testes aprovados |
+| Frontend Web | `cd src/frontend && npm test` | 4 suítes, 13 testes aprovados |
+| Mobile | `cd src/mobile && npm test` | 5 suítes, 15 testes aprovados |
+
+Automação em CI:
+
+- Workflow: `.github/workflows/ci.yml`.
+- Eventos: `push` para `develop`, `task/**`, `test/**`, `feature/**` e `pull_request` para `develop`.
+- Jobs independentes: `backend-tests`, `frontend-tests` e `mobile-tests`.
+- Instalação reprodutível com Node.js 20.19.0, `npm ci` e cache por `package-lock.json` de cada aplicação.
+
 ### Modelagem implementada
 
 #### Modelo `Auth` (`auth_credentials`)

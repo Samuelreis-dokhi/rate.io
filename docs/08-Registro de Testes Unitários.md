@@ -1,92 +1,90 @@
-# Testes Unitários no Backend
+# Registro de Testes Unitários
 
-## O que são Testes Unitários?
+## Objetivo
 
-Testes unitários são testes automatizados escritos e executados para garantir que pequenas partes individuais do código (unidades) funcionem conforme esperado. No contexto do desenvolvimento backend, isso geralmente significa testar funções, métodos, ou classes de maneira isolada, sem dependências externas como bancos de dados ou serviços web.
+Registrar a cobertura unitária atual do RATE.IO para backend, frontend web e mobile, garantindo detecção rápida de defeitos nas regras de domínio, contratos de serviço e estado de autenticação.
 
-## Por que são Importantes?
+## Critérios F.I.R.S.T. adotados
 
-Testes unitários ajudam a:
+- **Fast:** testes unitários rodam sem dependências externas reais.
+- **Independent:** cada caso prepara seus mocks e limpa estado compartilhado.
+- **Repeatable:** não dependem de MongoDB Atlas, rede externa ou relógio de produção.
+- **Self-validating:** cada teste possui `expect` objetivo e resultado PASS/FAIL automático.
+- **Timely:** testes cobrem contratos implementados e bugs corrigidos durante o desenvolvimento.
 
-- Identificar problemas de maneira precoce no ciclo de desenvolvimento.
-- Garantir que o código continue funcionando após alterações (regressões).
-- Facilitar o processo de refatoração.
-- Melhorar a confiabilidade e a qualidade do software.
+## Backend
 
-## Configuração do Ambiente
+Diretório: `src/backend/tests/unit`
 
-Para começar a escrever testes unitários em um projeto backend utilizando C#, siga os passos abaixo:
+Comando:
 
-1. **Instale o .NET SDK**: Certifique-se de ter o [.NET SDK](https://dotnet.microsoft.com/download) instalado.
-
-2. **Crie um projeto de testes**: No terminal, navegue até o diretório do seu projeto e execute o seguinte comando para criar um projeto de testes usando xUnit (um framework popular de testes unitários para .NET):
-
-   ```bash
-   dotnet new xunit -o tests
-   ```
-
-3. **Adicione uma referência ao seu projeto principal**: No diretório do projeto de testes, adicione uma referência ao seu projeto principal:
-
-   ```bash
-   dotnet add reference ../src/MyProject.csproj
-   ```
-
-4. **Organize sua estrutura de diretórios**: Uma estrutura comum de projeto é a seguinte:
-
-   ```
-   MyProject/
-   ├── src/
-   │   └── MyProject.cs
-   └── tests/
-       └── MyProject.Tests.cs
-   ```
-
-## Exemplo de Teste Unitário
-
-Aqui está um exemplo simples de um teste unitário em C# usando xUnit. Vamos supor que temos um método na classe `Calculator` que soma dois números.
-
-```csharp
-// src/MyProject.cs
-
-namespace MyProject
-{
-    public class Calculator
-    {
-        public int Add(int a, int b)
-        {
-            return a + b;
-        }
-    }
-}
+```bash
+cd src/backend
+npm run test:unit
 ```
 
-## Registro de Execucao - 2026-04-10
+Escopo coberto:
 
-### Contexto
+| Arquivo | Escopo |
+| --- | --- |
+| `spliteService.test.js` | Tipos de divisão `igual`, `porcentagem` e `exato`, validações e arredondamento |
+| `balanceService.test.js` | Cálculo de saldo, resumo por usuário e grafo de pagamentos |
+| `ChangePasswordService.test.js` | Validação de senha atual, confirmação, hash e regras de troca |
 
-- Diretorio de execucao: `src/backend`
-- Comando executado: `npm run test:unit`
+Resultado validado em 2026-05-30: 3 suítes, 39 testes aprovados.
 
-### Resultado
+## Frontend Web
 
-- Status geral: falha
-- Suites: 2 falharam, 2 no total
-- Testes: 1 falhou, 21 passaram, 22 no total
-- Snapshots: 0
-- Tempo total: 0.349 s
+Diretório: `src/frontend/src/tests/unit`
 
-### Falhas observadas
+Comando:
 
-1. Arquivo: `tests/unit/spliteService.test.js`
-   - Cenario: `splitService > calculateSplit > delega para calculateEqualSplit quando tipo e "igual"`
-   - Erro: `Detalhes da divisao sao obrigatorios e devem ser um array nao vazio.`
-   - Origem no servico: `services/splitService.js:74`
+```bash
+cd src/frontend
+npm run test:unit
+```
 
-2. Arquivo: `tests/unit/balanceService.test.js`
-   - Erro: `Your test suite must contain at least one test.`
-   - Causa imediata: suite sem casos de teste declarados.
+Escopo coberto:
 
-### Proximo passo recomendado
+| Arquivo | Escopo |
+| --- | --- |
+| `api.test.jsx` | Headers de autenticação, serialização de payloads, erros HTTP e liquidação de despesa |
+| `aut-context.test.jsx` | Login, logout, restauração de sessão e limpeza de token inválido |
 
-1. Ajustar dados de entrada do teste de `spliteService` para enviar `splitData` valido no tipo `igual`.
-2. Criar ao menos um teste real em `balanceService.test.js` ou remover o arquivo ate a implementacao dos cenarios.
+Resultado validado em 2026-05-30: 2 suítes, 9 testes aprovados.
+
+## Mobile
+
+Diretório: `src/mobile/__tests__`
+
+Comando:
+
+```bash
+cd src/mobile
+npm run test:unit
+```
+
+Escopo coberto:
+
+| Arquivo | Escopo |
+| --- | --- |
+| `api-client.test.ts` | Respostas de sucesso, `ApiError`, status HTTP e limpeza de sessão em 401 |
+| `auth-service.test.ts` | Contratos de login, cadastro e troca de senha via `PUT` |
+| `domain-services.test.ts` | Endpoints e envelopes de grupos, despesas, saldos, quitação e exclusão |
+
+Resultado validado em 2026-05-30: 3 suítes, 11 testes aprovados.
+
+## Procedimento padrão
+
+1. Instalar dependências do módulo alvo com `npm install`.
+2. Executar o comando unitário do módulo.
+3. Corrigir falhas mantendo independência dos casos.
+4. Reexecutar a suíte completa antes do merge.
+
+## Execução consolidada
+
+| Data | Módulo | Comando | Resultado |
+| --- | --- | --- | --- |
+| 2026-05-30 | Backend | `npm run test:unit` | PASS, 39/39 |
+| 2026-05-30 | Frontend | `npm run test:unit` | PASS, 9/9 |
+| 2026-05-30 | Mobile | `npm run test:unit` | PASS, 11/11 |

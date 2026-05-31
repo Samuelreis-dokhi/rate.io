@@ -63,7 +63,7 @@ Preencha `src/backend/.env`:
 PORT=3000
 JWT_SECRET=<sua-chave-jwt>
 MONGO_URI_AUTH=<uri-do-mongo-auth>
-MONGO_URI_USER=<uri-do-mongo-user>
+MONGO_URI_USERS=<uri-do-mongo-user>
 MONGO_URI_EXPENSES=<uri-do-mongo-expenses>
 MONGO_URI_GROUPS=<uri-do-mongo-groups>
 ```
@@ -103,6 +103,26 @@ curl http://localhost:3000/health
 ```
 
 ![docker compose up](../docs/img/serverRunning.png)
+
+
+## Testes automatizados
+
+Os testes do backend usam Jest, Supertest e `mongodb-memory-server`. O helper `tests/helpers/db.js` cria um MongoDB em memória, injeta variáveis de ambiente de teste e limpa coleções entre casos, mantendo independência e repetibilidade.
+
+| Nível | Pasta | Comando | Escopo |
+| --- | --- | --- | --- |
+| Unitário | `tests/unit` | `npm run test:unit` | Serviços de domínio, divisão de despesas, saldos e troca de senha |
+| Integração | `tests/integration` | `npm run test:integration` | Rotas Auth, Groups e Expenses com Express + Mongo em memória |
+| Sistema/E2E API | `tests/system` | `npm run test:system` | Jornada cadastro, login, grupo, despesa, quitação, saldo e atividades |
+
+Execução completa:
+
+```bash
+cd src/backend
+npm test
+```
+
+Última validação: 7 suítes e 108 testes aprovados em 2026-05-30.
 
 ## Guia Reutilizável de Testes no Postman
 

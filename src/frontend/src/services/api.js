@@ -1,5 +1,5 @@
 // API_BASE_URL é a URL base para as chamadas à API, configurada via variável de ambiente
-const API_BASE_URL = import.meta.env.VITE_API_BASE;
+const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
 
 // função que lê o token do localStorage
 const getAuthHeaders = () => {
@@ -100,10 +100,9 @@ export const api = {
     settleExpenseShare: async (expenseId, payload) => {
         /* RECUPERA O TOKEN DE ONDE FOI SALVO NO LOGIN */
         const token = localStorage.getItem('token');
-        const baseUrl = import.meta.env.VITE_API_BASE;
 
         /* FAZ A CHAMADA NATIVA COM FETCH */
-        const response = await fetch(`${baseUrl}/api/expenses/${expenseId}/settle`, {
+        const response = await fetch(`${API_BASE_URL}/api/expenses/${expenseId}/settle`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
