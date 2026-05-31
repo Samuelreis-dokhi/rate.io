@@ -6,6 +6,7 @@ import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { updateProfile } from '@/src/features/auth/user-service'
 import { changePassword } from '@/src/features/auth/auth-service'
+import { ApiError } from '@/services/api-client'
 import { AppButton } from '@/components/ui/app-button'
 import { AppInput } from '@/components/ui/app-input'
 import { resolveUserId } from '@/src/utils/resolve-user-id'
@@ -24,9 +25,12 @@ export default function ProfileScreen() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [pwLoading, setPwLoading] = useState(false)
+  const [passwordNotice, setPasswordNotice] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
+  const passwordNoticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => {
     if (profileSuccessTimerRef.current) clearTimeout(profileSuccessTimerRef.current)
+    if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current)
   }, [])
 
   const handleUpdateProfile = async () => {
@@ -46,23 +50,55 @@ export default function ProfileScreen() {
     }
   }
 
+  const showPasswordNotice = (message: string, kind: 'success' | 'error') => {
+    setPasswordNotice({ message, kind })
+    if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current)
+    if (kind === 'success') {
+      passwordNoticeTimerRef.current = setTimeout(() => setPasswordNotice(null), 3500)
+    }
+  }
+
+  const getPasswordApiErrorMessage = (err: unknown) => {
+    const apiErrorMessage = err instanceof ApiError
+      ? (err.data as { error?: string })?.error ?? err.message
+      : (err as Error).message
+
+    if (apiErrorMessage === 'Senha atual incorreta') {
+      return 'Senha atual incorreta. Verifique e tente novamente.'
+    }
+
+    if (apiErrorMessage === 'a senha nao pode ser a mesma utilizada anteriormente') {
+      return 'A nova senha deve ser diferente da senha atual.'
+    }
+
+    return apiErrorMessage || 'Não foi possível alterar a senha. Tente novamente.'
+  }
+
   const handleChangePassword = async () => {
+    setPasswordNotice(null)
+
     if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert('Erro', 'Preencha todos os campos.'); return
+      showPasswordNotice('Preencha todos os campos para alterar a senha.', 'error')
+      return
     }
+
     if (newPassword.length < 6) {
-      Alert.alert('Erro', 'Nova senha deve ter no mínimo 6 caracteres.'); return
+      showPasswordNotice('A nova senha deve ter no mínimo 6 caracteres.', 'error')
+      return
     }
+
     if (newPassword !== confirmPassword) {
-      Alert.alert('Erro', 'Senhas não conferem.'); return
+      showPasswordNotice('As senhas não combinam. Confira a nova senha e a confirmação.', 'error')
+      return
     }
+
     setPwLoading(true)
     try {
       await changePassword({ currentPassword, newPassword, confirmPassword })
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
-      Alert.alert('✅', 'Senha alterada com sucesso!')
+      showPasswordNotice('Senha alterada com sucesso!', 'success')
     } catch (err) {
-      Alert.alert('Erro', (err as Error).message)
+      showPasswordNotice(getPasswordApiErrorMessage(err), 'error')
     } finally {
       setPwLoading(false)
     }
@@ -78,9 +114,9 @@ export default function ProfileScreen() {
         {profileSuccess ? (
           <View
             accessibilityLiveRegion='polite'
-            style={[styles.successNotice, { backgroundColor: c.positive + '14', borderColor: c.positive + '55' }]}
+            style={[styles.notice, { backgroundColor: c.positive + '14', borderColor: c.positive + '55' }]}
           >
-            <Text style={[Typography.body, styles.successNoticeText, { color: c.positive }]}>
+            <Text style={[Typography.body, styles.noticeText, { color: c.positive }]}>
               {profileSuccess}
             </Text>
           </View>
@@ -94,6 +130,27 @@ export default function ProfileScreen() {
       {/* Trocar senha */}
       <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
         <Text style={[Typography.h2, { color: c.textPrimary }]}>Trocar senha</Text>
+        {passwordNotice ? (
+          <View
+            accessibilityLiveRegion='polite'
+            style={[
+              styles.notice,
+              passwordNotice.kind === 'success'
+                ? { backgroundColor: c.positive + '14', borderColor: c.positive + '55' }
+                : { backgroundColor: c.negative + '14', borderColor: c.negative + '55' },
+            ]}
+          >
+            <Text
+              style={[
+                Typography.body,
+                styles.noticeText,
+                { color: passwordNotice.kind === 'success' ? c.positive : c.negative },
+              ]}
+            >
+              {passwordNotice.message}
+            </Text>
+          </View>
+        ) : null}
         <AppInput label='Senha atual' value={currentPassword} onChangeText={setCurrentPassword} secureTextEntry placeholder='••••••••' />
         <AppInput label='Nova senha' value={newPassword} onChangeText={setNewPassword} secureTextEntry placeholder='Mínimo 6 caracteres' />
         <AppInput label='Confirmar nova senha' value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry placeholder='••••••••' />
@@ -109,13 +166,13 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   content: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: 80 },
   card: { borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg, gap: Spacing.md },
-  successNotice: {
+  notice: {
     borderRadius: Radius.md,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
     paddingVertical: 12,
   },
-  successNoticeText: {
+  noticeText: {
     fontWeight: '600',
   },
 })
