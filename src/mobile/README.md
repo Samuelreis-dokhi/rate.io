@@ -101,6 +101,83 @@ Isso é esperado. No celular, `localhost` aponta para o próprio celular, não p
 
 ---
 
+## Instalando o APK em aparelho Android
+
+Use este passo a passo quando já existir um APK gerado para instalação direta em um aparelho Android pessoal. O APK atual fica em:
+
+```text
+src/mobile/android/app/build/outputs/apk/release/app-release.apk
+```
+
+### Antes de instalar
+
+1. Confirme que o APK foi gerado com sucesso:
+
+   ```bash
+   ls -lh src/mobile/android/app/build/outputs/apk/release/app-release.apk
+   ```
+
+2. Garanta que a API configurada no app seja acessível pelos celulares que receberão o APK. Para distribuição entre outras pessoas, use a API pública do Render: `https://rateio-api.onrender.com`. Evite `localhost` ou IP da sua rede local em APKs compartilhados.
+
+3. Se for gerar um novo APK, defina a variável antes do build quando precisar apontar para uma API específica:
+
+   ```bash
+   cd src/mobile
+   EXPO_PUBLIC_API_BASE_URL=https://rateio-api.onrender.com npx expo prebuild --platform android --no-install
+   cd android
+   JAVA_HOME=/tmp/jdk21 ANDROID_HOME=/tmp/android-sdk ANDROID_SDK_ROOT=/tmp/android-sdk ./gradlew assembleRelease
+   ```
+
+### Instalação manual pelo celular
+
+1. Transfira o arquivo `app-release.apk` para o aparelho Android. Pode ser por cabo USB, Google Drive, WhatsApp, e-mail ou outro meio confiável.
+
+2. No aparelho, abra o arquivo APK pelo gerenciador de arquivos ou pelo aplicativo usado na transferência.
+
+3. Se o Android bloquear a instalação, toque em **Configurações** quando solicitado e permita **Instalar apps desconhecidos** para o aplicativo usado para abrir o APK. Exemplo: Arquivos, Chrome, Drive ou WhatsApp.
+
+4. Volte para a tela de instalação e toque em **Instalar**.
+
+5. Depois da instalação, abra o app **mobile** na lista de aplicativos.
+
+6. Por segurança, depois de instalar, desative novamente a permissão **Instalar apps desconhecidos** para o aplicativo usado na instalação.
+
+### Instalação via ADB
+
+Use este caminho quando o celular estiver conectado ao computador por USB com a depuração USB habilitada.
+
+1. No aparelho, habilite as opções de desenvolvedor e ative **Depuração USB**.
+
+2. Conecte o aparelho via USB e aceite a autorização de depuração no celular.
+
+3. Verifique se o aparelho foi reconhecido:
+
+   ```bash
+   /tmp/android-sdk/platform-tools/adb devices
+   ```
+
+4. Instale ou atualize o APK:
+
+   ```bash
+   /tmp/android-sdk/platform-tools/adb install -r src/mobile/android/app/build/outputs/apk/release/app-release.apk
+   ```
+
+### Problemas comuns na instalação
+
+#### O Android mostra aviso de app desconhecido
+
+Isso é esperado para APKs instalados fora da Play Store. Permita a instalação somente se o APK veio do build do projeto.
+
+#### O app instala, mas não acessa a API
+
+Verifique se `EXPO_PUBLIC_API_BASE_URL` usado no build aponta para uma URL acessível pela internet ou pela rede do usuário. Para APK compartilhado, use `https://rateio-api.onrender.com`. Em aparelho físico, `http://localhost:3000` não funciona para acessar o backend do computador.
+
+#### O comando `adb devices` não lista o aparelho
+
+Confirme que a depuração USB está ativa, que o cabo permite transferência de dados e que a autorização RSA foi aceita na tela do celular.
+
+---
+
 ## Rodando no navegador (Web)
 
 ### Passo a passo
