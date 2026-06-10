@@ -29,12 +29,7 @@ tmp/
 relatorio.md
 
 nomeclatura.md
-<<<<<<< HEAD
 .agents/*
 !.agents/*.md
 .codex/*
 !.codex/*.md
-=======
-.agents
-.codex
->>>>>>> 47cbf17debdb7e3fee91ea831d37a42655ef2028
