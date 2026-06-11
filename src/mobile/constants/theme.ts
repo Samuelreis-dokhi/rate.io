@@ -72,6 +72,12 @@ export const Spacing = {
   xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48,
 }
 
+export const Layout = {
+  screenPadding: 28,
+  screenBottomPadding: 112,
+  modalPadding: 28,
+}
+
 export const Radius = {
   sm: 8, md: 12, lg: 18, xl: 24, full: 999,
 }

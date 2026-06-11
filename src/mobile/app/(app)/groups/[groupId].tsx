@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Modal, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import {
   deleteGroup,
@@ -754,14 +754,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: Spacing.lg,
+    padding: Layout.screenPadding,
     borderBottomWidth: 1,
   },
   backText: { fontWeight: '700' },
   headerActions: { flexDirection: 'row', gap: Spacing.sm },
   actionBtn: { borderRadius: Radius.full, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
   actionText: { fontWeight: '700' },
-  content: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: Spacing.xxl },
+  content: { padding: Layout.screenPadding, gap: Spacing.lg, paddingBottom: Layout.screenBottomPadding },
   titleBlock: { gap: Spacing.xs },
   statsRow: { flexDirection: 'row', gap: Spacing.md },
   section: { gap: Spacing.sm },
@@ -793,8 +793,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.md,
   },
-  modal: { flex: 1, padding: Spacing.lg, gap: Spacing.lg },
-  modalScroll: { gap: Spacing.md, paddingBottom: Spacing.xxl },
+  modal: { flex: 1, padding: Layout.modalPadding, gap: Spacing.lg },
+  modalScroll: { gap: Spacing.md, paddingBottom: Layout.screenBottomPadding },
   formRow: { flexDirection: 'row', gap: Spacing.md },
   currencyInput: { width: 96 },
   formBlock: { gap: Spacing.sm },

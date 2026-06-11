@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { getPublicProfile } from '@/src/features/auth/user-service'
 import { getUserGroups } from '@/src/features/groups/group-service'
@@ -280,7 +280,7 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: Spacing.xxl },
+  content: { padding: Layout.screenPadding, gap: Spacing.lg, paddingBottom: Layout.screenBottomPadding },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   statsRow: { flexDirection: 'row', gap: Spacing.md },
   shortcuts: { flexDirection: 'row', gap: Spacing.md },

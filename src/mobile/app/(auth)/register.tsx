@@ -2,8 +2,9 @@
 import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Link } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { AppButton } from '@/components/ui/app-button'
 import { AppInput } from '@/components/ui/app-input'
@@ -41,11 +42,12 @@ export default function RegisterScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.root, { backgroundColor: c.canvas }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps='handled'>
+    <SafeAreaView style={[styles.root, { backgroundColor: c.canvas }]}>
+      <KeyboardAvoidingView
+        style={styles.root}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps='handled'>
         <View style={styles.header}>
           <Text style={[Typography.display, { color: c.accentDeep }]}>RATE.IO</Text>
           <Text style={[Typography.h2, { color: c.textPrimary, marginTop: Spacing.lg }]}>
@@ -86,14 +88,15 @@ export default function RegisterScreen() {
             </Text>
           </Link>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  content: { flexGrow: 1, padding: Spacing.lg, gap: Spacing.xl, justifyContent: 'center' },
+  content: { flexGrow: 1, padding: Layout.screenPadding, gap: Spacing.xl, justifyContent: 'center' },
   header: { gap: Spacing.xs },
   form: { gap: Spacing.md },
   footer: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' },
