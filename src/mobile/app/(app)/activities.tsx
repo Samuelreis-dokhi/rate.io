@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { getGroupActivities, getUserGroups, type Activity, type Group } from '@/src/features/groups/group-service'
 import { ActivityItem } from '@/components/ui/activity-item'
@@ -59,7 +59,7 @@ export default function ActivitiesScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: c.canvas }]}>
-      <Text style={[Typography.h1, { color: c.textPrimary, padding: Spacing.lg, paddingBottom: Spacing.sm }]}>
+      <Text style={[Typography.h1, styles.title, { color: c.textPrimary }]}>
         Atividades
       </Text>
 
@@ -81,7 +81,7 @@ export default function ActivitiesScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => item._id}
-        contentContainerStyle={{ padding: Spacing.lg, gap: Spacing.sm }}
+        contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load() }} />}
         ListEmptyComponent={
           loading ? (
@@ -100,6 +100,8 @@ export default function ActivitiesScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  filters: { flexDirection: 'row', gap: Spacing.sm, paddingHorizontal: Spacing.lg, flexWrap: 'wrap', marginBottom: Spacing.sm },
+  title: { paddingHorizontal: Layout.screenPadding, paddingTop: Layout.screenPadding, paddingBottom: Spacing.md },
+  filters: { flexDirection: 'row', gap: Spacing.sm, paddingHorizontal: Layout.screenPadding, flexWrap: 'wrap', marginBottom: Spacing.md },
+  listContent: { paddingHorizontal: Layout.screenPadding, paddingBottom: Layout.screenBottomPadding, gap: Spacing.sm },
   chip: { borderRadius: 999, borderWidth: 1, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs },
 })

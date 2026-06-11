@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Alert, FlatList, Modal, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { router } from 'expo-router'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { createGroup, getUserGroups, type Group } from '@/src/features/groups/group-service'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -94,7 +94,7 @@ export default function GroupListScreen() {
       </View>
 
       {/* Busca */}
-      <View style={{ padding: Spacing.lg, paddingTop: 0 }}>
+      <View style={styles.searchWrap}>
         <TextInput
           style={[styles.search, { backgroundColor: c.surface, borderColor: c.border, color: c.textPrimary }]}
           placeholder='Buscar grupo...'
@@ -107,7 +107,7 @@ export default function GroupListScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => item._id}
-        contentContainerStyle={{ padding: Spacing.lg, paddingTop: 0, gap: Spacing.md }}
+        contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load() }} />}
         ListEmptyComponent={
           loading ? (
@@ -172,11 +172,13 @@ export default function GroupListScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: Spacing.lg },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: Layout.screenPadding },
+  searchWrap: { paddingHorizontal: Layout.screenPadding, paddingBottom: Spacing.lg },
+  listContent: { paddingHorizontal: Layout.screenPadding, paddingBottom: Layout.screenBottomPadding, gap: Spacing.md },
   addBtn: { borderRadius: Radius.full, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
   search: { borderRadius: Radius.md, borderWidth: 1, padding: Spacing.md, fontSize: 15 },
   card: { borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg, gap: Spacing.xs },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  modal: { flex: 1, padding: Spacing.lg, gap: Spacing.lg },
+  modal: { flex: 1, padding: Layout.modalPadding, gap: Spacing.lg },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
 })
