@@ -333,3 +333,8 @@
     font-size: 2.5rem;
   }
 }
+
+/* Modal Actions - Invertida para Confirmação */
+.modal-actions--reversed {
+  flex-direction: row-reverse;
+}
