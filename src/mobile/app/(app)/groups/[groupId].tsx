@@ -29,6 +29,8 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { StatCard } from '@/components/ui/stat-card'
 import { resolveUserId } from '@/src/utils/resolve-user-id'
 import { formatDate, formatMoney } from '@/src/utils/format'
+import { usePolling } from '@/hooks/usePolling'
+import { useIsFocused } from '@react-navigation/native'
 
 type SplitType = 'igual' | 'porcentagem' | 'exato'
 
@@ -82,6 +84,8 @@ export default function GroupDetailScreen() {
   const scheme = useColorScheme()
   const c = Colors[scheme ?? 'light']
 
+  const isFocused = useIsFocused()
+
   const [group, setGroup] = useState<Group | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
@@ -105,7 +109,13 @@ export default function GroupDetailScreen() {
   const [expenseError, setExpenseError] = useState('')
   const [expenseLoading, setExpenseLoading] = useState(false)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (showLoader = true) => {
+    console.log('[Mobile] load executou')
+
+    if (showLoader) {
+      setLoading(true)
+    }
+
     if (!groupId || !userId) {
       setLoading(false)
       setRefreshing(false)
@@ -148,12 +158,31 @@ export default function GroupDetailScreen() {
     } catch (err) {
       Alert.alert('Erro', (err as Error).message)
     } finally {
-      setLoading(false)
+      if (showLoader) {
+        setLoading(false)
+      }
+
       setRefreshing(false)
     }
   }, [groupId, userId])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => { load(true) }, [load])
+
+  
+  const shouldPoll =
+    isFocused &&
+    !showExpense &&
+    !showInvite &&
+    !loading
+
+  usePolling(
+    async () => {
+      console.log('[Mobile] polling executou')
+      await load(false)
+    },
+    3000,
+    shouldPoll
+  )
 
   const members = useMemo<MemberView[]>(() => {
     if (!group) return []
@@ -331,7 +360,7 @@ export default function GroupDetailScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
-    load()
+    load(false)
   }, [load])
 
   const handleSettle = async (expenseId: string) => {

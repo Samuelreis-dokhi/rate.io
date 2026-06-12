@@ -15,6 +15,7 @@ import ExpenseForm from '../components/ExpenseForm'
 import PendingPaymentsSection from '../components/PendingPaymentsSection'
 import ExpenseDetailModal from '../components/ExpenseDetailModal'
 import ExpenseEditForm from '../components/ExpenseEditForm'
+import { usePolling } from '../hooks/usePolling'
 
 const GroupDetailPage = () => {
   const { groupId } = useParams()
@@ -47,9 +48,11 @@ const GroupDetailPage = () => {
   const showToast = (msg, kind = 'success') => setToast({ message: msg, kind })
 
   // ── Carregamento ──────────────────────────────
-  const load = useCallback(async () => {
+  const load = useCallback(async (showLoader = true) => {
     if (!groupId || !userId) return
-    setLoading(true)
+      if (showLoader) {
+        setLoading(true)
+      }
     try {
       const allGroups = await api.getUserGroups(userId)
       const found = allGroups.find((g) => g._id === groupId)
@@ -79,11 +82,28 @@ const GroupDetailPage = () => {
     } catch (err) {
       showToast(err.message, 'error')
     } finally {
-      setLoading(false)
+      if (showLoader) { 
+        setLoading(false) 
+      }
     }
   }, [groupId, userId, navigate])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => { load(true) }, [load])
+
+  //tira o polling quando algum modal estiver aberto ou durante o carregamento para evitar conflitos de estado e chamadas desnecessárias
+  const shouldPoll =
+  !showInvite &&
+  !showDeleteConfirm &&
+  !showExpenseModal &&
+  !showEditModal &&
+  !showDetailModal
+
+  // Ativa o polling para atualizar os dados em tempo real, mas apenas quando nenhum modal estiver aberto e não estiver carregando
+  usePolling(
+    () => load(false),
+    3000,
+    shouldPoll
+  )
 
   // ── Derivações ────────────────────────────────
   const members = useMemo(() => {
