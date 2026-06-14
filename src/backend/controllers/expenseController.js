@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const fs = require('fs/promises');
+const path = require('path');
+
 const Expense = require('../models/Expense');
 const getGroupModel = require('../models/Group');
 const getUserModel = require('../models/User');
@@ -18,10 +21,49 @@ const getActiveGroupOrNull = async (groupId) => {
   return Group.findOne({ _id: groupId, isActive: true });
 };
 
+const parseSplitsData = (value) => {
+  if (Array.isArray(value)) return value;
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+};
+
+const buildAttachmentPayload = (req, file) => {
+  if (!file) return null;
+
+  return {
+    url: `${req.protocol}://${req.get('host')}/uploads/receipts/${file.filename}`,
+    name: file.originalname,
+    mimeType: file.mimetype,
+    size: file.size,
+    uploadedAt: new Date(),
+  };
+};
+
+const removeAttachmentFromDisk = async (attachmentUrl) => {
+  if (!attachmentUrl) return;
+
+  try {
+    const filename = path.basename(new URL(attachmentUrl).pathname);
+    await fs.unlink(path.join(__dirname, '..', 'uploads', 'receipts', filename));
+  } catch {
+    // Ignora se o arquivo não existir no disco.
+  }
+};
+
 exports.createExpense = async (req, res) => {
   const User = getUserModel();
-  const { groupId, description, amount, currency, paidBy, createdBy, splitType, splitsData } =
-    req.body;
+  const { groupId, description, amount, currency, paidBy, createdBy, splitType } = req.body;
+  const splitsData = parseSplitsData(req.body.splitsData);
+  const attachment = buildAttachmentPayload(req, req.file);
 
   try {
     if (
@@ -93,6 +135,7 @@ exports.createExpense = async (req, res) => {
       paidBy,
       createdBy,
       splitType,
+      attachment,
       splits: calculatedSplits.map((split) => ({
         userId: split.userId,
         amount: Number(split.amount),
@@ -111,6 +154,7 @@ exports.createExpense = async (req, res) => {
         amount: normalizedAmount,
         currency: currency || 'BRL',
         splitType,
+        attachmentUrl: attachment ? attachment.url : null,
       },
     });
 
@@ -242,7 +286,17 @@ exports.getGroupBalances = async (req, res) => {
 exports.updateExpense = async (req, res) => {
   const User = getUserModel();
   const { expenseId } = req.params;
-  const { description, amount, currency, paidBy, splitType, splitsData, updatedBy } = req.body;
+  const {
+    description,
+    amount,
+    currency,
+    paidBy,
+    splitType,
+    updatedBy,
+  } = req.body;
+
+  const splitsData = parseSplitsData(req.body.splitsData);
+  const newAttachment = buildAttachmentPayload(req, req.file);
 
   try {
     if (!isValidObjectId(expenseId)) {
@@ -300,6 +354,13 @@ exports.updateExpense = async (req, res) => {
     if (paidBy) expense.paidBy = paidBy;
     if (splitType) expense.splitType = splitType;
 
+    if (newAttachment) {
+      if (expense.attachment?.url) {
+        await removeAttachmentFromDisk(expense.attachment.url);
+      }
+      expense.attachment = newAttachment;
+    }
+
     if (shouldRecalculateSplits) {
       const idsToCheck = splitsData.map((split) => split.userId);
       const invalidId = idsToCheck.find((id) => !isValidObjectId(id));
@@ -320,9 +381,12 @@ exports.updateExpense = async (req, res) => {
         }
       }
 
+      const splitBaseAmount = amount !== undefined ? Number(amount) : expense.amount;
+      const splitBaseType = splitType || expense.splitType;
+
       const calculatedSplits = splitService.calculateSplit(
-        expense.splitType,
-        expense.amount,
+        splitBaseType,
+        splitBaseAmount,
         splitsData
       );
 
@@ -350,6 +414,7 @@ exports.updateExpense = async (req, res) => {
       metadata: {
         expenseId: expense._id,
         amount: expense.amount,
+        attachmentUrl: expense.attachment?.url || null,
       },
     });
 
@@ -363,49 +428,58 @@ exports.updateExpense = async (req, res) => {
 };
 
 exports.deleteExpense = async (req, res) => {
-  const User = getUserModel();
-  const { expenseId } = req.params;
-  const { userId } = req.body;
+  const User = getUserModel()
+  const { expenseId } = req.params
+  const authId = req.user?.id
 
   try {
     if (!isValidObjectId(expenseId)) {
-      return res.status(400).json({ message: 'ID de despesa inválido' });
+      return res.status(400).json({ message: 'ID de despesa inválido' })
     }
 
-    if (!userId || !isValidObjectId(userId)) {
-      return res.status(400).json({ message: 'userId é obrigatório e deve ser um ID válido' });
+    if (!authId || !isValidObjectId(authId)) {
+      return res.status(401).json({ message: 'Usuário autenticado inválido' })
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findByAuthId(authId)
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+      return res.status(404).json({ message: 'Usuário não encontrado' })
     }
 
-    const expense = await Expense.findById(expenseId);
+    const expense = await Expense.findById(expenseId)
     if (!expense) {
-      return res.status(404).json({ message: 'Despesa não encontrada' });
+      return res.status(404).json({ message: 'Despesa não encontrada' })
     }
 
-    const group = await getActiveGroupOrNull(expense.groupId);
-    if (!group || !isGroupMember(group, userId)) {
-      return res.status(403).json({ message: 'Não autorizado para deletar esta despesa' });
+    const group = await getActiveGroupOrNull(expense.groupId)
+    if (!group || !isGroupMember(group, user._id)) {
+      return res.status(403).json({ message: 'Não autorizado para deletar esta despesa' })
     }
 
-    await Expense.findByIdAndDelete(expenseId);
+    if (expense.attachment?.url) {
+      await removeAttachmentFromDisk(expense.attachment.url)
+    }
 
-    await Activity.create({
-      groupId: expense.groupId,
-      actorUserId: userId,
-      type: 'EXPENSE_DELETED',
-      message: `${user.name} deletou a despesa: ${expense.description}`,
-      metadata: {
-        expenseId: expense._id,
-        amount: expense.amount,
-      },
-    });
+    await Expense.findByIdAndDelete(expenseId)
 
-    return res.status(200).json({ message: 'Despesa deletada com sucesso' });
+    try {
+      await Activity.create({
+        groupId: expense.groupId,
+        actorUserId: user._id,
+        type: 'EXPENSE_DELETED',
+        message: `${user.name || 'Usuário'} deletou uma despesa no grupo`,
+        metadata: {
+          expenseId: expense._id,
+          amount: expense.amount,
+          description: expense.description,
+        },
+      })
+    } catch (activityError) {
+      console.error('Falha ao registrar atividade de exclusão:', activityError)
+    }
+
+    return res.status(200).json({ message: 'Despesa deletada com sucesso' })
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message })
   }
 };

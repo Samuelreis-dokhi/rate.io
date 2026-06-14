@@ -4,6 +4,7 @@ const cors = require('cors');
 const { URL } = require('node:url');
 const { connectDB } = require('./config/database');
 const { authenticateToken } = require('./middleware/authMiddleware');
+const path = require('node:path');
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Inicia o servidor e conecta ao MongoDB
 const startServer = async () => {
@@ -76,6 +79,18 @@ const startServer = async () => {
 
     app.use((req, res) => {
       res.status(404).json({ message: 'Endpoint não encontrado' });
+    });
+
+    app.use((err, req, res, next) => {
+      if (err.message === 'Formato de arquivo não suportado') {
+        return res.status(400).json({ message: err.message })
+      }
+
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'Arquivo maior que o limite permitido' })
+      }
+
+      next(err)
     });
 
     app.use((err, req, res) => {

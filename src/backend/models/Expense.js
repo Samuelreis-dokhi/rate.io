@@ -79,6 +79,13 @@ const expenseSchema = new mongoose.Schema(
       enum: ['igual', 'porcentagem', 'exato'],
       default: 'igual',
     },
+    attachment: {
+      url: { type: String, default: null },
+      name: { type: String, default: null },
+      mimeType: { type: String, default: null },
+      size: { type: Number, default: null },
+      uploadedAt: { type: Date, default: null },
+    }
   },
   { timestamps: true }
 );
