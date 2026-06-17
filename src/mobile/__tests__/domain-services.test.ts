@@ -65,8 +65,7 @@ describe('domain services mobile', () => {
       body: JSON.stringify({ userId: 'user-2', paidBy: 'user-2' }),
     })
     expect(mockedRequest).toHaveBeenNthCalledWith(3, '/api/expenses/expense-1', {
-      method: 'DELETE',
-      body: JSON.stringify({ userId: 'user-1' }),
+  method: 'DELETE',
     })
   })
 
