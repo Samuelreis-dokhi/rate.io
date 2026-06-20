@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { updateProfile } from '@/src/features/auth/user-service'
 import { changePassword } from '@/src/features/auth/auth-service'
@@ -164,7 +164,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: 80 },
+  content: { padding: Layout.screenPadding, gap: Spacing.lg, paddingBottom: Layout.screenBottomPadding },
   card: { borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg, gap: Spacing.md },
   notice: {
     borderRadius: Radius.md,

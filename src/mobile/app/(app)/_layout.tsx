@@ -1,5 +1,6 @@
 // src/mobile/app/(app)/_layout.tsx
 import { Tabs } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { Colors } from '@/constants/theme'
 import { HapticTab } from '@/components/haptic-tab'
@@ -10,7 +11,8 @@ export default function AppLayout() {
   const c = Colors[scheme ?? 'light']
 
   return (
-    <Tabs
+    <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: c.canvas }}>
+      <Tabs
       screenOptions={{
         tabBarActiveTintColor: c.tint,
         tabBarInactiveTintColor: c.tabIconDefault,
@@ -62,6 +64,7 @@ export default function AppLayout() {
           href: null,
         }}
       />
-    </Tabs>
+      </Tabs>
+    </SafeAreaView>
   )
 }

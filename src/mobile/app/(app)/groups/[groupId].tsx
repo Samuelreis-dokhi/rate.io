@@ -6,7 +6,7 @@ import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
 import {
   deleteGroup,
@@ -134,6 +134,8 @@ export default function GroupDetailScreen() {
   const scheme = useColorScheme()
   const c = Colors[scheme ?? 'light']
 
+  const isFocused = useIsFocused()
+
   const [group, setGroup] = useState<Group | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
@@ -222,7 +224,13 @@ export default function GroupDetailScreen() {
     }
   }
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (showLoader = true) => {
+    console.log('[Mobile] load executou')
+
+    if (showLoader) {
+      setLoading(true)
+    }
+
     if (!groupId || !userId) {
       setLoading(false)
       setRefreshing(false)
@@ -265,7 +273,10 @@ export default function GroupDetailScreen() {
     } catch (err) {
       Alert.alert('Erro', (err as Error).message)
     } finally {
-      setLoading(false)
+      if (showLoader) {
+        setLoading(false)
+      }
+
       setRefreshing(false)
     }
   }, [groupId, userId])
@@ -526,7 +537,7 @@ export default function GroupDetailScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
-    load()
+    load(false)
   }, [load])
 
   const handleSettle = async (expenseId: string) => {
@@ -1298,14 +1309,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: Spacing.lg,
+    padding: Layout.screenPadding,
     borderBottomWidth: 1,
   },
   backText: { fontWeight: '700' },
   headerActions: { flexDirection: 'row', gap: Spacing.sm },
   actionBtn: { borderRadius: Radius.full, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
   actionText: { fontWeight: '700' },
-  content: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: Spacing.xxl },
+  content: { padding: Layout.screenPadding, gap: Spacing.lg, paddingBottom: Layout.screenBottomPadding },
   titleBlock: { gap: Spacing.xs },
   statsRow: { flexDirection: 'row', gap: Spacing.md },
   section: { gap: Spacing.sm },
@@ -1354,8 +1365,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.md,
   },
-  modal: { flex: 1, padding: Spacing.lg, gap: Spacing.lg },
-  modalScroll: { gap: Spacing.md, paddingBottom: Spacing.xxl },
+  modal: { flex: 1, padding: Layout.modalPadding, gap: Spacing.lg },
+  modalScroll: { gap: Spacing.md, paddingBottom: Layout.screenBottomPadding },
   formRow: { flexDirection: 'row', gap: Spacing.md },
   currencyInput: { width: 96 },
   formBlock: { gap: Spacing.sm },
