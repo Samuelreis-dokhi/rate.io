@@ -1,7 +1,10 @@
 // src/mobile/app/(app)/groups/[groupId].tsx
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Alert, Modal, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Linking, Modal, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
+import { Image } from 'expo-image'
+import * as ImagePicker from 'expo-image-picker'
+import * as DocumentPicker from 'expo-document-picker'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { Colors, Layout, Radius, Spacing, Typography } from '@/constants/theme'
 import { useAuth } from '@/src/features/auth/auth-context'
@@ -14,13 +17,14 @@ import {
   type Group,
 } from '@/src/features/groups/group-service'
 import {
-  createExpense,
+  deleteExpense,
   getGroupBalance,
   getGroupExpenses,
   settleExpenseShare,
   type Expense,
   type GroupBalance,
 } from '@/src/features/expenses/expense-service'
+import { request } from '@/services/api-client'
 import { getPublicProfile, type UserProfile } from '@/src/features/auth/user-service'
 import { ActivityItem } from '@/components/ui/activity-item'
 import { AppButton } from '@/components/ui/app-button'
@@ -29,8 +33,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { StatCard } from '@/components/ui/stat-card'
 import { resolveUserId } from '@/src/utils/resolve-user-id'
 import { formatDate, formatMoney } from '@/src/utils/format'
-import { usePolling } from '@/hooks/usePolling'
-import { useIsFocused } from '@react-navigation/native'
+import { getApiBaseUrl } from '@/services/api-client'
 
 type SplitType = 'igual' | 'porcentagem' | 'exato'
 
@@ -77,6 +80,53 @@ type PendingReceivement = {
   createdAt: string
 }
 
+type AttachmentState = {
+  uri: string
+  name: string
+  type: string
+} | null
+
+const isLocalAttachmentHost = (url: string) => {
+  try {
+    const { hostname } = new URL(url)
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0'
+  } catch {
+    return false
+  }
+}
+
+const resolveAttachmentUrl = (url: string) => {
+  if (!isLocalAttachmentHost(url)) return url
+
+  try {
+    const sourceUrl = new URL(url)
+    const baseUrl = new URL(getApiBaseUrl())
+    sourceUrl.protocol = baseUrl.protocol
+    sourceUrl.hostname = baseUrl.hostname
+    sourceUrl.port = baseUrl.port
+    return sourceUrl.toString()
+  } catch {
+    return url
+  }
+}
+
+const appendAttachmentToFormData = async (formData: FormData, currentAttachment: AttachmentState) => {
+  if (!currentAttachment) return
+
+  if (Platform.OS === 'web') {
+    const response = await fetch(currentAttachment.uri)
+    const blob = await response.blob()
+    formData.append('attachment', blob, currentAttachment.name)
+    return
+  }
+
+  formData.append('attachment', {
+    uri: currentAttachment.uri,
+    name: currentAttachment.name,
+    type: currentAttachment.type,
+  } as any)
+}
+
 export default function GroupDetailScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>()
   const { user } = useAuth()
@@ -108,6 +158,71 @@ export default function GroupDetailScreen() {
   const [splitValues, setSplitValues] = useState<Record<string, string>>({})
   const [expenseError, setExpenseError] = useState('')
   const [expenseLoading, setExpenseLoading] = useState(false)
+  const [attachment, setAttachment] = useState<AttachmentState>(null)
+  const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null)
+  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
+  const [showExpenseDetail, setShowExpenseDetail] = useState(false)
+
+  const pickFromCamera = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync()
+    if (!permission.granted) {
+      Alert.alert('Permissão necessária', 'Ative a câmera para anexar o recibo.')
+      return
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    })
+
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0]
+      setAttachment({
+        uri: asset.uri,
+        name: asset.fileName || `recibo-${Date.now()}.jpg`,
+        type: asset.mimeType || 'image/jpeg',
+      })
+    }
+  }
+
+  const pickFromGallery = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (!permission.granted) {
+      Alert.alert('Permissão necessária', 'Ative a galeria para anexar o recibo.')
+      return
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    })
+
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0]
+      setAttachment({
+        uri: asset.uri,
+        name: asset.fileName || `recibo-${Date.now()}.jpg`,
+        type: asset.mimeType || 'image/jpeg',
+      })
+    }
+  }
+
+  const pickDocument = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: ['application/pdf', 'image/*'],
+      copyToCacheDirectory: true,
+      multiple: false,
+    })
+
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0]
+      setAttachment({
+        uri: asset.uri,
+        name: asset.name || `recibo-${Date.now()}`,
+        type: asset.mimeType || 'application/pdf',
+      })
+    }
+  }
 
   const load = useCallback(async (showLoader = true) => {
     console.log('[Mobile] load executou')
@@ -166,23 +281,9 @@ export default function GroupDetailScreen() {
     }
   }, [groupId, userId])
 
-  useEffect(() => { load(true) }, [load])
-
-  
-  const shouldPoll =
-    isFocused &&
-    !showExpense &&
-    !showInvite &&
-    !loading
-
-  usePolling(
-    async () => {
-      console.log('[Mobile] polling executou')
-      await load(false)
-    },
-    3000,
-    shouldPoll
-  )
+  useEffect(() => {
+    load()
+  }, [load])
 
   const members = useMemo<MemberView[]>(() => {
     if (!group) return []
@@ -204,22 +305,23 @@ export default function GroupDetailScreen() {
   const isCreator = Boolean(group && String(group.createdBy) === userId)
   const hasPending = expenses.some((expense) => expense.splits.some((split) => split.status === 'pendente'))
 
-  const myPendingPayments = useMemo<PendingPayment[]>(() =>
-    expenses
-      .map((expense) => {
-        const mine = expense.splits.find((split) => String(split.userId) === userId)
-        if (!mine || mine.status !== 'pendente' || String(expense.paidBy) === userId) return null
+  const myPendingPayments = useMemo<PendingPayment[]>(
+    () =>
+      expenses
+        .map((expense) => {
+          const mine = expense.splits.find((split) => String(split.userId) === userId)
+          if (!mine || mine.status !== 'pendente' || String(expense.paidBy) === userId) return null
 
-        return {
-          expenseId: expense._id,
-          description: expense.description,
-          amount: Number(mine.amount || 0),
-          currency: expense.currency || 'BRL',
-          paidToName: profilesById[String(expense.paidBy)]?.name ?? 'Membro',
-          createdAt: expense.createdAt,
-        }
-      })
-      .filter((item): item is PendingPayment => item !== null),
+          return {
+            expenseId: expense._id,
+            description: expense.description,
+            amount: Number(mine.amount || 0),
+            currency: expense.currency || 'BRL',
+            paidToName: profilesById[String(expense.paidBy)]?.name ?? 'Membro',
+            createdAt: expense.createdAt,
+          }
+        })
+        .filter((item): item is PendingPayment => item !== null),
     [expenses, profilesById, userId]
   )
 
@@ -257,18 +359,54 @@ export default function GroupDetailScreen() {
     return selectedMemberIds.reduce((sum, id) => sum + parseCurrencyNumber(splitValues[id]), 0)
   }, [expenseForm.splitType, selectedMemberIds, splitValues])
 
-  const openExpenseModal = () => {
-    const memberIds = members.map((member) => member.userId)
+  const prepareExpenseForm = (expense?: Expense) => {
+    if (!expense) {
+      const memberIds = members.map((member) => member.userId)
+
+      setExpenseForm({
+        description: '',
+        amount: '',
+        currency: 'BRL',
+        splitType: 'igual',
+        paidBy: userId || memberIds[0] || '',
+      })
+      setSelectedMemberIds(memberIds)
+      setSplitValues(Object.fromEntries(memberIds.map((id) => [id, ''])))
+      setAttachment(null)
+      setEditingExpenseId(null)
+      setExpenseError('')
+      return
+    }
+
+    const memberIds = expense.splits.map((split) => String(split.userId))
+
     setExpenseForm({
-      description: '',
-      amount: '',
-      currency: 'BRL',
-      splitType: 'igual',
-      paidBy: userId || memberIds[0] || '',
+      description: expense.description,
+      amount: String(expense.amount),
+      currency: expense.currency || 'BRL',
+      splitType: (expense.splitType as SplitType) || 'igual',
+      paidBy: String(expense.paidBy),
     })
     setSelectedMemberIds(memberIds)
-    setSplitValues(Object.fromEntries(memberIds.map((id) => [id, ''])))
+    setSplitValues(
+      Object.fromEntries(
+        expense.splits.map((split) => [
+          String(split.userId),
+          expense.splitType === 'porcentagem'
+            ? String(split.percentage ?? 0)
+            : expense.splitType === 'exato'
+              ? String(split.amount ?? 0)
+              : '',
+        ])
+      )
+    )
+    setAttachment(null)
+    setEditingExpenseId(expense._id)
     setExpenseError('')
+  }
+
+  const openExpenseModal = () => {
+    prepareExpenseForm()
     setShowExpense(true)
   }
 
@@ -276,14 +414,16 @@ export default function GroupDetailScreen() {
     if (expenseLoading) return
     setShowExpense(false)
     setExpenseError('')
+    setEditingExpenseId(null)
+    setAttachment(null)
   }
 
   const toggleSplitMember = (memberId: string) => {
-    setSelectedMemberIds((current) => (
+    setSelectedMemberIds((current) =>
       current.includes(memberId)
         ? current.filter((id) => id !== memberId)
         : [...current, memberId]
-    ))
+    )
   }
 
   const buildSplitsData = (): SplitPayload[] => {
@@ -298,11 +438,12 @@ export default function GroupDetailScreen() {
     return selectedMemberIds.map((id) => ({ userId: id, amount: parseCurrencyNumber(splitValues[id]) }))
   }
 
-  const handleCreateExpense = async () => {
+  const submitExpense = async () => {
     if (!groupId || !userId) return
 
     const amount = parseCurrencyNumber(expenseForm.amount)
     const currency = expenseForm.currency.trim().toUpperCase() || 'BRL'
+    const isEditing = Boolean(editingExpenseId)
 
     if (!expenseForm.description.trim()) {
       setExpenseError('Informe a descrição da despesa.')
@@ -330,27 +471,63 @@ export default function GroupDetailScreen() {
     }
 
     if (expenseForm.splitType === 'exato' && Math.abs((exactTotal ?? 0) - amount) > 0.01) {
-      setExpenseError(`Os valores devem somar ${formatMoney(amount, currency)}. Atual: ${formatMoney(exactTotal ?? 0, currency)}`)
+      setExpenseError(
+        `Os valores devem somar ${formatMoney(amount, currency)}. Atual: ${formatMoney(exactTotal ?? 0, currency)}`
+      )
       return
     }
 
     setExpenseLoading(true)
     setExpenseError('')
 
+    const payload = {
+      groupId,
+      description: expenseForm.description.trim(),
+      amount,
+      currency,
+      paidBy: expenseForm.paidBy,
+      [isEditing ? 'updatedBy' : 'createdBy']: userId,
+      splitType: expenseForm.splitType,
+      splitsData: buildSplitsData(),
+    }
+
     try {
-      await createExpense({
-        groupId,
-        description: expenseForm.description.trim(),
-        amount,
-        currency,
-        paidBy: expenseForm.paidBy,
-        createdBy: userId,
-        splitType: expenseForm.splitType,
-        splitsData: buildSplitsData(),
-      })
+      const endpoint = isEditing ? `/api/expenses/${editingExpenseId}` : '/api/expenses'
+
+      if (!attachment) {
+        await request(endpoint, {
+          method: isEditing ? 'PUT' : 'POST',
+          body: JSON.stringify(payload),
+        })
+      } else {
+        const formData = new FormData()
+
+        formData.append('groupId', payload.groupId)
+        formData.append('description', payload.description)
+        formData.append('amount', String(payload.amount))
+        formData.append('currency', payload.currency)
+        formData.append('paidBy', payload.paidBy)
+        formData.append(isEditing ? 'updatedBy' : 'createdBy', userId)
+        formData.append('splitType', payload.splitType)
+        formData.append('splitsData', JSON.stringify(payload.splitsData))
+
+        await appendAttachmentToFormData(formData, attachment)
+
+        await request(endpoint, {
+          method: isEditing ? 'PUT' : 'POST',
+          body: formData,
+        })
+      }
+
       setShowExpense(false)
+      setEditingExpenseId(null)
+      setAttachment(null)
       await load()
-      Alert.alert('Despesa registrada', 'O resumo do grupo foi atualizado.')
+
+      Alert.alert(
+        isEditing ? 'Despesa atualizada' : 'Despesa registrada',
+        isEditing ? 'As alterações foram salvas.' : 'O resumo do grupo foi atualizado.'
+      )
     } catch (err) {
       setExpenseError((err as Error).message)
     } finally {
@@ -417,6 +594,69 @@ export default function GroupDetailScreen() {
     ])
   }
 
+  const handleViewDetails = (expense: Expense) => {
+    setSelectedExpense(expense)
+    setShowExpenseDetail(true)
+  }
+
+  const closeExpenseDetail = () => {
+    setShowExpenseDetail(false)
+    setSelectedExpense(null)
+  }
+
+  const canManageSelectedExpense = Boolean(selectedExpense && userId && String(selectedExpense.createdBy) === userId)
+  const selectedExpenseAttachment = selectedExpense?.attachment?.url ? selectedExpense.attachment : null
+
+  const handleEditSelectedExpense = () => {
+    if (!selectedExpense || !canManageSelectedExpense) return
+
+    prepareExpenseForm(selectedExpense)
+    setShowExpenseDetail(false)
+    setShowExpense(true)
+  }
+
+  const handleDeleteSelectedExpense = () => {
+    if (!selectedExpense || !canManageSelectedExpense || !userId) return
+
+    const confirmDelete = async () => {
+      try {
+        await deleteExpense(selectedExpense._id)
+        closeExpenseDetail()
+        await load()
+        Alert.alert('Despesa excluída', 'A despesa foi removida do grupo.')
+      } catch (err) {
+        Alert.alert('Erro', (err as Error).message)
+      }
+    }
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        `A despesa "${selectedExpense.description}" será removida para todos os membros do grupo.`
+      )
+
+      if (confirmed) {
+        void confirmDelete()
+      }
+
+      return
+    }
+
+    Alert.alert(
+      'Excluir despesa?',
+      `A despesa "${selectedExpense.description}" será removida para todos os membros do grupo.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            void confirmDelete()
+          },
+        },
+      ]
+    )
+  }
+
   if (loading || !group) {
     return (
       <View style={[styles.center, { backgroundColor: c.canvas }]}>
@@ -427,6 +667,7 @@ export default function GroupDetailScreen() {
 
   const netBalance = Number(balance?.netBalance ?? 0)
   const netTone = netBalance > 0.01 ? 'positive' : netBalance < -0.01 ? 'negative' : 'neutral'
+  const expenseModalTitle = editingExpenseId ? 'Editar despesa' : 'Nova despesa'
 
   return (
     <View style={[styles.root, { backgroundColor: c.canvas }]}>
@@ -439,11 +680,17 @@ export default function GroupDetailScreen() {
           <TouchableOpacity style={[styles.actionBtn, { backgroundColor: c.accentDeep }]} onPress={openExpenseModal}>
             <Text style={[Typography.caption, styles.actionText, { color: '#fff' }]}>Despesa</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: c.accentBg }]} onPress={() => setShowInvite(true)}>
+          <TouchableOpacity
+            style={[styles.actionBtn, { backgroundColor: c.accentBg }]}
+            onPress={() => setShowInvite(true)}
+          >
             <Text style={[Typography.caption, styles.actionText, { color: c.accentDeep }]}>Convidar</Text>
           </TouchableOpacity>
           {isCreator ? (
-            <TouchableOpacity style={[styles.actionBtn, { backgroundColor: 'rgba(200,31,31,0.08)' }]} onPress={handleDelete}>
+            <TouchableOpacity
+              style={[styles.actionBtn, { backgroundColor: 'rgba(200,31,31,0.08)' }]}
+              onPress={handleDelete}
+            >
               <Text style={[Typography.caption, styles.actionText, { color: c.negative }]}>Excluir</Text>
             </TouchableOpacity>
           ) : null}
@@ -456,15 +703,21 @@ export default function GroupDetailScreen() {
       >
         <View style={styles.titleBlock}>
           <Text style={[Typography.h1, { color: c.textPrimary }]}>{group.name}</Text>
-          {group.description ? (
-            <Text style={[Typography.body, { color: c.textSecondary }]}>{group.description}</Text>
-          ) : null}
+          {group.description ? <Text style={[Typography.body, { color: c.textSecondary }]}>{group.description}</Text> : null}
         </View>
 
         <SectionTitle title='Resumo do grupo' count={expenses.length} color={c.textPrimary} mutedColor={c.textSecondary} />
         <View style={styles.statsRow}>
-          <StatCard label='A receber' value={formatMoney(balance?.totalPaid ?? 0)} tone={(balance?.totalPaid ?? 0) > 0 ? 'positive' : 'neutral'} />
-          <StatCard label='A pagar' value={formatMoney(balance?.totalOwed ?? 0)} tone={(balance?.totalOwed ?? 0) > 0 ? 'negative' : 'neutral'} />
+          <StatCard
+            label='A receber'
+            value={formatMoney(balance?.totalPaid ?? 0)}
+            tone={(balance?.totalPaid ?? 0) > 0 ? 'positive' : 'neutral'}
+          />
+          <StatCard
+            label='A pagar'
+            value={formatMoney(balance?.totalOwed ?? 0)}
+            tone={(balance?.totalOwed ?? 0) > 0 ? 'negative' : 'neutral'}
+          />
         </View>
         <View style={styles.statsRow}>
           <StatCard label='Saldo líquido' value={formatMoney(netBalance)} tone={netTone} />
@@ -474,9 +727,11 @@ export default function GroupDetailScreen() {
         <View style={styles.section}>
           <SectionTitle title='Despesas' count={expenses.length} color={c.textPrimary} mutedColor={c.textSecondary} />
           {expenses.length === 0 ? (
-            <EmptyState icon='💸' message='Nenhuma despesa ainda.' action={
-              <AppButton title='Adicionar despesa' onPress={openExpenseModal} />
-            } />
+            <EmptyState
+              icon='💸'
+              message='Nenhuma despesa ainda.'
+              action={<AppButton title='Adicionar despesa' onPress={openExpenseModal} />}
+            />
           ) : (
             expenses.map((expense) => {
               const mine = expense.splits.find((split) => String(split.userId) === userId)
@@ -484,13 +739,18 @@ export default function GroupDetailScreen() {
 
               return (
                 <View key={expense._id} style={[styles.expenseCard, { backgroundColor: c.surface, borderColor: c.border }]}>
-                  <View style={styles.expenseHeader}>
-                    <Text style={[Typography.h3, styles.flexText, { color: c.textPrimary }]}>{expense.description}</Text>
-                    <Text style={[Typography.h3, { color: c.textPrimary }]}>{formatMoney(expense.amount, expense.currency)}</Text>
-                  </View>
-                  <Text style={[Typography.caption, { color: c.textSecondary }]}>
-                    Pago por {profilesById[String(expense.paidBy)]?.name ?? 'Membro'} · {formatDate(expense.createdAt)}
-                  </Text>
+                  <TouchableOpacity onPress={() => handleViewDetails(expense)} activeOpacity={0.85}>
+                    <View style={styles.expenseHeader}>
+                      <Text style={[Typography.h3, styles.flexText, { color: c.textPrimary }]}>{expense.description}</Text>
+                      <Text style={[Typography.h3, { color: c.textPrimary }]}>
+                        {formatMoney(expense.amount, expense.currency)}
+                      </Text>
+                    </View>
+                    <Text style={[Typography.caption, { color: c.textSecondary }]}>
+                      Pago por {profilesById[String(expense.paidBy)]?.name ?? 'Membro'} · {formatDate(expense.createdAt)}
+                    </Text>
+                  </TouchableOpacity>
+
                   <View style={styles.splits}>
                     {expense.splits.map((split) => {
                       const isPaid = split.status === 'pago'
@@ -511,13 +771,23 @@ export default function GroupDetailScreen() {
                       )
                     })}
                   </View>
-                  {canSettle ? (
-                    <AppButton
-                      title={`Registrar pagamento (${formatMoney(mine.amount, expense.currency)})`}
-                      onPress={() => handleSettle(expense._id)}
-                      variant='outline'
-                    />
-                  ) : null}
+
+                  <View style={styles.expenseActions}>
+                    <TouchableOpacity
+                      onPress={() => handleViewDetails(expense)}
+                      style={[styles.detailBtn, { borderColor: c.border, backgroundColor: c.canvas }]}
+                    >
+                      <Text style={[Typography.caption, { color: c.accentDeep, fontWeight: '700' }]}>Detalhes</Text>
+                    </TouchableOpacity>
+
+                    {canSettle ? (
+                      <AppButton
+                        title={`Registrar pagamento (${formatMoney(mine.amount, expense.currency)})`}
+                        onPress={() => handleSettle(expense._id)}
+                        variant='outline'
+                      />
+                    ) : null}
+                  </View>
                 </View>
               )
             })
@@ -542,7 +812,12 @@ export default function GroupDetailScreen() {
         </View>
 
         <View style={styles.section}>
-          <SectionTitle title='Meus pagamentos pendentes' count={myPendingPayments.length} color={c.textPrimary} mutedColor={c.textSecondary} />
+          <SectionTitle
+            title='Meus pagamentos pendentes'
+            count={myPendingPayments.length}
+            color={c.textPrimary}
+            mutedColor={c.textSecondary}
+          />
           {myPendingPayments.length === 0 ? (
             <EmptyState icon='OK' message='Tudo pago!' />
           ) : (
@@ -550,7 +825,9 @@ export default function GroupDetailScreen() {
               <View key={payment.expenseId} style={[styles.pendingCard, { backgroundColor: c.surface, borderColor: c.border }]}>
                 <View style={styles.flexText}>
                   <Text style={[Typography.h3, { color: c.textPrimary }]}>{payment.description}</Text>
-                  <Text style={[Typography.caption, { color: c.textSecondary }]}>Para {payment.paidToName} · {formatDate(payment.createdAt)}</Text>
+                  <Text style={[Typography.caption, { color: c.textSecondary }]}>
+                    Para {payment.paidToName} · {formatDate(payment.createdAt)}
+                  </Text>
                   <Text style={[Typography.h3, { color: c.negative }]}>{formatMoney(payment.amount, payment.currency)}</Text>
                 </View>
                 <AppButton title='Pagar' onPress={() => handleSettle(payment.expenseId)} variant='outline' />
@@ -560,7 +837,12 @@ export default function GroupDetailScreen() {
         </View>
 
         <View style={styles.section}>
-          <SectionTitle title='Meus recebimentos pendentes' count={myPendingReceivements.length} color={c.textPrimary} mutedColor={c.textSecondary} />
+          <SectionTitle
+            title='Meus recebimentos pendentes'
+            count={myPendingReceivements.length}
+            color={c.textPrimary}
+            mutedColor={c.textSecondary}
+          />
           {myPendingReceivements.length === 0 ? (
             <EmptyState icon='OK' message='Nenhum recebimento pendente.' />
           ) : (
@@ -568,7 +850,9 @@ export default function GroupDetailScreen() {
               <View key={receivement.key} style={[styles.pendingCard, { backgroundColor: c.surface, borderColor: c.border }]}>
                 <View style={styles.flexText}>
                   <Text style={[Typography.h3, { color: c.textPrimary }]}>{receivement.description}</Text>
-                  <Text style={[Typography.caption, { color: c.textSecondary }]}>De {receivement.fromName} · {formatDate(receivement.createdAt)}</Text>
+                  <Text style={[Typography.caption, { color: c.textSecondary }]}>
+                    De {receivement.fromName} · {formatDate(receivement.createdAt)}
+                  </Text>
                 </View>
                 <Text style={[Typography.h3, { color: c.positive }]}>{formatMoney(receivement.amount, receivement.currency)}</Text>
               </View>
@@ -586,11 +870,10 @@ export default function GroupDetailScreen() {
         </View>
       </ScrollView>
 
-
       <Modal visible={showExpense} animationType='slide' presentationStyle='pageSheet' onRequestClose={closeExpenseModal}>
-        <View style={[styles.modal, { backgroundColor: c.canvas }]}> 
+        <View style={[styles.modal, { backgroundColor: c.canvas }]}>
           <View style={styles.modalHeader}>
-            <Text style={[Typography.h1, { color: c.textPrimary }]}>Nova despesa</Text>
+            <Text style={[Typography.h1, { color: c.textPrimary }]}>{expenseModalTitle}</Text>
             <TouchableOpacity onPress={closeExpenseModal} disabled={expenseLoading}>
               <Text style={[Typography.body, { color: c.accent }]}>Fechar</Text>
             </TouchableOpacity>
@@ -614,16 +897,63 @@ export default function GroupDetailScreen() {
                   keyboardType='decimal-pad'
                 />
               </View>
+
               <View style={styles.currencyInput}>
                 <AppInput
                   label='Moeda'
                   placeholder='BRL'
                   value={expenseForm.currency}
-                  onChangeText={(currency) => setExpenseForm((current) => ({ ...current, currency: currency.toUpperCase().slice(0, 3) }))}
+                  onChangeText={(currency) =>
+                    setExpenseForm((current) => ({ ...current, currency: currency.toUpperCase().slice(0, 3) }))
+                  }
                   autoCapitalize='characters'
                   maxLength={3}
                 />
               </View>
+            </View>
+
+            <View style={styles.formBlock}>
+              <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Comprovante</Text>
+
+              <View style={styles.wrapRow}>
+                <TouchableOpacity
+                  style={[styles.choiceChip, { backgroundColor: c.surface, borderColor: c.border }]}
+                  onPress={pickFromCamera}
+                >
+                  <Text style={[Typography.caption, styles.choiceText, { color: c.textPrimary }]}>📸 Câmera</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.choiceChip, { backgroundColor: c.surface, borderColor: c.border }]}
+                  onPress={pickFromGallery}
+                >
+                  <Text style={[Typography.caption, styles.choiceText, { color: c.textPrimary }]}>🖼️ Galeria</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.choiceChip, { backgroundColor: c.surface, borderColor: c.border }]}
+                  onPress={pickDocument}
+                >
+                  <Text style={[Typography.caption, styles.choiceText, { color: c.textPrimary }]}>📄 Arquivo</Text>
+                </TouchableOpacity>
+              </View>
+
+              {attachment ? (
+                <View style={[styles.splitMemberRow, { backgroundColor: c.surface, borderColor: c.border }]}>
+                  <View style={styles.flexText}>
+                    <Text style={[Typography.body, { color: c.textPrimary }]}>{attachment.name}</Text>
+                    <Text style={[Typography.caption, { color: c.textSecondary }]}>{attachment.type}</Text>
+                  </View>
+
+                  <TouchableOpacity onPress={() => setAttachment(null)}>
+                    <Text style={[Typography.caption, { color: c.negative }]}>Remover</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : editingExpenseId && selectedExpense?.attachment?.name ? (
+                <Text style={[Typography.caption, { color: c.textSecondary }]}>
+                  Comprovante atual: {selectedExpense.attachment.name}. Se você não anexar outro arquivo, o atual será mantido.
+                </Text>
+              ) : null}
             </View>
 
             <View style={styles.formBlock}>
@@ -634,10 +964,15 @@ export default function GroupDetailScreen() {
                   return (
                     <TouchableOpacity
                       key={member.userId}
-                      style={[styles.choiceChip, { backgroundColor: selected ? c.accentDeep : c.surface, borderColor: c.border }]}
+                      style={[
+                        styles.choiceChip,
+                        { backgroundColor: selected ? c.accentDeep : c.surface, borderColor: c.border },
+                      ]}
                       onPress={() => setExpenseForm((current) => ({ ...current, paidBy: member.userId }))}
                     >
-                      <Text style={[Typography.caption, styles.choiceText, { color: selected ? '#fff' : c.textPrimary }]}>{member.name}</Text>
+                      <Text style={[Typography.caption, styles.choiceText, { color: selected ? '#fff' : c.textPrimary }]}>
+                        {member.name}
+                      </Text>
                     </TouchableOpacity>
                   )
                 })}
@@ -655,7 +990,9 @@ export default function GroupDetailScreen() {
                       style={[styles.segment, { backgroundColor: selected ? c.accentDeep : c.surface, borderColor: c.border }]}
                       onPress={() => setExpenseForm((current) => ({ ...current, splitType: value }))}
                     >
-                      <Text style={[Typography.caption, styles.choiceText, { color: selected ? '#fff' : c.textSecondary }]}>{label}</Text>
+                      <Text style={[Typography.caption, styles.choiceText, { color: selected ? '#fff' : c.textSecondary }]}>
+                        {label}
+                      </Text>
                     </TouchableOpacity>
                   )
                 })}
@@ -666,14 +1003,23 @@ export default function GroupDetailScreen() {
               <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Dividir entre</Text>
               {members.map((member) => {
                 const selected = selectedMemberIds.includes(member.userId)
-                const equalPreview = parseCurrencyNumber(expenseForm.amount) > 0 && selectedMemberIds.length > 0
-                  ? formatMoney(parseCurrencyNumber(expenseForm.amount) / selectedMemberIds.length, expenseForm.currency || 'BRL')
-                  : ''
+                const equalPreview =
+                  parseCurrencyNumber(expenseForm.amount) > 0 && selectedMemberIds.length > 0
+                    ? formatMoney(parseCurrencyNumber(expenseForm.amount) / selectedMemberIds.length, expenseForm.currency || 'BRL')
+                    : ''
 
                 return (
-                  <View key={member.userId} style={[styles.splitMemberRow, { backgroundColor: c.surface, borderColor: c.border }]}> 
+                  <View key={member.userId} style={[styles.splitMemberRow, { backgroundColor: c.surface, borderColor: c.border }]}>
                     <TouchableOpacity style={styles.splitMemberName} onPress={() => toggleSplitMember(member.userId)}>
-                      <View style={[styles.checkbox, { borderColor: selected ? c.accentDeep : c.border, backgroundColor: selected ? c.accentDeep : 'transparent' }]}>
+                      <View
+                        style={[
+                          styles.checkbox,
+                          {
+                            borderColor: selected ? c.accentDeep : c.border,
+                            backgroundColor: selected ? c.accentDeep : 'transparent',
+                          },
+                        ]}
+                      >
                         <Text style={[Typography.caption, { color: '#fff' }]}>{selected ? 'OK' : ''}</Text>
                       </View>
                       <View style={styles.flexText}>
@@ -700,22 +1046,202 @@ export default function GroupDetailScreen() {
             </View>
 
             {percentageTotal !== null ? (
-              <Text style={[Typography.body, styles.splitIndicator, { color: Math.abs(percentageTotal - 100) <= 0.01 ? c.positive : c.negative }]}>Total: {percentageTotal.toFixed(1)}%</Text>
+              <Text
+                style={[
+                  Typography.body,
+                  styles.splitIndicator,
+                  { color: Math.abs(percentageTotal - 100) <= 0.01 ? c.positive : c.negative },
+                ]}
+              >
+                Total: {percentageTotal.toFixed(1)}%
+              </Text>
             ) : null}
 
             {exactTotal !== null && expenseForm.amount ? (
-              <Text style={[Typography.body, styles.splitIndicator, { color: Math.abs(exactTotal - parseCurrencyNumber(expenseForm.amount)) <= 0.01 ? c.positive : c.negative }]}>Soma: {formatMoney(exactTotal, expenseForm.currency || 'BRL')} / {formatMoney(parseCurrencyNumber(expenseForm.amount), expenseForm.currency || 'BRL')}</Text>
+              <Text
+                style={[
+                  Typography.body,
+                  styles.splitIndicator,
+                  {
+                    color:
+                      Math.abs(exactTotal - parseCurrencyNumber(expenseForm.amount)) <= 0.01 ? c.positive : c.negative,
+                  },
+                ]}
+              >
+                Soma: {formatMoney(exactTotal, expenseForm.currency || 'BRL')} /{' '}
+                {formatMoney(parseCurrencyNumber(expenseForm.amount), expenseForm.currency || 'BRL')}
+              </Text>
             ) : null}
 
             {expenseError ? <Text style={[Typography.body, { color: c.negative }]}>{expenseError}</Text> : null}
 
             <AppButton
-              title={expenseLoading ? 'Registrando...' : 'Registrar despesa'}
-              onPress={handleCreateExpense}
+              title={expenseLoading ? (editingExpenseId ? 'Salvando...' : 'Registrando...') : editingExpenseId ? 'Salvar alterações' : 'Registrar despesa'}
+              onPress={submitExpense}
               loading={expenseLoading}
               disabled={expenseLoading || selectedMemberIds.length === 0}
             />
           </ScrollView>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showExpenseDetail}
+        animationType='slide'
+        presentationStyle='pageSheet'
+        onRequestClose={closeExpenseDetail}
+      >
+        <View style={[styles.modal, { backgroundColor: c.canvas }]}>
+          <View style={styles.modalHeader}>
+            <Text style={[Typography.h1, { color: c.textPrimary }]}>Detalhes da despesa</Text>
+            <TouchableOpacity onPress={closeExpenseDetail}>
+              <Text style={[Typography.body, { color: c.accent }]}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+
+          {selectedExpense ? (
+            <ScrollView contentContainerStyle={styles.modalScroll} keyboardShouldPersistTaps='handled'>
+              <View style={styles.detailBlock}>
+                <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Descrição</Text>
+                <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>
+                  {selectedExpense.description}
+                </Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <View style={styles.detailCol}>
+                  <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Valor</Text>
+                  <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>
+                    {formatMoney(selectedExpense.amount, selectedExpense.currency)}
+                  </Text>
+                </View>
+                <View style={styles.detailCol}>
+                  <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Moeda</Text>
+                  <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>{selectedExpense.currency}</Text>
+                </View>
+              </View>
+
+              <View style={styles.detailRow}>
+                <View style={styles.detailCol}>
+                  <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Pago por</Text>
+                  <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>
+                    {profilesById[String(selectedExpense.paidBy)]?.name ?? 'Membro'}
+                  </Text>
+                </View>
+                <View style={styles.detailCol}>
+                  <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Criado em</Text>
+                  <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>
+                    {formatDate(selectedExpense.createdAt)}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.detailRow}>
+                <View style={styles.detailCol}>
+                  <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Tipo de divisão</Text>
+                  <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>
+                    {selectedExpense.splitType === 'igual'
+                      ? 'Igualmente'
+                      : selectedExpense.splitType === 'porcentagem'
+                        ? 'Porcentagem'
+                        : 'Valor exato'}
+                  </Text>
+                </View>
+                <View style={styles.detailCol}>
+                  <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Criado por</Text>
+                  <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>
+                    {profilesById[String(selectedExpense.createdBy)]?.name ?? 'Membro'}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.detailBlock}>
+                <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Comprovante</Text>
+
+                {selectedExpenseAttachment?.url ? (
+                  <View style={{ gap: Spacing.sm }}>
+                    {selectedExpenseAttachment.mimeType?.startsWith('image/') ? (
+                      <Image
+                        source={{ uri: resolveAttachmentUrl(selectedExpenseAttachment.url) }}
+                        style={{
+                          width: '100%',
+                          height: 220,
+                          borderRadius: Radius.lg,
+                        }}
+                        contentFit='cover'
+                      />
+                    ) : null}
+
+                    <TouchableOpacity
+                      style={[styles.detailBtn, { borderColor: c.border, backgroundColor: c.surface }]}
+                      onPress={() => Linking.openURL(resolveAttachmentUrl(selectedExpenseAttachment.url))}
+                    >
+                      <Text style={[Typography.caption, { color: c.accentDeep, fontWeight: '700' }]}>
+                        Ver comprovante
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <Text style={[Typography.body, { color: c.textSecondary }]}>
+                    Nenhum comprovante anexado.
+                  </Text>
+                )}
+              </View>
+
+              {canManageSelectedExpense ? (
+                <View style={styles.detailActions}>
+                  <TouchableOpacity
+                    style={[styles.detailBtn, { borderColor: c.accentDeep, backgroundColor: c.canvas }]}
+                    onPress={handleEditSelectedExpense}
+                  >
+                    <Text style={[Typography.caption, { color: c.accentDeep, fontWeight: '700' }]}>Editar despesa</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.detailBtn, { borderColor: c.negative, backgroundColor: c.canvas }]}
+                    onPress={handleDeleteSelectedExpense}
+                  >
+                    <Text style={[Typography.caption, { color: c.negative, fontWeight: '700' }]}>Excluir despesa</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+
+              <View style={styles.detailBlock}>
+                <Text style={[Typography.label, styles.upperLabel, { color: c.textSecondary }]}>Divisões</Text>
+                <View style={{ gap: Spacing.sm }}>
+                  {selectedExpense.splits.map((split) => {
+                    const splitName = profilesById[String(split.userId)]?.name ?? 'Membro'
+                    const isPaid = split.status === 'pago'
+
+                    return (
+                      <View
+                        key={`${selectedExpense._id}-${split.userId}`}
+                        style={[styles.splitMemberRow, { backgroundColor: c.surface, borderColor: c.border }]}
+                      >
+                        <View style={styles.flexText}>
+                          <Text style={[Typography.body, { color: c.textPrimary, fontWeight: '600' }]}>{splitName}</Text>
+                          <Text style={[Typography.caption, { color: c.textSecondary }]}>
+                            {formatMoney(split.amount, selectedExpense.currency)}
+                          </Text>
+                        </View>
+
+                        <View
+                          style={[
+                            styles.roleBadge,
+                            { backgroundColor: isPaid ? 'rgba(12,124,79,0.08)' : 'rgba(200,31,31,0.08)' },
+                          ]}
+                        >
+                          <Text style={[Typography.caption, { color: isPaid ? c.positive : c.negative, fontWeight: '700' }]}>
+                            {isPaid ? 'Pago' : 'Pendente'}
+                          </Text>
+                        </View>
+                      </View>
+                    )
+                  })}
+                </View>
+              </View>
+            </ScrollView>
+          ) : null}
         </View>
       </Modal>
 
@@ -797,6 +1323,23 @@ const styles = StyleSheet.create({
   sectionTitle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   expenseCard: { borderRadius: Radius.lg, borderWidth: 1, padding: Spacing.md, gap: Spacing.sm },
   expenseHeader: { flexDirection: 'row', justifyContent: 'space-between', gap: Spacing.md },
+  expenseActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    flexWrap: 'wrap',
+  },
+  detailActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    flexWrap: 'wrap',
+  },
+  detailBtn: {
+    borderWidth: 1,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    alignSelf: 'flex-start',
+  },
   flexText: { flex: 1 },
   splits: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs },
   splitPill: { borderRadius: Radius.full, paddingHorizontal: Spacing.sm, paddingVertical: 3 },
@@ -835,8 +1378,46 @@ const styles = StyleSheet.create({
   segment: { flex: 1, alignItems: 'center', borderWidth: 1, borderRadius: Radius.full, paddingVertical: Spacing.sm },
   splitMemberRow: { borderRadius: Radius.md, borderWidth: 1, padding: Spacing.sm, gap: Spacing.sm },
   splitMemberName: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  checkbox: { width: 28, height: 28, borderRadius: Radius.sm, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  checkbox: {
+    width: 28,
+    height: 28,
+    borderRadius: Radius.sm,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   splitValueInput: { marginLeft: 36 },
   splitIndicator: { fontWeight: '700' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  detailBlock: { gap: Spacing.sm },
+  detailRow: { flexDirection: 'row', gap: Spacing.md },
+  detailCol: { flex: 1, gap: Spacing.xs },
 })
+
+export function updateExpense(expenseId: string, payload: object): Promise<{ message: string; expense: Expense }>
+export function updateExpense(expenseId: string, payload: FormData): Promise<{ message: string; expense: Expense }>
+export function updateExpense(expenseId: string, payload: object | FormData) {
+  if (payload instanceof FormData) {
+    return request(`/api/expenses/${expenseId}`, { method: 'PUT', body: payload })
+  }
+
+  return request(`/api/expenses/${expenseId}`, { method: 'PUT', body: JSON.stringify(payload) })
+}
+
+export interface CreateExpensePayload {
+  groupId: string
+  description: string
+  amount: number
+  currency: string
+  paidBy: string
+  createdBy: string
+  splitType: string
+  splitsData: object[]
+  attachment?: {
+    url: string
+    name: string
+    mimeType: string
+    size: number
+    uploadedAt: string
+  } | null
+}

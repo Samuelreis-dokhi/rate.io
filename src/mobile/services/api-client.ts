@@ -44,7 +44,7 @@ function getDevelopmentApiBaseUrl(): string | undefined {
   return undefined
 }
 
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   const configuredApiBaseUrl = getConfiguredApiBaseUrl()
   const shouldInferDevUrl =
     __DEV__ &&
@@ -70,13 +70,20 @@ export async function request<T = unknown>(
 ): Promise<T> {
   const apiBaseUrl = getApiBaseUrl()
   const token = await getToken()
+  const isFormData =
+    typeof FormData !== 'undefined' &&
+    options.body != null &&
+    (
+      options.body instanceof FormData ||
+      Object.prototype.toString.call(options.body) === '[object FormData]'
+    )
 
   const response = await fetch(`${apiBaseUrl}${endpoint}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers as Record<string, string> || {}),
+      ...((options.headers as Record<string, string>) || {}),
     },
   })
 
@@ -86,9 +93,10 @@ export async function request<T = unknown>(
     if (response.status === 401) {
       await clearSession()
     }
-    const message = (data as { message?: string; error?: string }).message
-      ?? (data as { message?: string; error?: string }).error
-      ?? 'Erro na requisição'
+    const message =
+      (data as { message?: string; error?: string }).message ??
+      (data as { message?: string; error?: string }).error ??
+      'Erro na requisição'
     throw new ApiError(message, response.status, data)
   }
 

@@ -227,6 +227,25 @@ describe('POST /api/expenses (createExpense)', () => {
     const res = await request(app).post('/api/expenses').send({ groupId });
     expect(res.status).toBe(401);
   });
+
+  test('201: cria despesa com anexo', async () => {
+    const res = await request(app)
+      .post('/api/expenses')
+      .set('Authorization', 'Bearer ' + token)
+      .field('groupId', groupId)
+      .field('description', 'Despesa com recibo')
+      .field('amount', '100')
+      .field('currency', 'BRL')
+      .field('paidBy', userId)
+      .field('createdBy', userId)
+      .field('splitType', 'igual')
+      .field('splitsData', JSON.stringify([{ userId }, { userId: userId2 }]))
+      .attach('attachment', Buffer.from('fake image content'), 'recibo.png')
+
+    expect(res.status).toBe(201)
+    expect(res.body.expense.attachment).toBeTruthy()
+    expect(res.body.expense.attachment.url).toContain('/uploads/receipts/')
+  });
 });
 
 // ─── GET /api/expenses/group/:groupId ─────────────────────────────────

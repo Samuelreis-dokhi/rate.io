@@ -10,11 +10,13 @@ const {
   deleteExpense,
 } = require('../controllers/expenseController');
 
-router.post('/', createExpense);
+const uploadReceipt = require('../middleware/uploadMiddleware');
+
+router.post('/', uploadReceipt.single('attachment'), createExpense);
 router.get('/group/:groupId', getGroupExpenses);
 router.post('/:expenseId/settle', settleExpenseShare);
 router.get('/group/:groupId/balances', getGroupBalances);
-router.put('/:expenseId', updateExpense);
+router.put('/:expenseId', uploadReceipt.single('attachment'), updateExpense);
 router.delete('/:expenseId', deleteExpense);
 
 module.exports = router;
