@@ -31,7 +31,7 @@ Casos cobertos:
 | `group.routes.test.js` | Criação, membros, convite, listagem, atividades e remoção lógica | PASS |
 | `expense.routes.test.js` | Criação, listagem, quitação, atualização, exclusão e saldos | PASS |
 
-Resultado validado em 2026-05-30: 3 suítes, 68 testes aprovados.
+Resultado validado em 2026-06-20: 3 suítes, 69 testes aprovados.
 
 ## Frontend Web
 
@@ -50,7 +50,7 @@ Casos cobertos:
 | --- | --- | --- |
 | `ProtectedRoute.test.jsx` | Redirecionamento sem autenticação, estado de carregamento e renderização autenticada | PASS |
 
-Resultado validado em 2026-05-30: 1 suíte, 3 testes aprovados.
+Resultado validado em 2026-06-20: 1 suíte, 3 testes aprovados.
 
 ## Mobile
 
@@ -69,7 +69,7 @@ Casos cobertos:
 | --- | --- | --- |
 | `auth-context.integration.test.tsx` | `AuthProvider` real coordenando bootstrap de desenvolvimento, login, cadastro com login automático, refresh de perfil, logout, storage e serviços mockados | PASS |
 
-Resultado validado em 2026-05-30: 1 suíte, 3 testes aprovados.
+Resultado validado em 2026-06-20: 1 suíte, 3 testes aprovados.
 
 ## Critérios F.I.R.S.T.
 
@@ -82,6 +82,6 @@ Resultado validado em 2026-05-30: 1 suíte, 3 testes aprovados.
 
 | Data | Módulo | Comando | Resultado |
 | --- | --- | --- | --- |
-| 2026-05-30 | Backend | `npm run test:integration` | PASS, 68/68 |
-| 2026-05-30 | Frontend | `npm run test:integration` | PASS, 3/3 |
-| 2026-05-30 | Mobile | `npm run test:integration` | PASS, 3/3 |
+| 2026-06-20 | Backend | `npm run test:integration` | PASS, 69/69 |
+| 2026-06-20 | Frontend | `npm run test:integration` | PASS, 3/3 |
+| 2026-06-20 | Mobile | `npm run test:integration` | PASS, 3/3 |

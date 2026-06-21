@@ -60,7 +60,7 @@ O diagrama abaixo representa o fluxo principal implementado na API, incluindo au
 * Runtime: Node.js 18+
 * Framework HTTP: Express 5
 * Persistência: Mongoose + MongoDB Atlas
-* Segurança: bcryptjs (hash) + jsonwebtoken (JWT)
+* Segurança: bcryptjs (hash) + jsonwebtoken (JWT), CORS e rate limit nas rotas públicas de autenticação
 * Configuração: dotenv
 * Qualidade: ESLint + Prettier
 * Padronização de ambiente: Docker + Docker Compose
@@ -160,11 +160,11 @@ Critérios F.I.R.S.T. aplicados:
 - Assertivas auto-verificáveis com Jest/Vitest.
 - Cobertura escrita junto das funcionalidades e correções de contrato.
 
-Execução consolidada validada em 2026-05-30:
+Execução consolidada validada em 2026-06-20:
 
 | Aplicação | Comando | Resultado |
 | --- | --- | --- |
-| Backend | `cd src/backend && npm test` | 7 suítes, 108 testes aprovados |
+| Backend | `cd src/backend && npm test` | 7 suítes, 109 testes aprovados |
 | Frontend Web | `cd src/frontend && npm test` | 4 suítes, 13 testes aprovados |
 | Mobile | `cd src/mobile && npm test` | 5 suítes, 15 testes aprovados |
 

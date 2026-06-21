@@ -226,7 +226,7 @@ cd src/mobile
 npm test
 ```
 
-Última validação: 5 suítes e 15 testes aprovados em 2026-05-30.
+Última validação: 5 suítes e 15 testes aprovados em 2026-06-20.
 
 Observação de contrato: a troca de senha usa `PUT /api/auth/change-password`, igual ao backend.
 

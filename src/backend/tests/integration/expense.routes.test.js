@@ -1,5 +1,6 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
+const { Buffer } = require('node:buffer');
 const { createApp } = require('../helpers/app');
 
 let app;
@@ -240,11 +241,11 @@ describe('POST /api/expenses (createExpense)', () => {
       .field('createdBy', userId)
       .field('splitType', 'igual')
       .field('splitsData', JSON.stringify([{ userId }, { userId: userId2 }]))
-      .attach('attachment', Buffer.from('fake image content'), 'recibo.png')
+      .attach('attachment', Buffer.from('fake image content'), 'recibo.png');
 
-    expect(res.status).toBe(201)
-    expect(res.body.expense.attachment).toBeTruthy()
-    expect(res.body.expense.attachment.url).toContain('/uploads/receipts/')
+    expect(res.status).toBe(201);
+    expect(res.body.expense.attachment).toBeTruthy();
+    expect(res.body.expense.attachment.url).toContain('/uploads/receipts/');
   });
 });
 

@@ -7,6 +7,10 @@ const changePasswordService = require('../services/changePasswordService');
 
 const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 const validatePassword = (password) => password && password.length >= 6;
+const normalizeEmail = (email) =>
+  String(email || '')
+    .trim()
+    .toLowerCase();
 // const buildDefaultName = (email) => {
 //   const localPart = String(email || '').split('@')[0] || '';
 //   const cleaned = localPart.replace(/[._-]+/g, ' ').trim();
@@ -19,6 +23,7 @@ exports.register = async (req, res) => {
 
   try {
     const { email, password, name } = req.body || {};
+    const normalizedEmail = normalizeEmail(email);
     const normalizedName = String(name || '').trim();
 
     // Validação de entrada
@@ -26,7 +31,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
     }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(normalizedEmail)) {
       return res.status(400).json({ error: 'Email inválido' });
     }
 
@@ -38,21 +43,21 @@ exports.register = async (req, res) => {
 
     // Verifica se email já existe
     const existingUser = await Auth.findOne({
-      email: email.toLowerCase(),
+      email: normalizedEmail,
     });
     if (existingUser) {
       return res.status(409).json({ error: 'Email já cadastrado' });
     }
 
     // Cria o registro de autenticação
-    const authRecord = await Auth.create({ email, password });
+    const authRecord = await Auth.create({ email: normalizedEmail, password });
 
     let userProfile;
     try {
       // Cria o perfil de usuário associado automaticamente
       userProfile = await User.create({
         name: normalizedName,
-        email,
+        email: normalizedEmail,
         authId: authRecord._id,
       });
     } catch (profileError) {
@@ -89,6 +94,7 @@ exports.login = async (req, res) => {
 
   try {
     const { email, password } = req.body || {};
+    const normalizedEmail = normalizeEmail(email);
 
     // Validação de entrada
     if (!email || !password) {
@@ -96,7 +102,7 @@ exports.login = async (req, res) => {
     }
 
     const user = await Auth.findOne({
-      email: email.toLowerCase(),
+      email: normalizedEmail,
       isActive: true,
     });
 

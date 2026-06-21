@@ -5,6 +5,7 @@ const authRateLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
   message: {
     message: 'Too many authentication attempts, please try again later',
   },

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs/promises');
 const path = require('path');
+const { URL } = require('node:url');
 
 const Expense = require('../models/Expense');
 const getGroupModel = require('../models/Group');
@@ -286,14 +287,7 @@ exports.getGroupBalances = async (req, res) => {
 exports.updateExpense = async (req, res) => {
   const User = getUserModel();
   const { expenseId } = req.params;
-  const {
-    description,
-    amount,
-    currency,
-    paidBy,
-    splitType,
-    updatedBy,
-  } = req.body;
+  const { description, amount, currency, paidBy, splitType, updatedBy } = req.body;
 
   const splitsData = parseSplitsData(req.body.splitsData);
   const newAttachment = buildAttachmentPayload(req, req.file);
@@ -428,39 +422,39 @@ exports.updateExpense = async (req, res) => {
 };
 
 exports.deleteExpense = async (req, res) => {
-  const User = getUserModel()
-  const { expenseId } = req.params
-  const authId = req.user?.id
+  const User = getUserModel();
+  const { expenseId } = req.params;
+  const authId = req.user?.id;
 
   try {
     if (!isValidObjectId(expenseId)) {
-      return res.status(400).json({ message: 'ID de despesa inválido' })
+      return res.status(400).json({ message: 'ID de despesa inválido' });
     }
 
     if (!authId || !isValidObjectId(authId)) {
-      return res.status(401).json({ message: 'Usuário autenticado inválido' })
+      return res.status(401).json({ message: 'Usuário autenticado inválido' });
     }
 
-    const user = await User.findByAuthId(authId)
+    const user = await User.findByAuthId(authId);
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' })
+      return res.status(404).json({ message: 'Usuário não encontrado' });
     }
 
-    const expense = await Expense.findById(expenseId)
+    const expense = await Expense.findById(expenseId);
     if (!expense) {
-      return res.status(404).json({ message: 'Despesa não encontrada' })
+      return res.status(404).json({ message: 'Despesa não encontrada' });
     }
 
-    const group = await getActiveGroupOrNull(expense.groupId)
+    const group = await getActiveGroupOrNull(expense.groupId);
     if (!group || !isGroupMember(group, user._id)) {
-      return res.status(403).json({ message: 'Não autorizado para deletar esta despesa' })
+      return res.status(403).json({ message: 'Não autorizado para deletar esta despesa' });
     }
 
     if (expense.attachment?.url) {
-      await removeAttachmentFromDisk(expense.attachment.url)
+      await removeAttachmentFromDisk(expense.attachment.url);
     }
 
-    await Expense.findByIdAndDelete(expenseId)
+    await Expense.findByIdAndDelete(expenseId);
 
     try {
       await Activity.create({
@@ -473,13 +467,13 @@ exports.deleteExpense = async (req, res) => {
           amount: expense.amount,
           description: expense.description,
         },
-      })
-    } catch (activityError) {
-      console.error('Falha ao registrar atividade de exclusão:', activityError)
+      });
+    } catch {
+      // A exclusão da despesa não deve falhar se o registro de atividade não for criado.
     }
 
-    return res.status(200).json({ message: 'Despesa deletada com sucesso' })
+    return res.status(200).json({ message: 'Despesa deletada com sucesso' });
   } catch (error) {
-    return res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message });
   }
 };

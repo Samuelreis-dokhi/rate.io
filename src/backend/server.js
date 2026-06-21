@@ -10,12 +10,41 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const allowedOrigins = new Set(['https://rateio-app.onrender.com']);
+const defaultAllowedOrigins = ['https://rateio-app.onrender.com'];
+const configuredAllowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = new Set([...defaultAllowedOrigins, ...configuredAllowedOrigins]);
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+const isPrivateIPv4 = (hostname) => {
+  const octets = hostname.split('.').map(Number);
+
+  if (octets.length !== 4 || octets.some((octet) => Number.isNaN(octet))) {
+    return false;
+  }
+
+  const [first, second] = octets;
+  return (
+    first === 10 ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+};
 
 const isLocalDevelopmentOrigin = (origin) => {
   try {
     const { hostname } = new URL(origin);
-    return hostname === 'localhost' || hostname === '127.0.0.1';
+    return (
+      isDevelopment &&
+      (hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '0.0.0.0' ||
+        hostname === '::1' ||
+        hostname === '[::1]' ||
+        isPrivateIPv4(hostname))
+    );
   } catch {
     return false;
   }
@@ -82,18 +111,22 @@ const startServer = async () => {
     });
 
     app.use((err, req, res, next) => {
+      if (err.message === 'Origem não permitida pelo CORS') {
+        return res.status(403).json({ message: err.message });
+      }
+
       if (err.message === 'Formato de arquivo não suportado') {
-        return res.status(400).json({ message: err.message })
+        return res.status(400).json({ message: err.message });
       }
 
       if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ message: 'Arquivo maior que o limite permitido' })
+        return res.status(400).json({ message: 'Arquivo maior que o limite permitido' });
       }
 
-      next(err)
+      next(err);
     });
 
-    app.use((err, req, res) => {
+    app.use((err, req, res, _next) => {
       console.error('Erro no servidor:', err);
       res.status(500).json({ message: 'Erro interno do servidor' });
     });

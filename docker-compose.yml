@@ -44,7 +44,7 @@ services:
     env_file:
       - ./src/frontend/.env
     environment:
-      - VITE_API_URL=http://api:3000
+      - VITE_API_BASE=http://localhost:3000
     depends_on:
       api:
         condition: service_healthy

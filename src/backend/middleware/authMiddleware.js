@@ -30,7 +30,7 @@ const authenticateToken = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       message: 'Invalid or expired token',
-      error: error.message,
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 };

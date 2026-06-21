@@ -85,7 +85,7 @@ const expenseSchema = new mongoose.Schema(
       mimeType: { type: String, default: null },
       size: { type: Number, default: null },
       uploadedAt: { type: Date, default: null },
-    }
+    },
   },
   { timestamps: true }
 );

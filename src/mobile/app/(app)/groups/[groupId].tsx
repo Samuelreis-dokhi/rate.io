@@ -24,7 +24,7 @@ import {
   type Expense,
   type GroupBalance,
 } from '@/src/features/expenses/expense-service'
-import { request } from '@/services/api-client'
+import { getApiBaseUrl, request } from '@/services/api-client'
 import { getPublicProfile, type UserProfile } from '@/src/features/auth/user-service'
 import { ActivityItem } from '@/components/ui/activity-item'
 import { AppButton } from '@/components/ui/app-button'
@@ -33,7 +33,6 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { StatCard } from '@/components/ui/stat-card'
 import { resolveUserId } from '@/src/utils/resolve-user-id'
 import { formatDate, formatMoney } from '@/src/utils/format'
-import { getApiBaseUrl } from '@/services/api-client'
 
 type SplitType = 'igual' | 'porcentagem' | 'exato'
 
@@ -134,7 +133,6 @@ export default function GroupDetailScreen() {
   const scheme = useColorScheme()
   const c = Colors[scheme ?? 'light']
 
-  const isFocused = useIsFocused()
 
   const [group, setGroup] = useState<Group | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
