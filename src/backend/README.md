@@ -31,6 +31,8 @@ Dependências principais (instaladas via `npm install`):
 - bcryptjs
 - jsonwebtoken
 - dotenv
+- multer
+- express-rate-limit
 
 Dependências de desenvolvimento:
 
@@ -122,7 +124,7 @@ cd src/backend
 npm test
 ```
 
-Última validação: 7 suítes e 108 testes aprovados em 2026-05-30.
+Última validação: 7 suítes e 109 testes aprovados em 2026-06-20.
 
 ## Guia Reutilizável de Testes no Postman
 
@@ -261,7 +263,7 @@ Verifique:
 
 1. Não versionar `src/backend/.env`.
 2. Versionar somente `src/backend/.env.example`.
-3. Rodar `npm run format` e `npm run lint` antes de commit.
+3. Rodar `npm run format`, `npm run lint`, `npm test` e `npm audit --omit=dev` antes de commit.
 4. Usar branch por contexto (`feature/...`, `bugfix/...`, `docs/...`, `test/...`).
 
 ## Checklist de onboarding
@@ -273,5 +275,12 @@ Verifique:
 5. Validei `GET /health`.
 6. Rodei lint/format.
 7. Testei fluxo principal no Postman.
+
+## Segurança operacional
+
+1. `POST /api/auth/register` e `POST /api/auth/login` usam rate limit para reduzir força bruta.
+2. Upload de comprovantes aceita apenas JPEG, PNG, WebP e PDF, com limite de 10 MB.
+3. A auditoria de produção (`npm audit --omit=dev`) foi validada sem vulnerabilidades em 2026-06-20.
+4. Vulnerabilidades restantes em auditoria completa estão restritas a dependências de desenvolvimento/testes e não devem ser corrigidas com `--force` sem avaliar quebra de Jest.
 
 ---

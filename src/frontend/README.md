@@ -32,7 +32,7 @@ Execução completa:
 npm test
 ```
 
-Última validação: 4 suítes e 13 testes aprovados em 2026-05-30.
+Última validação: 4 suítes e 13 testes aprovados em 2026-06-20.
 
 ## Estrutura CSS
 

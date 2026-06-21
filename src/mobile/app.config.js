@@ -17,7 +17,7 @@ function loadDotenv(filePath) {
 }
 
 const env = loadDotenv(path.resolve(__dirname, '.env'));
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || env.EXPO_PUBLIC_API_BASE_URL || undefined;
+const apiBaseUrl = 'https://kiln-alive-magazine.ngrok-free.dev';
 const appJson = require('./app.json');
 
 module.exports = {
@@ -26,6 +26,9 @@ module.exports = {
     ...appJson.expo,
     extra: {
       ...appJson.expo.extra,
+      eas: {
+        projectId: '37e3c4b5-a5bf-4d55-8079-494b6b806915',
+      },
       ...(apiBaseUrl ? { apiBaseUrl } : {}),
     },
   },

@@ -82,8 +82,9 @@ describe('mobile integration: AuthProvider', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('bootstrapping')).toHaveTextContent('false')
-      expect(mockedClearSession).toHaveBeenCalledTimes(1)
     })
+
+expect(mockedClearSession).not.toHaveBeenCalled()
 
     fireEvent.press(screen.getByTestId('login'))
 
@@ -102,7 +103,7 @@ describe('mobile integration: AuthProvider', () => {
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false')
       expect(screen.getByTestId('user-name')).toHaveTextContent('sem usuario')
-      expect(mockedClearSession).toHaveBeenCalledTimes(2)
+      expect(mockedClearSession).toHaveBeenCalledTimes(1)
     })
   })
 

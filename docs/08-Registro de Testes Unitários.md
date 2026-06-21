@@ -31,7 +31,7 @@ Escopo coberto:
 | `balanceService.test.js` | Cálculo de saldo, resumo por usuário e grafo de pagamentos |
 | `ChangePasswordService.test.js` | Validação de senha atual, confirmação, hash e regras de troca |
 
-Resultado validado em 2026-05-30: 3 suítes, 39 testes aprovados.
+Resultado validado em 2026-06-20: 3 suítes, 39 testes aprovados.
 
 ## Frontend Web
 
@@ -51,7 +51,7 @@ Escopo coberto:
 | `api.test.jsx` | Headers de autenticação, serialização de payloads, erros HTTP e liquidação de despesa |
 | `aut-context.test.jsx` | Login, logout, restauração de sessão e limpeza de token inválido |
 
-Resultado validado em 2026-05-30: 2 suítes, 9 testes aprovados.
+Resultado validado em 2026-06-20: 2 suítes, 9 testes aprovados.
 
 ## Mobile
 
@@ -72,7 +72,7 @@ Escopo coberto:
 | `auth-service.test.ts` | Contratos de login, cadastro e troca de senha via `PUT` |
 | `domain-services.test.ts` | Endpoints e envelopes de grupos, despesas, saldos, quitação e exclusão |
 
-Resultado validado em 2026-05-30: 3 suítes, 11 testes aprovados.
+Resultado validado em 2026-06-20: 3 suítes, 11 testes aprovados.
 
 ## Procedimento padrão
 
@@ -85,6 +85,6 @@ Resultado validado em 2026-05-30: 3 suítes, 11 testes aprovados.
 
 | Data | Módulo | Comando | Resultado |
 | --- | --- | --- | --- |
-| 2026-05-30 | Backend | `npm run test:unit` | PASS, 39/39 |
-| 2026-05-30 | Frontend | `npm run test:unit` | PASS, 9/9 |
-| 2026-05-30 | Mobile | `npm run test:unit` | PASS, 11/11 |
+| 2026-06-20 | Backend | `npm run test:unit` | PASS, 39/39 |
+| 2026-06-20 | Frontend | `npm run test:unit` | PASS, 9/9 |
+| 2026-06-20 | Mobile | `npm run test:unit` | PASS, 11/11 |

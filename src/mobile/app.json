@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Precisamos da câmera para anexar o recibo da despesa.",
+        "NSPhotoLibraryUsageDescription": "Precisamos da galeria para escolher um recibo salvo.",
+        "NSPhotoLibraryAddUsageDescription": "Precisamos salvar imagens do recibo quando necessário."
+      }
     },
     "android": {
       "package": "com.rateio.mobile",
@@ -45,6 +50,7 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "permissions": []
   }
 }

@@ -189,11 +189,11 @@ Os scripts são executados dentro de cada aplicação, pois backend, frontend we
 
 A suíte segue os critérios F.I.R.S.T.: testes rápidos, independentes, repetíveis, auto-verificáveis e escritos em tempo de desenvolvimento. O backend usa MongoDB em memória para integração e sistema, evitando dependência de Atlas. Web e mobile isolam chamadas HTTP por mocks para validar contratos de serviço, autenticação, rotas protegidas e fluxos críticos sem flutuação de rede.
 
-Execução validada em 2026-05-30:
+Execução validada em 2026-06-20:
 
 | Aplicação | Comando | Resultado |
 | --- | --- | --- |
-| Backend | `cd src/backend && npm test` | 7 suítes, 108 testes aprovados |
+| Backend | `cd src/backend && npm test` | 7 suítes, 109 testes aprovados |
 | Frontend | `cd src/frontend && npm test` | 4 suítes, 13 testes aprovados |
 | Mobile | `cd src/mobile && npm test` | 5 suítes, 15 testes aprovados |
 

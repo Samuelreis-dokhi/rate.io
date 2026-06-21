@@ -6,8 +6,9 @@ O RATE.IO e uma aplicacao distribuida para gestao financeira colaborativa e rate
 
 - `src/backend`: API REST em Node.js, Express e MongoDB/Mongoose.
 - `src/frontend`: aplicacao Web em React, Vite e React Router.
+- `src/mobile`: aplicacao Mobile em Expo/React Native.
 
-A arquitetura adotada e cliente-servidor, com frontend leve consumindo uma API REST protegida por JWT. As regras centrais de negocio ficam no backend, especialmente validacao de membros, criacao de grupos, divisao de despesas, quitacao de parcelas e calculo de saldos.
+A arquitetura adotada e cliente-servidor, com clientes leves consumindo uma API REST protegida por JWT. As regras centrais de negocio ficam no backend, especialmente validacao de membros, criacao de grupos, divisao de despesas, quitacao de parcelas e calculo de saldos.
 
 ## 2. Estrutura do repositorio
 
@@ -27,14 +28,20 @@ A arquitetura adotada e cliente-servidor, com frontend leve consumindo uma API R
 │   │   ├── services/
 │   │   ├── tests/
 │   │   └── server.js
-│   └── frontend/
-│       ├── public/
-│       └── src/
-│           ├── components/
-│           ├── context/
-│           ├── pages/
-│           ├── services/
-│           └── tests/
+│   ├── frontend/
+│   │   ├── public/
+│   │   └── src/
+│   │       ├── components/
+│   │       ├── context/
+│   │       ├── pages/
+│   │       ├── services/
+│   │       └── tests/
+│   └── mobile/
+│       ├── app/
+│       ├── components/
+│       ├── services/
+│       ├── src/
+│       └── __tests__/
 ├── .agents/
 └── .codex/
 ```
@@ -49,6 +56,7 @@ A arquitetura adotada e cliente-servidor, com frontend leve consumindo uma API R
 - Autenticacao: JWT via `jsonwebtoken`.
 - Senhas: hash com `bcryptjs`.
 - Configuracao: `dotenv`.
+- Upload e protecao de borda: `multer` 2.x e `express-rate-limit`.
 - Testes: Jest, Supertest e `mongodb-memory-server`.
 - Qualidade: ESLint e Prettier.
 
@@ -144,7 +152,23 @@ Definidas em `src/frontend/src/App.jsx`:
 
 `src/frontend/src/services/api.js` centraliza chamadas REST, adicionando `Authorization: Bearer <token>` quando houver token salvo. A base URL vem de `import.meta.env.VITE_API_BASE`.
 
-## 5. Contrato de API implementado
+## 5. Mobile
+
+### Stack
+
+- Expo Router.
+- React Native.
+- Jest Expo e Testing Library React Native.
+- Serviços por domínio para Auth, Users, Groups e Expenses.
+
+### Organização
+
+- `app/`: rotas e telas por grupo de navegação.
+- `services/`: cliente HTTP e armazenamento seguro.
+- `src/features/`: serviços de domínio consumidos pelas telas.
+- `__tests__/`: testes unitários, integração e fluxo E2E mockado.
+
+## 6. Contrato de API implementado
 
 ### Auth
 
@@ -178,7 +202,7 @@ O arquivo de rotas tambem contem aliases POST/DELETE duplicados para exclusao, m
 - `PUT /api/expenses/:expenseId`
 - `DELETE /api/expenses/:expenseId`
 
-## 6. Execucao local
+## 7. Execucao local
 
 ### Docker
 
@@ -207,7 +231,15 @@ npm install
 npm run dev
 ```
 
-## 7. Testes e qualidade
+### Mobile local
+
+```bash
+cd src/mobile
+npm install
+npm start
+```
+
+## 8. Testes e qualidade
 
 ### Backend
 
@@ -232,17 +264,24 @@ npm run test:integration
 npm run test:coverage
 ```
 
-## 8. Pontos de atencao para evolucao
+### Mobile
 
-- `docker-compose.yml` define `VITE_API_URL`, mas o frontend le `VITE_API_BASE`.
-- `ProfilePage.jsx` faz `fetch` direto para `http://localhost:3000`, divergindo do cliente central `api.js`.
-- `rateLimitMiddleware.js` importa `express-rate-limit`, mas a dependencia nao aparece no `package.json` do backend e o middleware nao esta aplicado nas rotas de auth.
-- O error handler global em `server.js` esta com assinatura de 3 argumentos; no Express, middlewares de erro devem receber `(err, req, res, next)`.
+```bash
+cd src/mobile
+npm run lint
+npm test
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+```
+
+## 9. Pontos de atencao para evolucao
+
 - `userRoutes.js` aplica `authenticateToken` em rotas que ja sao protegidas no `server.js`, gerando redundancia.
 - `groupRoutes.js` contem multiplos aliases para exclusao de grupo; qualquer refatoracao deve preservar compatibilidade ou atualizar o frontend/testes.
 - A resposta de login retorna `userId` com o ID do registro `Auth`, enquanto o frontend busca o perfil real depois via `/api/users/profile`.
 
-## 9. Diretrizes para desenvolvimento
+## 10. Diretrizes para desenvolvimento
 
 - Preservar a separacao entre credencial (`Auth`) e perfil (`User`).
 - Nunca acessar MongoDB diretamente pelo frontend.
@@ -252,3 +291,4 @@ npm run test:coverage
 - Manter responses e envelopes existentes porque o frontend depende deles.
 - Para mudancas de contrato, atualizar backend, frontend, testes e documentacao no mesmo PR.
 - Preferir testes focados: unitarios para services, integracao para rotas e sistema para jornadas completas.
+- Validar `npm audit --omit=dev` em mudanças de dependência; em 2026-06-20 não havia vulnerabilidades de produção no backend.

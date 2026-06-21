@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useAuth } from '@/src/features/auth/auth-context'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Colors, Spacing, Typography } from '@/constants/theme'
+import { Colors, Layout, Typography } from '@/constants/theme'
 
 export default function LogoutScreen() {
   const { logout } = useAuth()
@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: Spacing.lg,
+    padding: Layout.screenPadding,
   },
 })

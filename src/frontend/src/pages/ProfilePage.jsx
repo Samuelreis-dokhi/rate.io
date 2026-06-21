@@ -24,6 +24,7 @@ const ProfilePage = () => {
   const [avatar, setAvatar] = useState(null)
   const [error, setError] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
   const [isPasswordOpen, setIsPasswordOpen] = useState(false)
   const [passwordData, setPasswordData] = useState(initialPasswordData)
   const [passwordLoading, setPasswordLoading] = useState(false)
@@ -70,15 +71,18 @@ const ProfilePage = () => {
     setPasswordFeedback('')
   }
 
-  const handleSave = async () => {
+  const handleSave = () => {
+    if (!formData.name.trim()) {
+      setError('Nome é obrigatório')
+      return
+    }
+
+    setError('')
+    setShowConfirmationModal(true)
+  }
+
+  const handleConfirmSave = async () => {
     try {
-      if (!formData.name.trim()) {
-        setError('Nome é obrigatório')
-        return
-      }
-
-      setError('')
-
       await api.updateUserProfile(null, {
         name: formData.name,
         avatarUrl: avatar,
@@ -90,10 +94,12 @@ const ProfilePage = () => {
         avatarUrl: avatar,
       })
 
-      alert('Perfil atualizado com sucesso!')
+      setShowConfirmationModal(false)
+      window.location.reload()
     } catch (err) {
       console.error('Erro ao salvar perfil:', err)
       setError('Erro ao salvar perfil')
+      setShowConfirmationModal(false)
     }
   }
 
@@ -299,6 +305,25 @@ const ProfilePage = () => {
             </section>
           </main>
         </div>
+
+        <Modal
+          open={showConfirmationModal}
+          onClose={() => setShowConfirmationModal(false)}
+          title='Confirmar alterações'
+          size='sm'
+        >
+          <div className='profile-modal-content'>
+            <p>Tem certeza que deseja salvar as alterações do seu perfil?</p>
+            <div className='modal-actions modal-actions--reversed'>
+              <button className='btn btn-primary' onClick={handleConfirmSave} type='button'>
+                Confirmar
+              </button>
+              <button className='btn btn-ghost' onClick={() => setShowConfirmationModal(false)} type='button'>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </Modal>
 
         <Modal
           open={showModal}

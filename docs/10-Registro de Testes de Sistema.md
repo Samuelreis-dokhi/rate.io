@@ -29,7 +29,7 @@ Fluxo coberto por `userJourney.test.js`:
 10. Consulta de despesas e atividades.
 11. Remoção lógica do grupo.
 
-Resultado validado em 2026-05-30: 1 suíte, 1 jornada aprovada.
+Resultado validado em 2026-06-20: 1 suíte, 1 jornada aprovada.
 
 ## Frontend Web: E2E com API mockada
 
@@ -52,7 +52,7 @@ Fluxo coberto por `authenticated-flow.test.jsx`:
 6. Carregamento de grupos, perfis e despesas por contrato de serviço mockado.
 7. Exibição do resumo financeiro e pendência.
 
-Resultado validado em 2026-05-30: 1 suíte, 1 fluxo aprovado.
+Resultado validado em 2026-06-20: 1 suíte, 1 fluxo aprovado.
 
 ## Mobile: E2E com serviços mockados
 
@@ -75,7 +75,7 @@ Fluxo coberto por `authenticated-mobile-flow.e2e.test.tsx`:
 6. Carregamento de grupos, perfis públicos e despesas.
 7. Exibição da pendência financeira no dashboard mobile.
 
-Resultado validado em 2026-05-30: 1 suíte, 1 fluxo aprovado.
+Resultado validado em 2026-06-20: 1 suíte, 1 fluxo aprovado.
 
 ## Critérios F.I.R.S.T.
 
@@ -89,6 +89,6 @@ Resultado validado em 2026-05-30: 1 suíte, 1 fluxo aprovado.
 
 | Data | Módulo | Comando | Resultado |
 | --- | --- | --- | --- |
-| 2026-05-30 | Backend | `npm run test:system` | PASS, 1/1 jornada |
-| 2026-05-30 | Frontend | `npm run test:e2e` | PASS, 1/1 fluxo |
-| 2026-05-30 | Mobile | `npm run test:e2e` | PASS, 1/1 fluxo |
+| 2026-06-20 | Backend | `npm run test:system` | PASS, 1/1 jornada |
+| 2026-06-20 | Frontend | `npm run test:e2e` | PASS, 1/1 fluxo |
+| 2026-06-20 | Mobile | `npm run test:e2e` | PASS, 1/1 fluxo |

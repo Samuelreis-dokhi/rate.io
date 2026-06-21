@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { StyleSheet } from 'react-native';
+import { Layout } from '@/constants/theme';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: Layout.screenPadding,
   },
   link: {
     marginTop: 15,
